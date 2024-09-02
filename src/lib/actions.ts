@@ -9,7 +9,7 @@ import {
   IPageRequest,
 } from "./definitions";
 import { count, eq, like, or, sql } from "drizzle-orm";
-import { signIn } from "@/auth";
+import { signIn } from "@/src/auth";
 import { AuthError } from "next-auth";
 import { MemberBaseSchema } from "../models/member.schema";
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Navbar from "@/src/components/ui/dashboard/navbar";
-import Sidenav from "@/src/components/ui/dashboard/sidenav";
+import Navbar from "@/src/components/dashboard/navbar";
+import Sidenav from "@/src/components/dashboard/sidenav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <div className="flex min-h-screen w-full">
       <Sidenav />
-      <div className="flex flex-col">
+      <div className="flex flex-col lg:ml-64">
         <Navbar />
         {children}
       </div>

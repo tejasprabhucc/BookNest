@@ -6,7 +6,7 @@ interface AppEnv {
   DATABASE_URL: string;
   // ACCESS_TOKEN_SECRET: string;
   // REFRESH_TOKEN_SECRET: string;
-  GOOGLE_CLIENT_ID: string;
+  AUTH_GOOGLE_ID: string;
   // GOOGLE_OAUTH_REDIRECT_URL: string;
 }
 
@@ -25,9 +25,9 @@ const getAppEnvs = (): AppEnv => {
   //     "REFRESH_TOKEN_SECRET is not defined in the environment variables"
   //   );
   // }
-  if (!process.env.GOOGLE_CLIENT_ID) {
+  if (!process.env.AUTH_GOOGLE_ID) {
     throw new Error(
-      "GOOGLE_CLIENT_ID is not defined in the environment variables"
+      "AUTH_GOOGLE_ID is not defined in the environment variables"
     );
   }
   // if (!process.env.GOOGLE_OAUTH_REDIRECT_URL) {
@@ -40,7 +40,7 @@ const getAppEnvs = (): AppEnv => {
     DATABASE_URL: process.env.DATABASE_URL,
     // ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
     // REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
-    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    AUTH_GOOGLE_ID: process.env.AUTH_GOOGLE_ID,
     // GOOGLE_OAUTH_REDIRECT_URL: process.env.GOOGLE_OAUTH_REDIRECT_URL,
   };
 };

@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { getUserByEmail } from "@/src/lib/actions";
 import { IMember } from "@/src/models/member.schema";
 import { z } from "zod";
+import Google from "next-auth/providers/google";
 
 function mapMemberToUser(member: IMember): User {
   return {
@@ -17,6 +18,7 @@ function mapMemberToUser(member: IMember): User {
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   providers: [
+    Google,
     CredentialsProvider({
       authorize: async (credentials) => {
         const parsedCredentials = z

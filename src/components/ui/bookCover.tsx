@@ -29,11 +29,11 @@ const BookCover: React.FC<BookCoverProps> = ({ title, author, publisher }) => {
 
   return (
     <div
-      className={`w-full h-[250px] flex flex-col justify-center items-center text-center p-4 rounded-lg shadow-md text-white  ${backgroundColor} ${fontFamily}`}
+      className={`w-full h-[250px] flex flex-col justify-center items-center text-center p-4 rounded-lg shadow-md bg-gray-200 ${fontFamily}`}
     >
       <h2 className="text-xl font-bold">{title}</h2>
-      <p className="text-lg mt-2">{author}</p>
-      {publisher && <p className="text-sm mt-2 italic">{publisher}</p>}
+      {/* <p className="text-lg mt-2">{author}</p>
+      {publisher && <p className="text-sm mt-2 italic">{publisher}</p>} */}
     </div>
   );
 };
