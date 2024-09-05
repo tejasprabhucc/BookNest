@@ -1,12 +1,12 @@
-import { IRepository } from "../core/repository";
-import { ITransaction, ITransactionBase } from "../models/transaction.model";
-import { ITransactionBaseSchema } from "../models/transaction.schema";
-import { BookRepository } from "../repositories/book.repository";
-import { MemberRepository } from "../repositories/member.repository";
+import { IRepository } from "@/src/lib/definitions";
+import { ITransaction, ITransactionBase } from "@/src/lib/definitions";
+import { ITransactionBaseSchema } from "@/src/models/transaction.schema";
+import { BookRepository } from "@/src/repositories/book.repository";
+import { MemberRepository } from "@/src/repositories/member.repository";
 import { MySql2Database } from "drizzle-orm/mysql2";
-import { transactions } from "../orm/schema";
+import { transactions } from "@/src/orm/schema";
 import { count, eq, or } from "drizzle-orm";
-import { IPagedResponse, IPageRequest } from "../core/pagination";
+import { IPagedResponse, IPageRequest } from "@/src/lib/definitions";
 
 export class TransactionRepository
   implements IRepository<ITransactionBase, ITransaction>
@@ -34,11 +34,10 @@ export class TransactionRepository
 
         const newTransaction: ITransaction = {
           ...validatedData,
+          memberId: BigInt(validatedData.memberId),
+          bookId: BigInt(validatedData.bookId),
           bookStatus: "issued",
-          dateOfIssue: new Date().toDateString(),
-          dueDate: new Date(
-            new Date().setDate(new Date().getDate() + 14)
-          ).toDateString(),
+          dateOfIssue: String(new Date().toISOString().split("T")[0]),
           id: 0,
         };
 
@@ -77,7 +76,7 @@ export class TransactionRepository
       }
 
       return await this.db.transaction(async (tx) => {
-        const book = await this.bookRepo.getById(transaction.bookId);
+        const book = await this.bookRepo.getById(Number(transaction.bookId));
 
         if (!book) {
           throw new Error("Book not found.");
@@ -85,7 +84,10 @@ export class TransactionRepository
 
         const updatedTransaction: ITransaction = {
           ...transaction,
+          memberId: BigInt(transaction.memberId),
+          bookId: BigInt(transaction.bookId),
           bookStatus: "returned",
+          id: 0,
         };
 
         await tx
@@ -106,7 +108,6 @@ export class TransactionRepository
       throw new Error(`Error returning book: ${(error as Error).message}`);
     }
   }
-
   async getById(id: number): Promise<ITransaction> {
     try {
       const [transaction] = (await this.db
@@ -114,7 +115,7 @@ export class TransactionRepository
         .from(transactions)
         .where(eq(transactions.id, id))
         .limit(1)
-        .execute()) as ITransaction[];
+        .execute()) as unknown as ITransaction[];
       if (!transaction) {
         throw new Error("Transaction not found");
       }
@@ -130,7 +131,7 @@ export class TransactionRepository
     let searchWhereClause;
 
     if (params.search) {
-      const search = Number(params.search);
+      const search = BigInt(params.search);
       searchWhereClause = or(
         eq(transactions.bookId, search),
         eq(transactions.memberId, search)
@@ -143,7 +144,7 @@ export class TransactionRepository
         .from(transactions)
         .where(searchWhereClause)
         .offset(params.offset)
-        .limit(params.limit)) as ITransaction[];
+        .limit(params.limit)) as unknown as ITransaction[];
 
       if (matchedTransactions.length > 0) {
         const [totalMatchedTransactions] = await this.db

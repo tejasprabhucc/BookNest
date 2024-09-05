@@ -33,17 +33,21 @@ export interface MemberTokens extends MemberTokensBase {
 }
 
 export interface ITransactionBase {
-  memberId: number;
-  bookId: number;
+  memberId: bigint; // Use bigint for large integers
+  bookId: bigint; // Use bigint for large integers
 }
 
-export type BookStatus = "issued" | "returned";
+export type BookStatus =
+  | "requested"
+  | "pending"
+  | "rejected"
+  | "issued"
+  | "returned";
 
 export interface ITransaction extends ITransactionBase {
-  id: number;
+  id: number; // `id` is usually a number
   bookStatus: BookStatus;
-  dateOfIssue: string;
-  dueDate: string;
+  dateOfIssue: string | null; // Allow null values
 }
 
 export type Models = IBook | IMember | ITransaction;
@@ -58,8 +62,33 @@ export interface IPagedResponse<T> {
   };
 }
 
+export interface IPaginationOptions {
+  offset: number;
+  limit: number;
+  total: number;
+}
+
 export interface IPageRequest {
   search?: string;
   offset: number;
   limit: number;
+}
+
+export interface IRepository<
+  MutationModel,
+  CompleteModel extends MutationModel
+> {
+  create(data: MutationModel): Promise<CompleteModel | undefined>;
+  update(id: number, data: MutationModel): Promise<CompleteModel | undefined>;
+  delete(id: number): Promise<CompleteModel | undefined>;
+  getById(id: number): Promise<CompleteModel | undefined>;
+  list(
+    params: IPageRequest
+  ): Promise<IPagedResponse<CompleteModel> | undefined>;
+}
+
+export interface INavOption {
+  label: string;
+  url: string;
+  icon: React.ComponentType;
 }

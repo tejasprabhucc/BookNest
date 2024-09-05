@@ -2,7 +2,7 @@ import NextAuth, { User } from "next-auth";
 import { authConfig } from "./auth.config";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { getUserByEmail } from "@/src/lib/actions";
+import { createUser, getUserByEmail } from "@/src/lib/actions";
 import { IMember } from "@/src/models/member.schema";
 import { z } from "zod";
 import Google from "next-auth/providers/google";
@@ -53,4 +53,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "google") {
+        try {
+          if (user && profile) {
+            const existingUser = await getUserByEmail(user.email!);
+            if (!existingUser) {
+              await createUser({
+                name: profile.name!,
+                email: user.email!,
+                age: 0,
+                password: "",
+                role: "user",
+              });
+            }
+          }
+        } catch (error) {
+          console.error("Error creating user:", error);
+          return false;
+        }
+      }
+      return true;
+    },
+  },
 });

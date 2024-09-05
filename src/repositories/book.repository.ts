@@ -1,9 +1,9 @@
-import { IBook } from "../models/book.model";
-import { BookSchemaBase, IBookBase } from "../models/book.schema";
+import { IBook } from "@/src/lib/definitions";
+import { BookSchemaBase, IBookBase } from "@/src/models/book.schema";
 import { IPagedResponse, IPageRequest } from "@/src/lib/definitions";
 import { MySql2Database } from "drizzle-orm/mysql2";
 import { count, eq, like, or, sql } from "drizzle-orm";
-import { books } from "../orm/schema";
+import { books } from "@/src/orm/schema";
 
 export class BookRepository {
   constructor(private readonly db: MySql2Database<Record<string, never>>) {}
@@ -17,12 +17,9 @@ export class BookRepository {
     };
 
     try {
-      const [insertId] = await this.db
-        .insert(books)
-        .values(newBook)
-        .$returningId();
+      const [result] = await this.db.insert(books).values(newBook);
 
-      return await this.getById(insertId.id);
+      return await this.getById(result.insertId);
     } catch (error) {
       throw new Error(`Error creating book: ${(error as Error).message}`);
     }
@@ -100,9 +97,11 @@ export class BookRepository {
     }
   }
 
-  async list(params: IPageRequest): Promise<IPagedResponse<IBook> | undefined> {
+  async list(params: IPageRequest): Promise<IPagedResponse<IBook> | null> {
+    if (!this.db) {
+      return null;
+    }
     let searchWhereClause;
-
     if (params.search) {
       const search = `%${params.search.toLowerCase()}%`;
       searchWhereClause = sql`${books.title} LIKE ${search} OR ${books.isbnNo} LIKE ${search}`;

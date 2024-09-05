@@ -2,7 +2,7 @@ import { defineConfig } from "drizzle-kit";
 import { AppEnvs } from "@/src/lib/read-env";
 
 export default defineConfig({
-  schema: "./src/orm/schema.ts",
+  schema: "./src/orm/schema.js",
   out: "./src/orm/migrations",
   dialect: "mysql",
   dbCredentials: {

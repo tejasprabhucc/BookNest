@@ -1,10 +1,10 @@
-import { IRepository } from "../core/repository";
-import { IMember, MemberTokens } from "../models/member.model";
+import { IRepository } from "@/src/lib/definitions";
+import { IMember, MemberTokens } from "@/src/lib/definitions";
 import { MemberBaseSchema, IMemberBase } from "../models/member.schema";
 import { MySql2Database } from "drizzle-orm/mysql2";
 import { members, memberTokens } from "../orm/schema";
 import { count, eq, like, or, sql } from "drizzle-orm";
-import { IPagedResponse, IPageRequest } from "../core/pagination";
+import { IPagedResponse, IPageRequest } from "@/src/lib/definitions";
 
 export class MemberRepository implements IRepository<IMemberBase, IMember> {
   constructor(private readonly db: MySql2Database<Record<string, never>>) {}
@@ -128,12 +128,19 @@ export class MemberRepository implements IRepository<IMemberBase, IMember> {
   }
 
   async getByEmail(email: string): Promise<IMember | null> {
-    const [selectedMember] = await this.db
-      .select()
-      .from(members)
-      .where(eq(members.email, email));
-    if (!selectedMember) return null;
-    return selectedMember;
+    try {
+      if (!this.db) {
+        return null;
+      }
+      const [selectedMember] = await this.db
+        .select()
+        .from(members)
+        .where(eq(members.email, email));
+      if (!selectedMember) return null;
+      return selectedMember;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async addTokenEntry(memberId: number, refreshToken: string) {

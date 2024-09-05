@@ -6,11 +6,10 @@ import {
   CardDescription,
   CardContent,
 } from "@/src/components/ui/card";
-import { ChromeIcon } from "lucide-react";
 import React from "react";
 import Link from "next/link";
 import SignupForm from "@/src/components/signup-form";
-import GoogleLoginButton from "@/src/components/google-login";
+import GoogleAuthButton from "@/src/components/googleAuthButton";
 
 const Signup = () => {
   return (
@@ -24,12 +23,7 @@ const Signup = () => {
         </CardHeader>
         <CardContent className="space-y-3">
           <SignupForm />
-          <GoogleLoginButton />
-          {/* <Button variant="outline" className="w-full">
-            <ChromeIcon className="mr-2 h-4 w-4" />
-            Continue with Google
-          </Button> */}
-
+          <GoogleAuthButton />
           <div>
             <p>
               Already have an account?{" "}

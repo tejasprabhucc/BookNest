@@ -8,7 +8,7 @@ import {
 import React from "react";
 import Link from "next/link";
 import LoginForm from "@/src/components/login-form";
-import GoogleLoginButton from "@/src/components/google-login";
+import GoogleAuthButton from "@/src/components/googleAuthButton";
 
 const Login = () => {
   return (
@@ -22,7 +22,7 @@ const Login = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <LoginForm />
-          <GoogleLoginButton />
+          <GoogleAuthButton />
           <div>
             <p>
               Don&apos;t have an account?{" "}

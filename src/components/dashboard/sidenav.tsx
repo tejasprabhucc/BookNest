@@ -1,47 +1,82 @@
 import React from "react";
 import Link from "next/link";
 import { MountainIcon, HomeIcon, BookmarkIcon, HeartIcon } from "lucide-react";
+import HamburgerMenu from "@/src/components/dashboard/hamburger";
+import DropDownOptions from "./dropDownMenu";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
+import { Button } from "../ui/button";
+import { INavOption } from "@/src/lib/definitions";
 
-const Sidenav = () => {
+const Sidenav = ({ navOptions }: { navOptions: INavOption[] }) => {
+  const simplifiedNavOptions = navOptions.map(({ label, url }) => ({
+    label,
+    url,
+  }));
   return (
-    <aside className="fixed inset-y-0 left-0 z-10 w-64 flex-col border-r bg-background hidden lg:flex">
-      <div className="flex h-16 items-center justify-between border-b px-4">
-        <Link
-          href="#"
-          className="flex items-center gap-2 font-bold"
-          prefetch={false}
-        >
-          <MountainIcon className="h-6 w-6" />
-          <span>BookNest</span>
-        </Link>
+    <>
+      <div className=" z-10 lg:hidden">
+        <div className="flex h-16 items-center justify-between border-b px-4">
+          <Link
+            href="#"
+            className="flex items-center gap-2 font-bold"
+            prefetch={false}
+          >
+            <MountainIcon className="h-6 w-6" />
+            <h1>BookNest</h1>
+          </Link>
+          <HamburgerMenu navOptions={simplifiedNavOptions} />
+        </div>
       </div>
-      <nav className="flex-1 space-y-1 px-2 py-4">
-        <Link
-          href="#"
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground"
-          prefetch={false}
-        >
-          <HomeIcon className="h-5 w-5" />
-          Home
-        </Link>
-        <Link
-          href={"/myBooks"}
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground"
-          prefetch={false}
-        >
-          <BookmarkIcon className="h-5 w-5" />
-          Borrowed
-        </Link>
-        <Link
-          href="#"
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground"
-          prefetch={false}
-        >
-          <HeartIcon className="h-5 w-5" />
-          Wishlist
-        </Link>
-      </nav>
-    </aside>
+      <aside className="w-60 inset-y-0 left-0 flex-col border-r bg-background hidden lg:flex">
+        <div className="flex h-16 items-center justify-between border-b px-4">
+          <Link href="#" className="flex items-center gap-2 " prefetch={false}>
+            <MountainIcon className="h-6 w-6" />
+            <span className="text-2xl">BookNest</span>
+          </Link>
+        </div>
+        <nav className="flex-1 space-y-1 px-2 py-4">
+          {navOptions.map((option: INavOption) => {
+            const IconComponent = option.icon;
+            return (
+              <Link
+                key={option.url}
+                href={option.url}
+                className="flex items-center gap-2 rounded-md px-3 py-3 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground"
+                prefetch={false}
+              >
+                <IconComponent /> {option.label}
+              </Link>
+            );
+          })}
+        </nav>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="flex  m-3 p-2 gap-2 items-center bg-slate-100 rounded-lg">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="overflow-hidden rounded-full bg-slate-200"
+              >
+                <span>T</span>
+                {/* <Image
+              src="/placeholder-user.jpg"
+              width={36}
+              height={36}
+              alt="Avatar"
+              className="rounded-full"
+              style={{ aspectRatio: "36/36", objectFit: "cover" }}
+            /> */}
+              </Button>
+              <p className="text-center">Profile</p>
+            </div>
+          </DropdownMenuTrigger>
+          <DropDownOptions />
+        </DropdownMenu>
+      </aside>
+    </>
   );
 };
 

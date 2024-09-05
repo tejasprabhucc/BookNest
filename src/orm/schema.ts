@@ -39,9 +39,11 @@ export const transactions = mysqlTable("transactions", {
   bookId: bigint("bookId", { mode: "bigint", unsigned: true })
     .references(() => books.id, { onDelete: "cascade" })
     .notNull(),
-  bookStatus: varchar("bookStatus", { length: 35 }).notNull(),
-  dateOfIssue: varchar("dateOfIssue", { length: 15 }).notNull(),
-  dueDate: varchar("dueDate", { length: 15 }).notNull(),
+  bookStatus: varchar("bookStatus", {
+    length: 35,
+    enum: ["requested", "pending", "rejected", "issued", "returned"],
+  }).notNull(),
+  dateOfIssue: varchar("dateOfIssue", { length: 15 }),
 });
 
 export const memberTokens = mysqlTable("memberTokens", {

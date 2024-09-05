@@ -1,8 +1,9 @@
+import React from "react";
 import { signIn } from "@/src/auth";
-import { Button } from "./button";
-import { ChromeIcon } from "lucide-react";
+import { Button } from "./ui/button";
+import { FcGoogle } from "react-icons/fc";
 
-export default function SignIn() {
+const GoogleAuthButton = () => {
   return (
     <form
       action={async () => {
@@ -11,9 +12,10 @@ export default function SignIn() {
       }}
     >
       <Button type="submit" variant="outline" className="w-full">
-        <ChromeIcon className="mr-2 h-4 w-4" />
-        Signin with Google
+        <FcGoogle className="mr-2 h-4 w-4" />
+        Continue with Google
       </Button>
     </form>
   );
-}
+};
+export default GoogleAuthButton;
