@@ -24,9 +24,9 @@ export const books = mysqlTable("books", {
 export const members = mysqlTable("members", {
   id: serial("id"),
   name: varchar("name", { length: 35 }).notNull(),
-  age: int("age").notNull(),
+  age: int("age"),
   email: varchar("email", { length: 255 }).unique().notNull(),
-  password: varchar("password", { length: 255 }).unique().notNull(),
+  password: varchar("password", { length: 255 }).unique(),
   role: mysqlEnum("role", ["user", "admin"]).notNull().default("user"),
 });
 
@@ -41,7 +41,7 @@ export const transactions = mysqlTable("transactions", {
     .notNull(),
   bookStatus: varchar("bookStatus", {
     length: 35,
-    enum: ["requested", "pending", "rejected", "issued", "returned"],
+    enum: ["pending", "rejected", "issued", "returned"],
   }).notNull(),
   dateOfIssue: varchar("dateOfIssue", { length: 15 }),
 });

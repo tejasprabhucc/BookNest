@@ -6,9 +6,55 @@ import {
   CardContent,
 } from "@/src/components/ui/card";
 import React from "react";
-import CreateBookForm from "@/src/components/create-book-form";
+import Form, { FormField } from "@/src/components/form";
+import { createBook } from "@/src/lib/actions";
 
 const Create = () => {
+  const bookFields: FormField[] = [
+    {
+      label: "Title",
+      type: "text",
+      name: "title",
+      placeholder: "Enter book title",
+    },
+    {
+      label: "Author",
+      type: "number",
+      name: "author",
+      placeholder: "Enter author name",
+    },
+    {
+      label: "Publisher",
+      type: "password",
+      name: "publisher",
+      placeholder: "Enter publisher name",
+    },
+    {
+      label: "ISBN",
+      type: "email",
+      name: "isbnNo",
+      placeholder: "Enter ISBN number",
+    },
+    {
+      label: "Pages",
+      type: "text",
+      name: "numOfPages",
+      placeholder: "Enter number of copies",
+    },
+    {
+      label: "Genre",
+      type: "text",
+      name: "genre",
+      placeholder: "Enter book genre",
+    },
+    {
+      label: "Total Copies",
+      type: "text",
+      name: "totalNumOfCopies",
+      placeholder: "Enter total number of copies",
+    },
+  ];
+
   return (
     <>
       <Card className="w-5/6 max-w-4xl mx-auto border-none shadow-none">
@@ -19,7 +65,12 @@ const Create = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <CreateBookForm />
+          <Form
+            type="create"
+            fields={bookFields}
+            action={createBook}
+            dataType="book"
+          />
         </CardContent>
       </Card>
     </>

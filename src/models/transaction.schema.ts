@@ -1,22 +1,24 @@
 import { z } from "zod";
 
-export const ITransactionBaseSchema = z.object({
-  memberId: z
-    .number({ message: "Member ID should be a number" })
-    .int({ message: "Member ID cannot be a decimal number." }),
-  bookId: z
-    .number({ message: "Book ID should be a number" })
-    .int({ message: "Book ID cannot be a decimal number." }),
+const bigintValidation = z
+  .any()
+  .refine((val) => typeof val === "bigint" || typeof val === "number", {
+    message: "Value must be a bigint or number.",
+  })
+  .transform((val) => BigInt(val));
+
+export const TransactionBaseSchema = z.object({
+  memberId: bigintValidation,
+  bookId: bigintValidation,
 });
 
-export const ITransactionSchema = ITransactionBaseSchema.extend({
+export const TransactionSchema = TransactionBaseSchema.extend({
   id: z
     .number({ message: "ID should be a number" })
     .int({ message: "ID cannot be a decimal number." }),
-  bookStatus: z.enum(["issued", "returned"]),
-  dateOfIssue: z.date(),
-  dueDate: z.date(),
+  bookStatus: z.enum(["pending", "rejected", "issued", "returned"]),
+  dateOfIssue: z.string().nullable(),
 });
 
-export type ITransactionBase = z.input<typeof ITransactionBaseSchema>;
-export type ITransaction = z.input<typeof ITransactionSchema>;
+export type ITransactionBase = z.input<typeof TransactionBaseSchema>;
+export type ITransaction = z.input<typeof TransactionSchema>;

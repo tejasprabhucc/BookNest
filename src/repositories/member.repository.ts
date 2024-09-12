@@ -1,10 +1,15 @@
 import { IRepository } from "@/src/lib/definitions";
 import { IMember, MemberTokens } from "@/src/lib/definitions";
-import { MemberBaseSchema, IMemberBase } from "../models/member.schema";
+import {
+  MemberBaseSchema,
+  IMemberBase,
+  MemberSchema,
+} from "../models/member.schema";
 import { MySql2Database } from "drizzle-orm/mysql2";
 import { members, memberTokens } from "../orm/schema";
 import { count, eq, like, or, sql } from "drizzle-orm";
 import { IPagedResponse, IPageRequest } from "@/src/lib/definitions";
+import bcrypt from "bcryptjs";
 
 export class MemberRepository implements IRepository<IMemberBase, IMember> {
   constructor(private readonly db: MySql2Database<Record<string, never>>) {}
@@ -12,8 +17,15 @@ export class MemberRepository implements IRepository<IMemberBase, IMember> {
   async create(data: IMemberBase): Promise<IMember> {
     const validatedData = { ...MemberBaseSchema.parse(data), id: 0 };
 
+    const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+
+    const newUser: IMemberBase = {
+      ...validatedData,
+      password: hashedPassword,
+      role: validatedData.role ?? "user",
+    };
     try {
-      const [insertId] = await this.db.insert(members).values(validatedData);
+      const [insertId] = await this.db.insert(members).values(newUser);
 
       return await this.getById(insertId.insertId);
     } catch (error) {
@@ -137,7 +149,7 @@ export class MemberRepository implements IRepository<IMemberBase, IMember> {
         .from(members)
         .where(eq(members.email, email));
       if (!selectedMember) return null;
-      return selectedMember;
+      return selectedMember as IMember;
     } catch (error) {
       throw error;
     }

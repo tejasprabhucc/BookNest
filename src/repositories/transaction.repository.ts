@@ -1,13 +1,25 @@
-import { IRepository } from "@/src/lib/definitions";
+import { BookStatus, IBook, IMember, IRepository } from "@/src/lib/definitions";
 import { ITransaction, ITransactionBase } from "@/src/lib/definitions";
-import { ITransactionBaseSchema } from "@/src/models/transaction.schema";
+import {
+  TransactionBaseSchema,
+  TransactionSchema,
+} from "@/src/models/transaction.schema";
 import { BookRepository } from "@/src/repositories/book.repository";
 import { MemberRepository } from "@/src/repositories/member.repository";
 import { MySql2Database } from "drizzle-orm/mysql2";
-import { transactions } from "@/src/orm/schema";
-import { count, eq, or } from "drizzle-orm";
+import { books, members, transactions } from "@/src/orm/schema";
+import { and, count, desc, eq, or, param, sql } from "drizzle-orm";
 import { IPagedResponse, IPageRequest } from "@/src/lib/definitions";
 
+export interface ITransactionDetails {
+  id: number;
+  memberId: bigint;
+  bookId: bigint;
+  bookStatus: BookStatus;
+  dateOfIssue: string | null;
+  book: IBook;
+  member?: IMember;
+}
 export class TransactionRepository
   implements IRepository<ITransactionBase, ITransaction>
 {
@@ -19,45 +31,85 @@ export class TransactionRepository
     this.memberRepo = new MemberRepository(this.db);
   }
 
+  list(
+    params: IPageRequest
+  ): Promise<IPagedResponse<ITransaction> | undefined> {
+    throw new Error("Method not implemented.");
+  }
+
   async create(data: ITransactionBase): Promise<ITransaction> {
-    const validatedData = ITransactionBaseSchema.parse(data);
-
+    const validatedData = TransactionBaseSchema.parse(data);
     try {
-      return await this.db.transaction(async (tx) => {
-        const book = await this.bookRepo.getById(validatedData.bookId);
+      const newTransaction: ITransaction = {
+        ...validatedData,
+        bookStatus: "pending",
+        dateOfIssue: null,
+        id: 0,
+      };
 
-        if (!book || book.availableNumOfCopies <= 0) {
-          throw new Error(
-            "The book is not available or has no available copies."
-          );
-        }
+      const [insertId] = await this.db
+        .insert(transactions)
+        .values(newTransaction);
 
-        const newTransaction: ITransaction = {
-          ...validatedData,
-          memberId: BigInt(validatedData.memberId),
-          bookId: BigInt(validatedData.bookId),
-          bookStatus: "issued",
-          dateOfIssue: String(new Date().toISOString().split("T")[0]),
-          id: 0,
-        };
-
-        const [insertId] = await tx
-          .insert(transactions)
-          .values(newTransaction)
-          .$returningId();
-
-        await this.bookRepo.update(
-          book.id,
-          book,
-          book.availableNumOfCopies - 1
-        );
-
-        return await this.getById(insertId.id);
-      });
+      return await this.getById(insertId.insertId);
     } catch (error) {
       throw new Error(
         `Error creating transaction: ${(error as Error).message}`
       );
+    }
+  }
+
+  async issueBook(id: number): Promise<ITransaction> {
+    try {
+      const transaction = await this.getById(id);
+
+      if (!transaction) {
+        throw new Error("Transaction not found.");
+      }
+
+      if (transaction.bookStatus === "issued") {
+        throw new Error("This book has already been issued.");
+      }
+
+      return await this.db.transaction(async (tx) => {
+        const book = await this.bookRepo.getById(Number(transaction.bookId));
+
+        if (!book) {
+          throw new Error("Book not found.");
+        }
+
+        const updatedTransaction: ITransaction = {
+          ...transaction,
+          memberId: BigInt(transaction.memberId),
+          bookId: BigInt(transaction.bookId),
+          bookStatus: "issued",
+          dateOfIssue: new Date().toDateString(),
+          id: transaction.id,
+        };
+
+        await tx
+          .update(transactions)
+          .set(updatedTransaction)
+          .where(eq(transactions.id, id))
+          .execute();
+
+        const [bookUpdated] = await tx
+          .update(books)
+          .set({
+            ...book,
+            availableNumOfCopies: book.availableNumOfCopies - 1, // Decrement the copies
+          })
+          .where(eq(books.id, book.id))
+          .execute();
+
+        if (bookUpdated.affectedRows === 0) {
+          throw new Error(`Couldn't update book ${book.id} ${book.title}`);
+        }
+
+        return updatedTransaction;
+      });
+    } catch (error) {
+      throw new Error(`Error issueing book: ${(error as Error).message}`);
     }
   }
 
@@ -66,9 +118,7 @@ export class TransactionRepository
       const transaction = await this.getById(id);
 
       if (!transaction) {
-        throw new Error(
-          "Transaction not found. Please enter correct transaction ID."
-        );
+        throw new Error("Transaction not found.");
       }
 
       if (transaction.bookStatus === "returned") {
@@ -87,7 +137,7 @@ export class TransactionRepository
           memberId: BigInt(transaction.memberId),
           bookId: BigInt(transaction.bookId),
           bookStatus: "returned",
-          id: 0,
+          id: transaction.id,
         };
 
         await tx
@@ -96,11 +146,12 @@ export class TransactionRepository
           .where(eq(transactions.id, id))
           .execute();
 
-        await this.bookRepo.update(
-          book.id,
-          book,
-          book.availableNumOfCopies + 1
-        );
+        const [result] = await tx
+          .update(books)
+          .set({ availableNumOfCopies: book.availableNumOfCopies + 1 })
+          .where(eq(books.id, book.id))
+          .execute();
+        console.log("Returning book 2");
 
         return updatedTransaction;
       });
@@ -108,6 +159,7 @@ export class TransactionRepository
       throw new Error(`Error returning book: ${(error as Error).message}`);
     }
   }
+
   async getById(id: number): Promise<ITransaction> {
     try {
       const [transaction] = (await this.db
@@ -125,35 +177,49 @@ export class TransactionRepository
     }
   }
 
-  async list(
+  async listTransactionDetails(
     params: IPageRequest
-  ): Promise<IPagedResponse<ITransaction> | undefined> {
+  ): Promise<IPagedResponse<ITransactionDetails> | undefined> {
     let searchWhereClause;
 
     if (params.search) {
       const search = BigInt(params.search);
-      searchWhereClause = or(
-        eq(transactions.bookId, search),
-        eq(transactions.memberId, search)
-      );
+
+      searchWhereClause = sql`
+      (${transactions.bookId} LIKE ${params.search} 
+       OR ${transactions.memberId} LIKE ${params.search})
+      `;
     }
 
     try {
-      const matchedTransactions = (await this.db
+      const matchedTransactions = await this.db
         .select()
         .from(transactions)
+        .leftJoin(books, eq(transactions.bookId, books.id))
+        .leftJoin(members, eq(transactions.memberId, members.id))
         .where(searchWhereClause)
         .offset(params.offset)
-        .limit(params.limit)) as unknown as ITransaction[];
+        .limit(params.limit)
+        .orderBy(desc(transactions.id))
+        .execute();
 
       if (matchedTransactions.length > 0) {
         const [totalMatchedTransactions] = await this.db
-          .select({ count: count() })
+          .select({
+            count: count(),
+          })
           .from(transactions)
-          .where(searchWhereClause);
+          .leftJoin(books, eq(transactions.bookId, books.id))
+          .leftJoin(members, eq(transactions.memberId, members.id))
+          .where(searchWhereClause)
+          .execute();
 
         return {
-          items: matchedTransactions,
+          items: matchedTransactions.map((transaction) => ({
+            ...transaction.transactions,
+            book: transaction.books as IBook,
+            member: transaction.members as IMember,
+          })),
           pagination: {
             offset: params.offset,
             limit: params.limit,
@@ -168,12 +234,104 @@ export class TransactionRepository
     }
   }
 
-  // Not required methods
-  update(id: number, data: ITransactionBase): Promise<ITransaction> {
-    throw new Error("Method not implemented.");
+  async listTransactionDetailsByMember(
+    params: IPageRequest,
+    memberId: bigint
+  ): Promise<IPagedResponse<ITransactionDetails> | undefined> {
+    let searchWhereClause;
+
+    if (params.search) {
+      const search = `%${params.search.toLowerCase()}%`;
+
+      searchWhereClause = sql`
+      (${transactions.bookId} LIKE ${search}
+      AND ${transactions.memberId} = ${memberId})
+    `;
+    } else {
+      searchWhereClause = sql`
+      ${transactions.memberId} = ${memberId}
+    `;
+    }
+
+    try {
+      const matchedTransactions = await this.db
+        .select()
+        .from(transactions)
+        .leftJoin(books, eq(transactions.bookId, books.id))
+        .where(searchWhereClause)
+        .offset(params.offset)
+        .limit(params.limit)
+        .orderBy(desc(transactions.id))
+        .execute();
+
+      if (matchedTransactions.length > 0) {
+        const [totalMatchedTransactions] = await this.db
+          .select({
+            count: count(),
+          })
+          .from(transactions)
+          .leftJoin(books, eq(transactions.bookId, books.id))
+          .where(searchWhereClause)
+          .execute();
+
+        return {
+          items: matchedTransactions.map((transaction) => ({
+            ...transaction.transactions,
+            book: transaction.books as IBook,
+          })),
+          pagination: {
+            offset: params.offset,
+            limit: params.limit,
+            total: totalMatchedTransactions.count,
+          },
+        };
+      } else {
+        throw new Error("No transactions found matching the criteria");
+      }
+    } catch (e) {
+      throw new Error((e as Error).message);
+    }
   }
 
-  delete(id: number): Promise<ITransaction> {
-    throw new Error("Method not implemented.");
+  async update(id: number, data: ITransaction): Promise<ITransaction> {
+    try {
+      const validatedData = TransactionSchema.parse(data);
+
+      const [result] = await this.db
+        .update(transactions)
+        .set(validatedData)
+        .where(eq(transactions.id, id))
+        .execute();
+
+      if (result.affectedRows > 0) {
+        return await this.getById(id);
+      } else {
+        throw new Error("Could not update transaction");
+      }
+    } catch (err) {
+      throw new Error((err as Error).message);
+    }
+  }
+
+  async delete(id: number): Promise<ITransaction> {
+    try {
+      const transactionToDelete = this.getById(id);
+
+      if (!transactionToDelete) {
+        throw new Error("Transaction not found");
+      }
+
+      const [result] = await this.db
+        .delete(transactions)
+        .where(eq(transactions.id, id))
+        .execute();
+      if (result.affectedRows > 0) {
+        return transactionToDelete;
+      } else {
+        throw new Error(`Book deletion failed`);
+      }
+    } catch (error) {
+      throw new Error((error as Error).message);
+    }
   }
 }

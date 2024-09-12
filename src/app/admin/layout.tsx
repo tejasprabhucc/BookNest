@@ -2,21 +2,16 @@ import type { Metadata } from "next";
 import Sidenav from "@/src/components/dashboard/sidenav";
 import { Toaster } from "@/src/components/ui/toaster";
 import { INavOption } from "@/src/lib/definitions";
-import {
-  Book,
-  BookPlus,
-  ArrowLeftRight,
-  Users,
-  HeartIcon,
-  HomeIcon,
-} from "lucide-react";
+import { Book, BookPlus, ArrowLeftRight, Users } from "lucide-react";
+import { getUserDetails } from "@/src/lib/actions";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "BookNest - Admin",
   description: "Admin panel for managing the library",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -28,9 +23,14 @@ export default function RootLayout({
     { label: "Transactions", url: "/admin/transactions", icon: ArrowLeftRight },
   ];
 
+  const user = await getUserDetails();
+  if (!user) {
+    redirect("/login");
+  }
+
   return (
     <div className="flex flex-1 flex-col h-screen lg:flex-row">
-      <Sidenav navOptions={navOptions} />
+      <Sidenav user={user} navOptions={navOptions} />
       <div className="flex flex-col flex-1 overflow-y-auto">
         {children}
         <Toaster />

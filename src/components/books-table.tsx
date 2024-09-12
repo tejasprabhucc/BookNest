@@ -9,11 +9,15 @@ import {
   TableBody,
   TableCell,
 } from "./ui/table";
-import { DeleteButton, EditButton } from "@/src/components/ui/customButtons";
+import {
+  BorrowButton,
+  DeleteButton,
+  EditButton,
+} from "@/src/components/ui/customButtons";
 
-const BooksTable = ({ books }: { books: IBook[] }) => {
+const BooksTable = ({ books, userId }: { books: IBook[]; userId: number }) => {
   return (
-    <Table className="w-full">
+    <Table className="w-full sortable">
       <TableHeader>
         <TableRow>
           <TableHead className="hidden sm:table-cell">Title</TableHead>
@@ -24,6 +28,7 @@ const BooksTable = ({ books }: { books: IBook[] }) => {
           <TableHead className="hidden sm:table-cell">Pages</TableHead>
           <TableHead className="hidden sm:table-cell">Total Copies</TableHead>
           <TableHead className="hidden sm:table-cell">Available</TableHead>
+          <TableHead>Borrow</TableHead>
           <TableHead>Edit</TableHead>
           <TableHead>Delete</TableHead>
         </TableRow>
@@ -43,13 +48,24 @@ const BooksTable = ({ books }: { books: IBook[] }) => {
               {book.totalNumOfCopies}
             </TableCell>
             <TableCell className="sm:table-cell">
-              {book.availableNumOfCopies}
+              {book.availableNumOfCopies > 0 ? (
+                <p>{book.availableNumOfCopies}</p>
+              ) : (
+                <p className="text-red-600">Unavailable</p>
+              )}
+            </TableCell>
+            <TableCell>
+              {book.availableNumOfCopies > 0 && (
+                <BorrowButton
+                  data={{ bookId: BigInt(book.id), memberId: BigInt(userId) }}
+                />
+              )}
             </TableCell>
             <TableCell>
               <EditButton url={`/admin/books/${book.id}/edit`} />
             </TableCell>
             <TableCell>
-              <DeleteButton bookId={book.id} bookTitle={book.title} />
+              <DeleteButton data={book} />
             </TableCell>
           </TableRow>
         ))}

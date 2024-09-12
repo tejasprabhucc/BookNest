@@ -6,7 +6,6 @@ import { createUser } from "../lib/actions";
 import { IMemberBase } from "../lib/definitions";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import bcrypt from "bcryptjs";
 
 const SignupForm = () => {
   const router = useRouter();
@@ -24,14 +23,11 @@ const SignupForm = () => {
       setError("Please fill in all the fields.");
       return;
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     const newUser: IMemberBase = {
       name,
       age,
       email,
-      password: hashedPassword,
+      password,
       role: "user",
     };
 

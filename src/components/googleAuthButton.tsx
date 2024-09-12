@@ -8,7 +8,8 @@ const GoogleAuthButton = () => {
     <form
       action={async () => {
         "use server";
-        await signIn("google");
+        const result = await signIn("google");
+        console.log(result);
       }}
     >
       <Button type="submit" variant="outline" className="w-full">

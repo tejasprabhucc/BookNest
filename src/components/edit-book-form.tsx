@@ -6,6 +6,7 @@ import { IBook } from "../lib/definitions";
 import { editBook } from "../lib/actions";
 import { Button } from "./ui/button";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 const EditBookForm = ({ book }: { book: IBook }) => {
   const initialState = { message: "", loading: false };
@@ -124,7 +125,15 @@ const EditBookForm = ({ book }: { book: IBook }) => {
         )}
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex gap-4 justify-end">
+        <Link href={"/admin/books"}>
+          <Button
+            variant="outline"
+            className=" py-2 px-4 rounded-md shadow-sm border hover:bg-secondary hover:border-primary hover:text-primary transition duration-150"
+          >
+            {"Cancel"}
+          </Button>
+        </Link>
         <Button
           type="submit"
           className="bg-primary text-white py-2 px-4 rounded-md shadow-sm border hover:bg-secondary hover:border-primary hover:text-primary transition duration-150"

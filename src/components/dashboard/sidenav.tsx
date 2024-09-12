@@ -8,13 +8,24 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { Button } from "../ui/button";
-import { INavOption } from "@/src/lib/definitions";
+import { IMember, INavOption } from "@/src/lib/definitions";
+import { User } from "next-auth";
+import SignOutButton from "@/src/components/ui/signOutButton";
+import Image from "next/image";
 
-const Sidenav = ({ navOptions }: { navOptions: INavOption[] }) => {
+const Sidenav = ({
+  navOptions,
+  user,
+}: {
+  navOptions: INavOption[];
+  user: User & IMember;
+}) => {
   const simplifiedNavOptions = navOptions.map(({ label, url }) => ({
     label,
     url,
   }));
+
+  const image = user.image;
   return (
     <>
       <div className=" z-10 lg:hidden">
@@ -27,7 +38,9 @@ const Sidenav = ({ navOptions }: { navOptions: INavOption[] }) => {
             <MountainIcon className="h-6 w-6" />
             <h1>BookNest</h1>
           </Link>
-          <HamburgerMenu navOptions={simplifiedNavOptions} />
+          <HamburgerMenu navOptions={simplifiedNavOptions} user={user}>
+            <SignOutButton />
+          </HamburgerMenu>
         </div>
       </div>
       <aside className="w-60 inset-y-0 left-0 flex-col border-r bg-background hidden lg:flex">
@@ -45,7 +58,6 @@ const Sidenav = ({ navOptions }: { navOptions: INavOption[] }) => {
                 key={option.url}
                 href={option.url}
                 className="flex items-center gap-2 rounded-md px-3 py-3 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground"
-                prefetch={false}
               >
                 <IconComponent /> {option.label}
               </Link>
@@ -60,20 +72,23 @@ const Sidenav = ({ navOptions }: { navOptions: INavOption[] }) => {
                 size="icon"
                 className="overflow-hidden rounded-full bg-slate-200"
               >
-                <span>T</span>
-                {/* <Image
-              src="/placeholder-user.jpg"
-              width={36}
-              height={36}
-              alt="Avatar"
-              className="rounded-full"
-              style={{ aspectRatio: "36/36", objectFit: "cover" }}
-            /> */}
+                {image ? (
+                  <Image
+                    src={image}
+                    width={36}
+                    height={36}
+                    alt="Avatar"
+                    className="rounded-full"
+                    style={{ aspectRatio: "36/36", objectFit: "cover" }}
+                  />
+                ) : (
+                  <span>{user.name.charAt(0)}</span>
+                )}
               </Button>
-              <p className="text-center">Profile</p>
+              <p className="text-center">{user.name}</p>
             </div>
           </DropdownMenuTrigger>
-          <DropDownOptions />
+          <DropDownOptions user={user} />
         </DropdownMenu>
       </aside>
     </>

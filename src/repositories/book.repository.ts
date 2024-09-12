@@ -2,7 +2,7 @@ import { IBook } from "@/src/lib/definitions";
 import { BookSchemaBase, IBookBase } from "@/src/models/book.schema";
 import { IPagedResponse, IPageRequest } from "@/src/lib/definitions";
 import { MySql2Database } from "drizzle-orm/mysql2";
-import { count, eq, like, or, sql } from "drizzle-orm";
+import { count, eq, sql } from "drizzle-orm";
 import { books } from "@/src/orm/schema";
 
 export class BookRepository {
@@ -29,36 +29,43 @@ export class BookRepository {
     id: number,
     data: IBookBase,
     availableNumOfCopies?: number
-  ): Promise<IBook> {
-    const bookToUpdate = await this.getById(id);
-    if (!bookToUpdate) {
-      throw new Error("Book not found");
-    }
-
-    const validatedData = BookSchemaBase.parse(data);
-    const updatedBook: IBook = {
-      ...bookToUpdate,
-      ...validatedData,
-      availableNumOfCopies:
-        availableNumOfCopies !== undefined
-          ? availableNumOfCopies
-          : validatedData.totalNumOfCopies -
-            (bookToUpdate.totalNumOfCopies - bookToUpdate.availableNumOfCopies),
-    };
-
+  ): Promise<IBook | undefined> {
     try {
+      const bookToUpdate = await this.getById(id);
+      if (!bookToUpdate) {
+        throw new Error("Book not found");
+      }
+
+      const validatedData = BookSchemaBase.parse(data);
+
+      const updatedAvailableCopies =
+        availableNumOfCopies ??
+        validatedData.totalNumOfCopies -
+          (bookToUpdate.totalNumOfCopies - bookToUpdate.availableNumOfCopies);
+
+      const updatedBook: IBook = {
+        ...bookToUpdate,
+        ...validatedData,
+        availableNumOfCopies: updatedAvailableCopies,
+      };
+
+      console.log("Updating book:", updatedBook);
+
       const [result] = await this.db
         .update(books)
         .set(updatedBook)
         .where(eq(books.id, id))
         .execute();
+
       if (result.affectedRows > 0) {
+        console.log(`Book successfully updated.`);
         return await this.getById(id);
       } else {
-        throw new Error("Could not update book");
+        throw new Error("Failed to update the book");
       }
     } catch (error) {
-      throw new Error("Could not update book");
+      console.error(`Error updating book:`, (error as Error).message);
+      throw new Error(`Error updating book: ${(error as Error).message}`);
     }
   }
 

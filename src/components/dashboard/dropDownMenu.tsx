@@ -1,33 +1,28 @@
 import React from "react";
 import {
-  DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
-import { Button } from "../ui/button";
-import { signOut } from "@/src/auth";
+import Link from "next/link";
+import SignOutButton from "@/src/components/ui/signOutButton";
+import { User } from "next-auth";
 
-const DropDownOptions = () => {
+const DropDownOptions = ({ user }: { user: User }) => {
+  const pathname = user?.role === "admin" ? "/admin" : "/dashboard";
   return (
     <>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Profile</DropdownMenuItem>
+        <DropdownMenuItem>
+          <Link href={`${pathname}/profile`}> Profile</Link>
+        </DropdownMenuItem>
         <DropdownMenuItem>Wishlist</DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <form
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/login" });
-            }}
-          >
-            <button type="submit">Sign Out</button>
-          </form>
+          <SignOutButton />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </>

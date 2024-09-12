@@ -12,12 +12,13 @@ export interface IBook extends IBookBase {
   availableNumOfCopies: number;
 }
 
+export type Role = "user" | "admin";
 export interface IMemberBase {
   name: string;
-  age: number;
+  age: number | null;
   email: string;
   password: string;
-  role: "user" | "admin";
+  role: Role;
 }
 export interface IMember extends IMemberBase {
   id: number;
@@ -33,21 +34,16 @@ export interface MemberTokens extends MemberTokensBase {
 }
 
 export interface ITransactionBase {
-  memberId: bigint; // Use bigint for large integers
-  bookId: bigint; // Use bigint for large integers
+  memberId: bigint;
+  bookId: bigint;
 }
 
-export type BookStatus =
-  | "requested"
-  | "pending"
-  | "rejected"
-  | "issued"
-  | "returned";
+export type BookStatus = "pending" | "rejected" | "issued" | "returned";
 
 export interface ITransaction extends ITransactionBase {
-  id: number; // `id` is usually a number
+  id: number;
   bookStatus: BookStatus;
-  dateOfIssue: string | null; // Allow null values
+  dateOfIssue: string | null;
 }
 
 export type Models = IBook | IMember | ITransaction;
@@ -69,6 +65,7 @@ export interface IPaginationOptions {
 }
 
 export interface IPageRequest {
+  column?: string;
   search?: string;
   offset: number;
   limit: number;

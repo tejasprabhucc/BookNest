@@ -49,13 +49,13 @@ const Books = async ({
   }
 
   return (
-    <main className="flex flex-col gap-3 overflow-auto p-8 ">
-      <h1 className="text-3xl mb-3 font-serif lg:text-6xl">Books</h1>
-      <div className="flex items-center  justify-between">
+    <main className=" flex flex-1 flex-col gap-2 overflow-y-auto p-4 px-8 ">
+      <h1 className="text-3xl mb-3 font-serif lg:text-5xl">Books</h1>
+      <div className=" flex items-center justify-between">
         <Search placeholder="Enter a keyword..." />
       </div>
       {books.length > 0 ? <BooksGrid books={books} /> : <p>No books found.</p>}
-      <div className="flex justify-center align-middle m-auto my-4">
+      <div className="flex justify-center align-middle m-auto my-1">
         {books.length > 0 ? (
           <PaginationControl
             currentPage={currentPage}

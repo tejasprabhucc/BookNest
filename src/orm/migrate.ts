@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import { AppEnvs } from "@/src/lib/read-env";
+import { AppEnvs } from "../lib/read-env";
 import { migrate } from "drizzle-orm/mysql2/migrator";
 import { drizzle } from "drizzle-orm/mysql2";
 

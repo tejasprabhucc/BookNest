@@ -7,15 +7,15 @@ export const MemberBaseSchema = z.object({
   age: z
     .number({ message: "Age must be a number." })
     .int()
-    .min(5, { message: "Member must be at least 5 years old." })
-    .max(100, { message: "Member cannot live that long." }),
+    .max(100, { message: "Member cannot live that long." })
+    .nullable(),
   email: z
     .string({ message: "Email must be a string." })
     .email({ message: "Invalid email address." }),
   password: z
     .string({ message: "Password must be a string." })
     .min(8, { message: "Password must be at least 8 characters long." }),
-  role: z.enum(["user", "admin"]).optional(),
+  role: z.enum(["user", "admin"]),
   refreshToken: z.string().optional(),
 });
 

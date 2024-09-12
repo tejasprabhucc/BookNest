@@ -16,3 +16,5 @@ export function initializeDatabase() {
     console.error("Database connection failed: ", error);
   }
 }
+
+export const db = initializeDatabase();

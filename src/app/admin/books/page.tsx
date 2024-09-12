@@ -1,11 +1,10 @@
 import React from "react";
-import { fetchBooks } from "@/src/lib/actions";
+import { fetchBooks, getUserDetails } from "@/src/lib/actions";
 import {
   IBook,
   IPagedResponse,
   IPaginationOptions,
 } from "@/src/lib/definitions";
-import BooksGrid from "@/src/components/dashboard/booksGrid";
 import PaginationControl from "@/src/components/dashboard/pagination";
 import Search from "@/src/components/ui/search";
 import { CreateButton } from "@/src/components/ui/customButtons";
@@ -19,6 +18,9 @@ const Books = async ({
     page?: string;
   };
 }) => {
+  const user = await getUserDetails();
+  const userId = Number(user?.id);
+
   let currentPage = Number(searchParams?.page) || 1;
   const searchQuery = searchParams?.query || undefined;
   const limit = 8;
@@ -50,15 +52,15 @@ const Books = async ({
 
   return (
     <main className=" flex flex-1 flex-col gap-2 overflow-y-auto p-4 px-8 ">
-      <h1 className="text-3xl mb-3 font-serif lg:text-6xl">Books</h1>
+      <h1 className="text-3xl mb-3 font-serif lg:text-5xl">Books</h1>
       <div className=" flex items-center justify-between">
         <Search placeholder="Enter a keyword..." />
-        <CreateButton />
+        <CreateButton url="/admin/books/create" label="Add Book" />
       </div>
       {errorMessage ? (
         <p>{errorMessage}</p>
       ) : books.length > 0 ? (
-        <BooksTable books={books} />
+        <BooksTable books={books} userId={userId} />
       ) : (
         <p>No books found.</p>
       )}
