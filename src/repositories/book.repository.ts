@@ -1,11 +1,17 @@
-import { IBook } from "@/src/lib/definitions";
-import { BookSchemaBase, IBookBase } from "@/src/models/book.schema";
+import {
+  IBook,
+  IRepository,
+  IBookBase,
+  FilterOptions,
+  SortOptions,
+} from "@/src/lib/definitions";
+import { BookSchemaBase } from "@/src/models/book.schema";
 import { IPagedResponse, IPageRequest } from "@/src/lib/definitions";
 import { MySql2Database } from "drizzle-orm/mysql2";
-import { count, eq, sql } from "drizzle-orm";
+import { count, eq, desc, asc, sql } from "drizzle-orm";
 import { books } from "@/src/orm/schema";
 
-export class BookRepository {
+export class BookRepository implements IRepository<IBookBase, IBook> {
   constructor(private readonly db: MySql2Database<Record<string, never>>) {}
 
   async create(data: IBookBase): Promise<IBook> {
@@ -104,14 +110,26 @@ export class BookRepository {
     }
   }
 
-  async list(params: IPageRequest): Promise<IPagedResponse<IBook> | null> {
+  async list(
+    params: IPageRequest,
+    filterOptions?: FilterOptions<IBook>,
+    sortOptions?: SortOptions<IBook>
+  ): Promise<IPagedResponse<IBook> | undefined> {
     if (!this.db) {
-      return null;
+      return;
     }
-    let searchWhereClause;
+    let searchWhereClause = sql`1 = 1`;
+    let sortOrder = sql``;
+
     if (params.search) {
       const search = `%${params.search.toLowerCase()}%`;
       searchWhereClause = sql`${books.title} LIKE ${search} OR ${books.isbnNo} LIKE ${search}`;
+    }
+
+    if (sortOptions) {
+      const sortBy = books[sortOptions.sortBy] || books.author;
+      sortOrder =
+        sortOptions?.sortOrder === "desc" ? desc(sortBy) : asc(sortBy);
     }
     try {
       const matchedBooks = (await this.db
@@ -119,7 +137,8 @@ export class BookRepository {
         .from(books)
         .where(searchWhereClause)
         .offset(params.offset)
-        .limit(params.limit)) as IBook[];
+        .limit(params.limit)
+        .orderBy(sortOrder)) as IBook[];
 
       if (matchedBooks.length > 0) {
         const [totalMatchedBooks] = await this.db

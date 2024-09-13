@@ -4,10 +4,10 @@ import { Card, CardContent } from "@/src/components/ui/card";
 import Image from "next/image";
 import bookCover from "@/public/bookCover.jpg";
 import { BorrowButton } from "../ui/customButtons";
-import { getUserDetails } from "@/src/lib/actions";
+import { getUserSession } from "@/src/lib/actions";
 
 const BooksGrid = async ({ books }: { books: IBook[] }) => {
-  const session = await getUserDetails();
+  const session = await getUserSession();
   const userId = Number(session?.id);
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

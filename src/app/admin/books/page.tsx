@@ -1,9 +1,11 @@
 import React from "react";
-import { fetchBooks, getUserDetails } from "@/src/lib/actions";
+import { fetchBooks, getUserSession } from "@/src/lib/actions";
 import {
   IBook,
+  IBookBase,
   IPagedResponse,
   IPaginationOptions,
+  SortOptions,
 } from "@/src/lib/definitions";
 import PaginationControl from "@/src/components/dashboard/pagination";
 import Search from "@/src/components/ui/search";
@@ -16,9 +18,11 @@ const Books = async ({
   searchParams?: {
     query?: string;
     page?: string;
+    sort?: keyof IBookBase;
+    order?: "asc" | "desc";
   };
 }) => {
-  const user = await getUserDetails();
+  const user = await getUserSession();
   const userId = Number(user?.id);
 
   let currentPage = Number(searchParams?.page) || 1;
@@ -33,11 +37,19 @@ const Books = async ({
   let errorMessage: string | null = null;
 
   try {
-    const fetchBooksResult = (await fetchBooks({
-      search: searchQuery,
-      offset: currentPage * 8 - 8,
-      limit: limit,
-    })) as IPagedResponse<IBook>;
+    let sortOptions: SortOptions<IBook> = {
+      sortBy: searchParams?.sort || "id",
+      sortOrder: searchParams?.order || "asc",
+    };
+    const fetchBooksResult = (await fetchBooks(
+      {
+        search: searchQuery,
+        offset: currentPage * 8 - 8,
+        limit: limit,
+      },
+      undefined,
+      sortOptions
+    )) as IPagedResponse<IBook>;
 
     if (!fetchBooksResult || !fetchBooksResult.items.length) {
       books = [];

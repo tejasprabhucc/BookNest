@@ -66,21 +66,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     ...authConfig.callbacks,
-    // async jwt({ token, user }) {
-    //   if (user) {
-    //     token.role = user.role;
-    //   }
-    //   return token;
-    // },
-
-    // async session({ session, token }) {
-    //   if (token.sub && token.role) {
-    //     session.user.id = token.sub;
-    //     session.user.role = token.role;
-    //   }
-    //   console.log("SESSION: ", session);
-    //   return session;
-    // },
 
     async signIn({ user, account }) {
       if (account?.provider === "google") {

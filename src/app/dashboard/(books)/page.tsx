@@ -1,15 +1,16 @@
-import React, { Suspense } from "react";
+import React from "react";
 import { fetchBooks } from "@/src/lib/actions";
 import {
   IBook,
+  IBookBase,
   IPagedResponse,
   IPaginationOptions,
+  SortOptions,
 } from "@/src/lib/definitions";
 import BooksGrid from "@/src/components/dashboard/booksGrid";
 import PaginationControl from "@/src/components/dashboard/pagination";
 import Search from "@/src/components/ui/search";
-import Link from "next/link";
-import { PlusIcon } from "lucide-react";
+import SortControl from "@/src/components/controls/sortControl";
 
 const Books = async ({
   searchParams,
@@ -17,6 +18,8 @@ const Books = async ({
   searchParams?: {
     query?: string;
     page?: string;
+    sort?: keyof IBookBase;
+    order?: "asc" | "desc";
   };
 }) => {
   let currentPage = Number(searchParams?.page) || 1;
@@ -29,12 +32,20 @@ const Books = async ({
     total: 0,
   };
 
+  let sortOptions: SortOptions<IBook> = {
+    sortBy: searchParams?.sort || "id",
+    sortOrder: searchParams?.order || "asc",
+  };
   try {
-    const fetchBooksResult = (await fetchBooks({
-      search: searchQuery,
-      offset: currentPage * 8 - 8,
-      limit: limit,
-    })) as IPagedResponse<IBook>;
+    const fetchBooksResult = (await fetchBooks(
+      {
+        search: searchQuery,
+        offset: currentPage * 8 - 8,
+        limit: limit,
+      },
+      undefined,
+      sortOptions
+    )) as IPagedResponse<IBook>;
 
     if (!fetchBooksResult || !fetchBooksResult.items.length) {
       books = [];
@@ -53,6 +64,7 @@ const Books = async ({
       <h1 className="text-3xl mb-3 font-serif lg:text-5xl">Books</h1>
       <div className=" flex items-center justify-between">
         <Search placeholder="Enter a keyword..." />
+        <SortControl sortOptions={sortOptions} />
       </div>
       {books.length > 0 ? <BooksGrid books={books} /> : <p>No books found.</p>}
       <div className="flex justify-center align-middle m-auto my-1">

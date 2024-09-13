@@ -1,14 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { LogOutIcon, MenuIcon, XIcon } from "lucide-react"; // XIcon is for closing the menu
-import { IMember, INavOption } from "@/src/lib/definitions";
-import { Button } from "../ui/button";
+import { MenuIcon, XIcon } from "lucide-react"; // XIcon is for closing the menu
+import { IMember } from "@/src/lib/definitions";
 import { User } from "next-auth";
 import Link from "next/link";
-import { signOut } from "@/src/auth";
-import SignOutButton from "../ui/signOutButton";
-import { usePathname } from "next/navigation";
 
 const HamburgerMenu = ({
   navOptions,

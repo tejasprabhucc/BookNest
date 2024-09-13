@@ -1,3 +1,5 @@
+import { string } from "zod";
+
 export interface IBookBase {
   title: string;
   author: string;
@@ -71,6 +73,15 @@ export interface IPageRequest {
   limit: number;
 }
 
+export type FilterOptions<Model> = {
+  [Property in keyof Model]: Partial<Model[Property]>;
+};
+
+export type SortOptions<Model> = {
+  sortBy: keyof Model;
+  sortOrder: "asc" | "desc";
+};
+
 export interface IRepository<
   MutationModel,
   CompleteModel extends MutationModel
@@ -80,7 +91,9 @@ export interface IRepository<
   delete(id: number): Promise<CompleteModel | undefined>;
   getById(id: number): Promise<CompleteModel | undefined>;
   list(
-    params: IPageRequest
+    params: IPageRequest,
+    filterOptions?: FilterOptions<MutationModel>,
+    sortOptions?: SortOptions<CompleteModel>
   ): Promise<IPagedResponse<CompleteModel> | undefined>;
 }
 

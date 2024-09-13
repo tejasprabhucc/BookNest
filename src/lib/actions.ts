@@ -1,6 +1,8 @@
 "use server";
 import { db } from "@/src/orm/index";
 import {
+  FilterOptions,
+  IBook,
   IBookBase,
   IMember,
   IMemberBase,
@@ -8,6 +10,7 @@ import {
   ITransaction,
   ITransactionBase,
   Role,
+  SortOptions,
 } from "@/src/lib/definitions";
 import { auth, signIn } from "@/src/auth";
 import { AuthError } from "next-auth";
@@ -27,7 +30,7 @@ export type State = {
   loading: boolean;
 };
 
-export async function getUserDetails() {
+export async function getUserSession() {
   const session = await auth();
   const user = session?.user;
   const email = user?.email;
@@ -61,6 +64,34 @@ export async function getUserByEmail(email: string) {
   } catch (err) {
     return { message: (err as Error).message };
   }
+}
+
+export async function getUserTransactionSummary(id: number) {
+  const allTransactions = await transactionRepo.listTransactionDetails(
+    {
+      offset: 0,
+      limit: 10,
+    },
+    BigInt(id)
+  );
+  if (!allTransactions) {
+    return null;
+  }
+  const summary = allTransactions.items.reduce(
+    (acc, transaction) => {
+      if (transaction.bookStatus === "issued") {
+        acc.borrowedBooks++;
+        acc.booksDue++;
+      } else if (transaction.bookStatus === "pending") {
+        acc.pendingRequest++;
+      } else if (transaction.bookStatus === "returned") {
+        acc.returnedBooks++;
+      }
+      return acc;
+    },
+    { borrowedBooks: 0, pendingRequest: 0, booksDue: 0, returnedBooks: 0 }
+  );
+  return summary;
 }
 
 export async function getUserById(id: number) {
@@ -144,9 +175,13 @@ export async function createBook(prevState: any, formData: FormData) {
   }
 }
 
-export async function fetchBooks(params: IPageRequest) {
+export async function fetchBooks(
+  params: IPageRequest,
+  filterOptions?: FilterOptions<IBookBase>,
+  sortOptions?: SortOptions<IBook>
+) {
   try {
-    return await bookRepo.list(params);
+    return await bookRepo.list(params, undefined, sortOptions);
   } catch (err) {
     return { message: (err as Error).message };
   }
@@ -288,10 +323,7 @@ export async function fetchRequestsByMember(
   memberId: bigint
 ) {
   try {
-    return await transactionRepo.listTransactionDetailsByMember(
-      params,
-      memberId
-    );
+    return await transactionRepo.listTransactionDetails(params, memberId);
   } catch (err) {
     return { message: (err as Error).message };
   }

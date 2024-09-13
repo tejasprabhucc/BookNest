@@ -43,7 +43,7 @@ const Sidenav = ({
           </HamburgerMenu>
         </div>
       </div>
-      <aside className="w-60 inset-y-0 left-0 flex-col border-r bg-background hidden lg:flex">
+      <aside className="w-60 max-h-screen sticky top-0 inset-y-0 left-0 flex-col border-r bg-background hidden  lg:flex">
         <div className="flex h-16 items-center justify-between border-b px-4">
           <Link href="#" className="flex items-center gap-2 " prefetch={false}>
             <MountainIcon className="h-6 w-6" />

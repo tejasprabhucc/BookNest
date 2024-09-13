@@ -3,7 +3,7 @@ import Sidenav from "@/src/components/dashboard/sidenav";
 import { Toaster } from "@/src/components/ui/toaster";
 import { INavOption } from "@/src/lib/definitions";
 import { Book, BookPlus, ArrowLeftRight, Users } from "lucide-react";
-import { getUserDetails } from "@/src/lib/actions";
+import { getUserSession } from "@/src/lib/actions";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ export default async function RootLayout({
     { label: "Transactions", url: "/admin/transactions", icon: ArrowLeftRight },
   ];
 
-  const user = await getUserDetails();
+  const user = await getUserSession();
   if (!user) {
     redirect("/login");
   }

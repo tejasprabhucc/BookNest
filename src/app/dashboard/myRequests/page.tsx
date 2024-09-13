@@ -1,5 +1,5 @@
 import React from "react";
-import { fetchRequestsByMember, getUserDetails } from "@/src/lib/actions";
+import { fetchRequestsByMember, getUserSession } from "@/src/lib/actions";
 import {
   ITransaction,
   IPagedResponse,
@@ -29,7 +29,7 @@ const MyRequests = async ({
     total: 0,
   };
   let errorMessage: string | null = null;
-  const user = await getUserDetails();
+  const user = await getUserSession();
   const memberId = Number(user?.id);
   try {
     const fetchRequestsResult = (await fetchRequestsByMember(

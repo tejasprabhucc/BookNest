@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import Sidenav from "@/src/components/dashboard/sidenav";
 import { INavOption } from "@/src/lib/definitions";
 import { ArrowLeftRight, Book, BookCheck, BookPlus } from "lucide-react";
-import { getUserDetails } from "@/src/lib/actions";
+import { getUserSession } from "@/src/lib/actions";
 import { Toaster } from "@/src/components/ui/toaster";
 import { redirect } from "next/navigation";
 
@@ -22,9 +22,9 @@ export default async function RootLayout({
   const navOptions: INavOption[] = [
     { label: "Books", url: "/dashboard", icon: Book },
     { label: "My Books", url: "/dashboard/myBooks", icon: BookCheck },
-    { label: "Requests", url: "/dashboard/myRequests", icon: BookPlus },
+    { label: "My Requests", url: "/dashboard/myRequests", icon: BookPlus },
   ];
-  const user = await getUserDetails();
+  const user = await getUserSession();
   if (!user) {
     redirect("/login");
   }

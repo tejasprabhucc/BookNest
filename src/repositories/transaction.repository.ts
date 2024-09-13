@@ -31,7 +31,7 @@ export class TransactionRepository
     this.memberRepo = new MemberRepository(this.db);
   }
 
-  list(
+  async list(
     params: IPageRequest
   ): Promise<IPagedResponse<ITransaction> | undefined> {
     throw new Error("Method not implemented.");
@@ -178,18 +178,30 @@ export class TransactionRepository
   }
 
   async listTransactionDetails(
-    params: IPageRequest
+    params: IPageRequest,
+    memberId?: bigint,
+    sortOptions?: {
+      sortBy?: keyof ITransactionDetails;
+      sortOrder?: "asc" | "desc";
+    }
   ): Promise<IPagedResponse<ITransactionDetails> | undefined> {
-    let searchWhereClause;
+    let searchWhereClause = sql`1 = 1`;
 
     if (params.search) {
-      const search = BigInt(params.search);
+      const search = `%${params.search.toLowerCase()}%`;
 
       searchWhereClause = sql`
-      (${transactions.bookId} LIKE ${params.search} 
-       OR ${transactions.memberId} LIKE ${params.search})
-      `;
+      (${transactions.bookId} LIKE ${search} 
+       OR ${transactions.memberId} LIKE ${search})
+    `;
     }
+
+    if (memberId) {
+      searchWhereClause = sql`${searchWhereClause} AND ${transactions.memberId} = ${memberId}`;
+    }
+
+    const sortBy = sortOptions?.sortBy ? sortOptions.sortBy : "id";
+    const sortOrder = sortOptions?.sortOrder === "asc" ? sql`asc` : sql`desc`;
 
     try {
       const matchedTransactions = await this.db
@@ -200,7 +212,7 @@ export class TransactionRepository
         .where(searchWhereClause)
         .offset(params.offset)
         .limit(params.limit)
-        .orderBy(desc(transactions.id))
+        .orderBy(sql`${sortBy} ${sortOrder}`)
         .execute();
 
       if (matchedTransactions.length > 0) {
@@ -219,65 +231,6 @@ export class TransactionRepository
             ...transaction.transactions,
             book: transaction.books as IBook,
             member: transaction.members as IMember,
-          })),
-          pagination: {
-            offset: params.offset,
-            limit: params.limit,
-            total: totalMatchedTransactions.count,
-          },
-        };
-      } else {
-        throw new Error("No transactions found matching the criteria");
-      }
-    } catch (e) {
-      throw new Error((e as Error).message);
-    }
-  }
-
-  async listTransactionDetailsByMember(
-    params: IPageRequest,
-    memberId: bigint
-  ): Promise<IPagedResponse<ITransactionDetails> | undefined> {
-    let searchWhereClause;
-
-    if (params.search) {
-      const search = `%${params.search.toLowerCase()}%`;
-
-      searchWhereClause = sql`
-      (${transactions.bookId} LIKE ${search}
-      AND ${transactions.memberId} = ${memberId})
-    `;
-    } else {
-      searchWhereClause = sql`
-      ${transactions.memberId} = ${memberId}
-    `;
-    }
-
-    try {
-      const matchedTransactions = await this.db
-        .select()
-        .from(transactions)
-        .leftJoin(books, eq(transactions.bookId, books.id))
-        .where(searchWhereClause)
-        .offset(params.offset)
-        .limit(params.limit)
-        .orderBy(desc(transactions.id))
-        .execute();
-
-      if (matchedTransactions.length > 0) {
-        const [totalMatchedTransactions] = await this.db
-          .select({
-            count: count(),
-          })
-          .from(transactions)
-          .leftJoin(books, eq(transactions.bookId, books.id))
-          .where(searchWhereClause)
-          .execute();
-
-        return {
-          items: matchedTransactions.map((transaction) => ({
-            ...transaction.transactions,
-            book: transaction.books as IBook,
           })),
           pagination: {
             offset: params.offset,

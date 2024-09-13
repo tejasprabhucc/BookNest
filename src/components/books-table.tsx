@@ -20,7 +20,9 @@ const BooksTable = ({ books, userId }: { books: IBook[]; userId: number }) => {
     <Table className="w-full sortable">
       <TableHeader>
         <TableRow>
-          <TableHead className="hidden sm:table-cell">Title</TableHead>
+          <TableHead className="hidden sm:table-cell" aria-sort="ascending">
+            Title
+          </TableHead>
           <TableHead className="hidden sm:table-cell">Author</TableHead>
           <TableHead className="hidden sm:table-cell">Publisher</TableHead>
           <TableHead className="hidden sm:table-cell">Genre</TableHead>
