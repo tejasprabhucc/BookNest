@@ -1,4 +1,10 @@
-import { BookStatus, IBook, IMember, IRepository } from "@/src/lib/definitions";
+import {
+  BookStatus,
+  FilterOptions,
+  IBook,
+  IMember,
+  IRepository,
+} from "@/src/lib/definitions";
 import { ITransaction, ITransactionBase } from "@/src/lib/definitions";
 import {
   TransactionBaseSchema,
@@ -8,7 +14,7 @@ import { BookRepository } from "@/src/repositories/book.repository";
 import { MemberRepository } from "@/src/repositories/member.repository";
 import { MySql2Database } from "drizzle-orm/mysql2";
 import { books, members, transactions } from "@/src/orm/schema";
-import { and, count, desc, eq, or, param, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, or, param, sql } from "drizzle-orm";
 import { IPagedResponse, IPageRequest } from "@/src/lib/definitions";
 
 export interface ITransactionDetails {
@@ -17,6 +23,7 @@ export interface ITransactionDetails {
   bookId: bigint;
   bookStatus: BookStatus;
   dateOfIssue: string | null;
+  dueDate: string | null;
   book: IBook;
   member?: IMember;
 }
@@ -44,6 +51,7 @@ export class TransactionRepository
         ...validatedData,
         bookStatus: "pending",
         dateOfIssue: null,
+        dueDate: null,
         id: 0,
       };
 
@@ -84,6 +92,9 @@ export class TransactionRepository
           bookId: BigInt(transaction.bookId),
           bookStatus: "issued",
           dateOfIssue: new Date().toDateString(),
+          dueDate: new Date(
+            new Date().setDate(new Date().getDate() + 7)
+          ).toDateString(),
           id: transaction.id,
         };
 
@@ -181,27 +192,46 @@ export class TransactionRepository
     params: IPageRequest,
     memberId?: bigint,
     sortOptions?: {
-      sortBy?: keyof ITransactionDetails;
-      sortOrder?: "asc" | "desc";
-    }
+      sortBy: keyof ITransaction;
+      sortOrder: "asc" | "desc";
+    },
+    filterOptions?: FilterOptions<ITransactionDetails>
   ): Promise<IPagedResponse<ITransactionDetails> | undefined> {
     let searchWhereClause = sql`1 = 1`;
-
     if (params.search) {
       const search = `%${params.search.toLowerCase()}%`;
 
       searchWhereClause = sql`
-      (${transactions.bookId} LIKE ${search} 
+      (${transactions.bookId} LIKE ${search}
        OR ${transactions.memberId} LIKE ${search})
     `;
     }
+
+    // if (params.search) {
+    //   const searchTerm = `%${params.search.toLowerCase()}%`;
+    //   const searchFields = [
+    //     transactions.bookId,
+    //     transactions.memberId,
+    //     members.name,
+    //     books.title,
+    //   ];
+
+    //   searchWhereClause = sql`
+    //     (${searchFields
+    //       .map((field) => `${field} LIKE ${searchTerm}`)
+    //       .join(" OR ")})
+    //   `;
+    // }
 
     if (memberId) {
       searchWhereClause = sql`${searchWhereClause} AND ${transactions.memberId} = ${memberId}`;
     }
 
-    const sortBy = sortOptions?.sortBy ? sortOptions.sortBy : "id";
-    const sortOrder = sortOptions?.sortOrder === "asc" ? sql`asc` : sql`desc`;
+    let sortOrder = sql``;
+    if (sortOptions) {
+      const sortBy = transactions[sortOptions.sortBy] || transactions.id;
+      sortOrder = sortOptions.sortOrder === "asc" ? asc(sortBy) : desc(sortBy); // Assign directly
+    }
 
     try {
       const matchedTransactions = await this.db
@@ -212,7 +242,7 @@ export class TransactionRepository
         .where(searchWhereClause)
         .offset(params.offset)
         .limit(params.limit)
-        .orderBy(sql`${sortBy} ${sortOrder}`)
+        .orderBy(sortOrder)
         .execute();
 
       if (matchedTransactions.length > 0) {

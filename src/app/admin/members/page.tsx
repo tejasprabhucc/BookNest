@@ -5,10 +5,10 @@ import {
   IPagedResponse,
   IPaginationOptions,
 } from "@/src/lib/definitions";
-import PaginationControl from "@/src/components/dashboard/pagination";
-import Search from "@/src/components/ui/search";
+import PaginationControl from "@/src/components/controls/pagination";
+import Search from "@/src/components/navbar/search";
 import { CreateButton } from "@/src/components/ui/customButtons";
-import MembersTable from "@/src/components/members-table";
+import MembersTable from "@/src/components/dashboard/members-table";
 
 const Members = async ({
   searchParams,

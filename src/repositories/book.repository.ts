@@ -112,8 +112,8 @@ export class BookRepository implements IRepository<IBookBase, IBook> {
 
   async list(
     params: IPageRequest,
-    filterOptions?: FilterOptions<IBook>,
-    sortOptions?: SortOptions<IBook>
+    sortOptions?: SortOptions<IBook>,
+    filterOptions?: FilterOptions<IBook>
   ): Promise<IPagedResponse<IBook> | undefined> {
     if (!this.db) {
       return;

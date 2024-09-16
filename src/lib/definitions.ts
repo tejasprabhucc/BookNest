@@ -8,6 +8,8 @@ export interface IBookBase {
   isbnNo: string;
   numOfPages: number;
   totalNumOfCopies: number;
+  coverImage: string;
+  price: number;
 }
 export interface IBook extends IBookBase {
   id: number;
@@ -19,7 +21,10 @@ export interface IMemberBase {
   name: string;
   age: number | null;
   email: string;
+  phone: string | null;
+  address: string | null;
   password: string;
+  image: string | null;
   role: Role;
 }
 export interface IMember extends IMemberBase {
@@ -46,6 +51,7 @@ export interface ITransaction extends ITransactionBase {
   id: number;
   bookStatus: BookStatus;
   dateOfIssue: string | null;
+  dueDate: string | null;
 }
 
 export type Models = IBook | IMember | ITransaction;
@@ -92,8 +98,8 @@ export interface IRepository<
   getById(id: number): Promise<CompleteModel | undefined>;
   list(
     params: IPageRequest,
-    filterOptions?: FilterOptions<MutationModel>,
-    sortOptions?: SortOptions<CompleteModel>
+    sortOptions?: SortOptions<CompleteModel>,
+    filterOptions?: FilterOptions<MutationModel>
   ): Promise<IPagedResponse<CompleteModel> | undefined>;
 }
 

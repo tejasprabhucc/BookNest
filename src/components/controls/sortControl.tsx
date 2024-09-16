@@ -19,9 +19,13 @@ import {
   SelectValue,
   SelectGroup,
 } from "@/src/components/ui/select";
+import { ITransactionDetails } from "@/src/repositories/transaction.repository";
 
 interface SortOptionProps {
-  sortOptions: SortOptions<IBook> | SortOptions<IMember>;
+  sortOptions:
+    | SortOptions<IBook>
+    | SortOptions<IMember>
+    | SortOptions<ITransactionDetails>;
 }
 
 const SortControl = ({ sortOptions }: SortOptionProps) => {

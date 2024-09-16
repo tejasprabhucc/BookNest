@@ -1,7 +1,7 @@
 import { signOut } from "@/src/auth";
 import { LogOutIcon } from "lucide-react";
 import React from "react";
-import { Button } from "./button";
+import { Button } from "@/src/components/ui/button";
 
 const SignOutButton = () => {
   return (

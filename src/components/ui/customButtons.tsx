@@ -68,6 +68,7 @@ export const BorrowButton = ({ data }: { data: ITransactionBase }) => {
     toast({
       title: result.message,
     });
+    setIsOpen(false);
     router.refresh();
   };
   return (
@@ -108,6 +109,7 @@ export const AcceptButton = ({ transactionId }: { transactionId: number }) => {
     toast({
       title: result.message,
     });
+    setIsOpen(false);
     router.refresh();
   };
 
@@ -145,15 +147,12 @@ export const RejectButton = ({ transactionId }: { transactionId: number }) => {
     toast({
       title: result.message,
     });
+    // setIsOpen(false);
     router.refresh();
   };
 
   return (
     <>
-      {/* <Button onClick={handleClick} variant="reject" className="flex gap-2">
-        <XIcon className="h-4 w-4" />
-        <span>Reject</span>
-      </Button> */}
       <Button
         variant="reject"
         onClick={() => setIsOpen(true)}
@@ -183,15 +182,12 @@ export const ReturnButton = ({ transactionId }: { transactionId: number }) => {
     toast({
       title: result.message,
     });
+    // setIsOpen(false);
     router.refresh();
   };
 
   return (
     <>
-      {/* <Button onClick={handleClick} variant="accept" className="flex gap-2">
-        <ArrowUturnLeftIcon className="h-4 w-4" />
-        <p>Return </p>
-      </Button> */}
       <Button
         variant="accept"
         onClick={() => setIsOpen(true)}
@@ -212,13 +208,13 @@ export const ReturnButton = ({ transactionId }: { transactionId: number }) => {
   );
 };
 
-export const EditButton = ({ url }: { url: string }) => {
+export const EditButton = ({ url, label }: { url: string; label?: string }) => {
   return (
     <>
       <Link href={url}>
-        <Button variant="outline" size="icon">
+        <Button variant="outline">
           <FilePenIcon className="h-4 w-4" />
-          <span className="sr-only">Edit</span>
+          {label && <span>{label}</span>}
         </Button>
       </Link>
     </>

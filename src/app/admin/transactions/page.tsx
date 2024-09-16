@@ -1,9 +1,14 @@
 import React from "react";
 import { fetchTransactions } from "@/src/lib/actions";
-import { IPagedResponse, IPaginationOptions } from "@/src/lib/definitions";
-import PaginationControl from "@/src/components/dashboard/pagination";
-import Search from "@/src/components/ui/search";
-import TransactionsTable from "@/src/components/transactions-table"; // Ensure you have this component
+import {
+  IPagedResponse,
+  IPaginationOptions,
+  ITransaction,
+  SortOptions,
+} from "@/src/lib/definitions";
+import PaginationControl from "@/src/components/controls/pagination";
+import Search from "@/src/components/navbar/search";
+import TransactionsTable from "@/src/components/dashboard/transactions-table"; // Ensure you have this component
 import { ITransactionDetails } from "@/src/repositories/transaction.repository";
 
 const Transactions = async ({
@@ -23,14 +28,21 @@ const Transactions = async ({
     limit: 8,
     total: 0,
   };
+  let sortOptions: SortOptions<ITransaction> = {
+    sortBy: "id",
+    sortOrder: "desc",
+  };
   let errorMessage: string | null = null;
 
   try {
-    const fetchTransactionsResult = (await fetchTransactions({
-      search: searchQuery,
-      offset: currentPage * 8 - 8,
-      limit: limit,
-    })) as IPagedResponse<ITransactionDetails>;
+    const fetchTransactionsResult = (await fetchTransactions(
+      {
+        search: searchQuery,
+        offset: currentPage * 8 - 8,
+        limit: limit,
+      },
+      sortOptions
+    )) as IPagedResponse<ITransactionDetails>;
 
     if (!fetchTransactionsResult || !fetchTransactionsResult.items.length) {
       transactions = [];

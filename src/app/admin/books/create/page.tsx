@@ -70,6 +70,7 @@ const Create = () => {
             fields={bookFields}
             action={createBook}
             dataType="book"
+            redirectUrl="/admin/books"
           />
         </CardContent>
       </Card>

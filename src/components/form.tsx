@@ -2,10 +2,12 @@
 import React, { useActionState } from "react";
 import { IBook, IMember } from "../lib/definitions";
 import clsx from "clsx";
-import { Input } from "./ui/input";
+import { Input } from "@/src/components/ui/input";
 
-import { Button } from "./ui/button";
+import { Button } from "@/src/components/ui/button";
 import Link from "next/link";
+import { toast } from "./hooks/use-toast";
+import { redirect } from "next/navigation";
 
 type FormFieldNames = keyof IBook | keyof IMember;
 
@@ -27,9 +29,17 @@ interface FormProps {
   }>;
   data?: IBook | IMember;
   dataType: "book" | "member";
+  redirectUrl: string;
 }
 
-const Form = ({ type, fields, action, data, dataType }: FormProps) => {
+const Form = ({
+  type,
+  fields,
+  action,
+  data,
+  dataType,
+  redirectUrl,
+}: FormProps) => {
   const initialState = { message: "" };
   const [state, formAction] = useActionState(action, initialState);
 
@@ -39,6 +49,13 @@ const Form = ({ type, fields, action, data, dataType }: FormProps) => {
     typedData = data as IBook;
   } else if (data && dataType === "member") {
     typedData = data as IMember;
+  }
+
+  if (state.message.toLocaleLowerCase().includes("success")) {
+    toast({
+      title: state.message,
+    });
+    // redirect(redirectUrl);
   }
 
   return (
@@ -76,7 +93,7 @@ const Form = ({ type, fields, action, data, dataType }: FormProps) => {
       ))}
 
       <div id="error" aria-live="polite" aria-atomic="true">
-        {state?.message && (
+        {state?.message && !state.message.toLowerCase().includes("success") && (
           <p className="mt-2 text-sm text-red-500 min-h-4 block">
             {state.message}
           </p>
@@ -91,7 +108,7 @@ const Form = ({ type, fields, action, data, dataType }: FormProps) => {
           {type === "create" ? `Create ${dataType}` : `Update ${dataType}`}
         </button>
 
-        <Link href={"/admin/books"}>
+        <Link href={redirectUrl}>
           <Button
             variant="outline"
             className=" py-2 px-4 rounded-md shadow-sm border hover:bg-secondary hover:border-primary hover:text-primary transition duration-150"

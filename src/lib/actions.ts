@@ -18,7 +18,10 @@ import { redirect } from "next/navigation";
 import { BookRepository } from "@/src/repositories/book.repository";
 import { MemberRepository } from "@/src/repositories/member.repository";
 import { z } from "zod";
-import { TransactionRepository } from "@/src/repositories/transaction.repository";
+import {
+  ITransactionDetails,
+  TransactionRepository,
+} from "@/src/repositories/transaction.repository";
 
 // const db = initializeDatabase();
 const bookRepo = new BookRepository(db!);
@@ -72,7 +75,8 @@ export async function getUserTransactionSummary(id: number) {
       offset: 0,
       limit: 10,
     },
-    BigInt(id)
+    BigInt(id),
+    { sortBy: "id", sortOrder: "desc" }
   );
   if (!allTransactions) {
     return null;
@@ -118,6 +122,9 @@ export async function createMember(prevState: any, formData: FormData) {
       email: formData.get("email") as string,
       password: formData.get("password") as string,
       role: formData.get("role") as Role,
+      phone: formData.get("phone") as string,
+      address: formData.get("address") as string,
+      image: formData.get("image") as string,
       id: 0,
     };
 
@@ -148,6 +155,34 @@ export async function deleteMember(id: number) {
   }
 }
 
+export async function editMember(prevState: any, formData: FormData) {
+  try {
+    const id = Number(formData.get("id"));
+    const oldData = await memberRepo.getById(id);
+    const data: IMemberBase = {
+      name: formData.get("name") as string,
+      age: Number(formData.get("age")),
+      email: formData.get("email") as string,
+      phone: formData.get("phone") as string,
+      address: formData.get("address") as string,
+      password: oldData.password,
+      role: oldData.role,
+      image: oldData.image,
+    };
+    const response = await memberRepo.update(id, data);
+    if (!response) {
+      return { message: "Failed to update the profile." };
+    }
+    return { message: "Profile updated successfully!" };
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      console.log(err.flatten());
+      return { message: err.errors[0].message || "Invalid input" };
+    }
+    return { message: (err as Error).message };
+  }
+}
+
 export async function createBook(prevState: any, formData: FormData) {
   try {
     const data: IBookBase = {
@@ -158,6 +193,8 @@ export async function createBook(prevState: any, formData: FormData) {
       isbnNo: formData.get("isbnNo") as string,
       numOfPages: Number(formData.get("numOfPages")),
       totalNumOfCopies: Number(formData.get("totalNumOfCopies")),
+      coverImage: formData.get("coverImage") as string,
+      price: Number(formData.get("price")),
     };
 
     const createdBook = await bookRepo.create(data);
@@ -181,7 +218,7 @@ export async function fetchBooks(
   sortOptions?: SortOptions<IBook>
 ) {
   try {
-    return await bookRepo.list(params, undefined, sortOptions);
+    return await bookRepo.list(params, sortOptions);
   } catch (err) {
     return { message: (err as Error).message };
   }
@@ -218,6 +255,8 @@ export async function editBook(prevState: any, formData: FormData) {
       isbnNo: formData.get("isbn") as string,
       numOfPages: Number(formData.get("numOfPages")),
       totalNumOfCopies: Number(formData.get("totalNumOfCopies")),
+      coverImage: formData.get("coverImage") as string,
+      price: Number(formData.get("price")),
     };
 
     const id = Number(formData.get("id"));
@@ -238,9 +277,16 @@ export async function editBook(prevState: any, formData: FormData) {
   }
 }
 
-export async function fetchTransactions(params: IPageRequest) {
+export async function fetchTransactions(
+  params: IPageRequest,
+  sortOptions: SortOptions<ITransaction>
+) {
   try {
-    return await transactionRepo.listTransactionDetails(params);
+    return await transactionRepo.listTransactionDetails(
+      params,
+      undefined,
+      sortOptions
+    );
   } catch (err) {
     return { message: (err as Error).message };
   }
@@ -320,11 +366,17 @@ export async function deleteTransaction(id: number) {
 
 export async function fetchRequestsByMember(
   params: IPageRequest,
-  memberId: bigint
+  memberId: bigint,
+  sortOptions?: SortOptions<ITransaction>
 ) {
   try {
-    return await transactionRepo.listTransactionDetails(params, memberId);
+    return await transactionRepo.listTransactionDetails(
+      params,
+      memberId,
+      sortOptions
+    );
   } catch (err) {
+    console.log(err);
     return { message: (err as Error).message };
   }
 }

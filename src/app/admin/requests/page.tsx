@@ -4,21 +4,24 @@ import {
   ITransaction,
   IPagedResponse,
   IPaginationOptions,
+  SortOptions,
 } from "@/src/lib/definitions";
-import PaginationControl from "@/src/components/dashboard/pagination";
-import Search from "@/src/components/ui/search";
+import PaginationControl from "@/src/components/controls/pagination";
+import Search from "@/src/components/navbar/search";
 import { ITransactionDetails } from "@/src/repositories/transaction.repository";
-import TransactionsTable from "@/src/components/transactions-table";
+import TransactionsTable from "@/src/components/dashboard/transactions-table";
 
-const Requests = async ({
-  searchParams,
-}: {
+interface RequestPageProps {
   memberId: bigint;
   searchParams?: {
     query?: string;
     page?: string;
+    sort?: keyof ITransaction;
+    order?: "asc" | "desc";
   };
-}) => {
+}
+
+const Requests = async ({ searchParams }: RequestPageProps) => {
   let currentPage = Number(searchParams?.page) || 1;
   const searchQuery = searchParams?.query || undefined;
   const limit = 8;
@@ -27,6 +30,10 @@ const Requests = async ({
     offset: 0,
     limit: 8,
     total: 0,
+  };
+  let sortOptions: SortOptions<ITransaction> = {
+    sortBy: searchParams?.sort || "id",
+    sortOrder: searchParams?.order || "asc",
   };
   let errorMessage: string | null = null;
   const user = await getUserSession();
@@ -38,7 +45,8 @@ const Requests = async ({
         offset: currentPage * 8 - 8,
         limit: limit,
       },
-      BigInt(memberId)
+      BigInt(memberId),
+      sortOptions
     )) as IPagedResponse<ITransactionDetails>;
 
     if (!fetchRequestsResult || !fetchRequestsResult.items.length) {

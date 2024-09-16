@@ -1,9 +1,9 @@
 "use client";
 import React, { useActionState } from "react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { Label } from "./ui/label";
-import { authenticate } from "../lib/actions";
+import { Input } from "@/src/components/ui/input";
+import { Button } from "@/src/components/ui/button";
+import { Label } from "@/src/components/ui/label";
+import { authenticate } from "@/src/lib/actions";
 
 const LoginForm = () => {
   const [errorMessage, formAction, isPending] = useActionState(
@@ -12,7 +12,7 @@ const LoginForm = () => {
   );
   return (
     <>
-      <form action={formAction} className="space-y-3">
+      <form action={formAction}>
         <div className="mt-2">
           <Label htmlFor="email">Email</Label>
           <Input id="email" name="email" type="email" required />
@@ -23,7 +23,7 @@ const LoginForm = () => {
         </div>
         <Button className="mt-4 w-full">Log in</Button>
         <div
-          className="flex h-8 items-end space-x-1"
+          className="flex items-end space-x-1 mt-3"
           aria-live="polite"
           aria-atomic="true"
         >

@@ -29,6 +29,8 @@ export const BookSchemaBase = z.object({
     .number({ message: "Number of copies must be a number." })
     .int({ message: "Number of copies cannot be a decimal number." })
     .positive("Total number of copies must be a positive integer"),
+  coverImage: z.string(),
+  price: z.number({ message: "Price should be a valid number." }),
 });
 
 export const BookSchema = BookSchemaBase.extend({

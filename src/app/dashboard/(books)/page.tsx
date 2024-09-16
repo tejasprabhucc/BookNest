@@ -1,5 +1,5 @@
 import React from "react";
-import { fetchBooks } from "@/src/lib/actions";
+import { fetchBooks, getUserSession } from "@/src/lib/actions";
 import {
   IBook,
   IBookBase,
@@ -8,9 +8,10 @@ import {
   SortOptions,
 } from "@/src/lib/definitions";
 import BooksGrid from "@/src/components/dashboard/booksGrid";
-import PaginationControl from "@/src/components/dashboard/pagination";
-import Search from "@/src/components/ui/search";
+import PaginationControl from "@/src/components/controls/pagination";
+import Search from "@/src/components/navbar/search";
 import SortControl from "@/src/components/controls/sortControl";
+import { User } from "lucide-react";
 
 const Books = async ({
   searchParams,
@@ -36,6 +37,7 @@ const Books = async ({
     sortBy: searchParams?.sort || "id",
     sortOrder: searchParams?.order || "asc",
   };
+  let errorMessage: string | null = null;
   try {
     const fetchBooksResult = (await fetchBooks(
       {
@@ -55,9 +57,11 @@ const Books = async ({
       books = fetchBooksResult.items;
     }
   } catch (error) {
-    console.error("Failed to fetch books:", error);
-    throw new Error("Something went wrong while fetching books.");
+    errorMessage = "No requests found.";
   }
+
+  const session = await getUserSession();
+  const userId = Number(session?.id);
 
   return (
     <main className=" flex flex-1 flex-col gap-2 overflow-y-auto p-4 px-8 ">
@@ -66,7 +70,11 @@ const Books = async ({
         <Search placeholder="Enter a keyword..." />
         <SortControl sortOptions={sortOptions} />
       </div>
-      {books.length > 0 ? <BooksGrid books={books} /> : <p>No books found.</p>}
+      {books.length > 0 ? (
+        <BooksGrid books={books} userId={userId} action={true} />
+      ) : (
+        <p>No books found.</p>
+      )}
       <div className="flex justify-center align-middle m-auto my-1">
         {books.length > 0 ? (
           <PaginationControl

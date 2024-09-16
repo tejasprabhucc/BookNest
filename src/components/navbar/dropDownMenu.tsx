@@ -6,7 +6,7 @@ import {
   DropdownMenuSeparator,
 } from "@/src/components/ui/dropdown-menu";
 import Link from "next/link";
-import SignOutButton from "@/src/components/ui/signOutButton";
+import SignOutButton from "@/src/components/navbar/signOutButton";
 import { User } from "next-auth";
 
 const DropDownOptions = ({ user }: { user: User }) => {
@@ -19,7 +19,7 @@ const DropDownOptions = ({ user }: { user: User }) => {
         <DropdownMenuItem>
           <Link href={`${pathname}/profile`}> Profile</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>Wishlist</DropdownMenuItem>
+        <DropdownMenuItem>Language</DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <SignOutButton />

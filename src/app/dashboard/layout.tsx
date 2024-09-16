@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Sidenav from "@/src/components/dashboard/sidenav";
+import Sidenav from "@/src/components/navbar/sidenav";
 import { INavOption } from "@/src/lib/definitions";
 import { ArrowLeftRight, Book, BookCheck, BookPlus } from "lucide-react";
 import { getUserSession } from "@/src/lib/actions";

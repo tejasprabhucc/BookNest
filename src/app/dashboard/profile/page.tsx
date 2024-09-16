@@ -3,8 +3,10 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/src/components/ui/avatar";
+import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
 import { Card, CardContent } from "@/src/components/ui/card";
+import { CreateButton, EditButton } from "@/src/components/ui/customButtons";
 import {
   getUserById,
   getUserSession,
@@ -17,6 +19,11 @@ import {
   BookOpen,
   Clock,
   CalendarClock,
+  AlertCircle,
+  Mail,
+  MapPin,
+  Phone,
+  Calendar,
 } from "lucide-react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -29,6 +36,7 @@ export default async function Profile() {
   const name = session.name;
   const image = session.user?.image;
 
+  const user = (await getUserById(session.id)) as IMember;
   const userData = (await getUserById(session.id)) as IMember;
   const userTransactionSummary = await getUserTransactionSummary(session.id);
 
@@ -37,14 +45,17 @@ export default async function Profile() {
       <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-sm">
         <div className="flex justify-between items-start mb-6">
           <h1 className="text-2xl font-semibold text-gray-700">PROFILE</h1>
-          <Button variant={"default"}>EDIT PROFILE</Button>
+          <EditButton
+            url={`/dashboard/profile/${user.id}/edit`}
+            label="Edit Profile"
+          />
         </div>
 
         <div className="flex flex-col items-center md:flex-row gap-6 mb-8">
           <Avatar className="w-24 h-24">
-            {image && (
+            {userData.image && (
               <Image
-                src={image}
+                src={userData.image}
                 width={36}
                 height={36}
                 alt="Avatar"
@@ -55,23 +66,48 @@ export default async function Profile() {
             <AvatarFallback>{name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-2">
-            <h2 className="text-2xl font-bold text-gray-800">{session.name}</h2>
-            <p className="text-gray-500">
-              {userData.role.toUpperCase()} • San Francisco, CA
-            </p>
+            <h2 className="text-2xl font-bold text-gray-800">
+              {userData.name}
+            </h2>
+
+            <Badge variant="secondary" className="text-sm font-medium">
+              {userData.role.toUpperCase()}
+            </Badge>
           </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           <Card>
-            <CardContent className="p-4">
-              <h3 className="text-lg font-semibold mb-4">CONTACT DETAILS</h3>
-              <div className="space-y-2">
-                <p className="text-indigo-600">{session.email}</p>
-                <p className="text-gray-600">123-456-7890</p>
-                <p className="text-gray-500">
-                  123 Library Lane, Booktown, BT 12345
-                </p>
+            <CardContent className="p-6">
+              <h3 className="text-xl font-semibold mb-6 flex items-center">
+                <AlertCircle className="mr-2 h-5 w-5 text-primary" />
+                CONTACT DETAILS
+              </h3>
+              <div className="space-y-4">
+                <div className="flex items-center">
+                  <Mail className="h-5 w-5 mr-3 text-primary" />
+                  <p className="text-foreground">{userData.email}</p>
+                </div>
+                <div className="flex items-center">
+                  <Phone className="h-5 w-5 mr-3 text-primary" />
+                  {userData.phone ? (
+                    <p className="text-foreground">{userData.phone}</p>
+                  ) : (
+                    <p className="text-muted-foreground italic">
+                      No phone number provided
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-start">
+                  <MapPin className="h-5 w-5 mr-3 mt-0.5 text-primary" />
+                  {userData.address ? (
+                    <p className="text-foreground">{userData.address}</p>
+                  ) : (
+                    <p className="text-muted-foreground italic">
+                      Address not available
+                    </p>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>

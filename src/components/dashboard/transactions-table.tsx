@@ -6,7 +6,7 @@ import {
   TableHead,
   TableBody,
   TableCell,
-} from "./ui/table";
+} from "@/src/components/ui/table";
 import { Badge } from "@/src/components/ui/badge";
 import {
   AcceptButton,

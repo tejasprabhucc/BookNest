@@ -1,5 +1,5 @@
 import React from "react";
-import { IMember } from "../lib/definitions";
+import { IMember } from "@/src/lib/definitions";
 import {
   Table,
   TableBody,
@@ -7,9 +7,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
-import { books } from "../orm/schema";
-import { EditButton, DeleteButton } from "./ui/customButtons";
+} from "@/src/components/ui/table";
+import { books } from "@/src/orm/schema";
+import { EditButton, DeleteButton } from "@/src/components/ui/customButtons";
 
 const MembersTable = ({ members }: { members: IMember[] }) => {
   return (

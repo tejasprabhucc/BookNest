@@ -1,4 +1,3 @@
-import Form, { FormField } from "@/src/components/form";
 import {
   Card,
   CardHeader,
@@ -6,10 +5,14 @@ import {
   CardDescription,
   CardContent,
 } from "@/src/components/ui/card";
-import { createBook, createMember } from "@/src/lib/actions";
+import { editMember, getBookById, getUserById } from "@/src/lib/actions";
+import EditBookForm from "@/src/components/edit-book-form";
 import React from "react";
+import { IBook, IMember } from "@/src/lib/definitions";
+import Form, { FormField } from "@/src/components/form";
 
-const Create = () => {
+const EditProfile = async ({ params }: { params: { id: string } }) => {
+  const userData = (await getUserById(Number(params.id))) as IMember;
   const memberFields: FormField[] = [
     {
       label: "Name",
@@ -30,37 +33,36 @@ const Create = () => {
       placeholder: "Enter email id",
     },
     {
-      label: "Password",
-      type: "password",
-      name: "password",
-      placeholder: "Enter password",
+      label: "Phone",
+      type: "text",
+      name: "phone",
+      placeholder: "Enter Phone number",
     },
     {
-      label: "Role",
+      label: "Address",
       type: "text",
-      name: "role",
-      placeholder: "Enter member's role",
+      name: "address",
+      placeholder: "Enter your address",
     },
   ];
-
   return (
     <>
       <Card className="w-5/6 max-w-4xl mx-auto border-none shadow-none">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold">
-            Add Member Details
-          </CardTitle>
+          <CardTitle className="text-3xl font-bold">Edit Profile</CardTitle>
           <CardDescription>
-            Fill out the form to add a new member.
+            Fill out the form to update your profile.
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* <EditBookForm book={book} /> */}
           <Form
-            type="create"
+            type="edit"
             fields={memberFields}
-            action={createMember}
+            action={editMember}
+            data={userData}
             dataType="member"
-            redirectUrl="/admin/members"
+            redirectUrl="/dashboard/profile"
           />
         </CardContent>
       </Card>
@@ -68,4 +70,4 @@ const Create = () => {
   );
 };
 
-export default Create;
+export default EditProfile;

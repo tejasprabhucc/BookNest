@@ -17,6 +17,16 @@ export const MemberBaseSchema = z.object({
     .min(8, { message: "Password must be at least 8 characters long." }),
   role: z.enum(["user", "admin"]),
   refreshToken: z.string().optional(),
+  phone: z
+    .string()
+    .min(10, { message: "Phone number should have atleast 10 digits" })
+    .optional()
+    .nullable(),
+  address: z
+    .string({ message: "Address must be a string." })
+    .optional()
+    .nullable(),
+  image: z.string().optional().nullable(),
 });
 
 export const MemberSchema = MemberBaseSchema.extend({

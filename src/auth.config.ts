@@ -33,6 +33,14 @@ export const authConfig = {
       const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
       const isOnAdminRoute = nextUrl.pathname.startsWith("/admin");
 
+      const isOnPublicPage = ["/", "/login", "/signup"].includes(
+        nextUrl.pathname
+      );
+
+      if (isOnPublicPage) {
+        return true;
+      }
+
       if (isLoggedIn) {
         if (isAdmin) {
           if (isOnAdminRoute) return true;

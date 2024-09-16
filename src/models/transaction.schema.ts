@@ -18,6 +18,7 @@ export const TransactionSchema = TransactionBaseSchema.extend({
     .int({ message: "ID cannot be a decimal number." }),
   bookStatus: z.enum(["pending", "rejected", "issued", "returned"]),
   dateOfIssue: z.string().nullable(),
+  dueDate: z.string().nullable(),
 });
 
 export type ITransactionBase = z.input<typeof TransactionBaseSchema>;

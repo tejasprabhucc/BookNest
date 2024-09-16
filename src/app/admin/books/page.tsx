@@ -7,10 +7,10 @@ import {
   IPaginationOptions,
   SortOptions,
 } from "@/src/lib/definitions";
-import PaginationControl from "@/src/components/dashboard/pagination";
-import Search from "@/src/components/ui/search";
+import PaginationControl from "@/src/components/controls/pagination";
+import Search from "@/src/components/navbar/search";
 import { CreateButton } from "@/src/components/ui/customButtons";
-import BooksTable from "@/src/components/books-table";
+import BooksTable from "@/src/components/dashboard/books-table";
 
 const Books = async ({
   searchParams,
@@ -35,12 +35,12 @@ const Books = async ({
     total: 0,
   };
   let errorMessage: string | null = null;
+  let sortOptions: SortOptions<IBook> = {
+    sortBy: searchParams?.sort || "id",
+    sortOrder: searchParams?.order || "asc",
+  };
 
   try {
-    let sortOptions: SortOptions<IBook> = {
-      sortBy: searchParams?.sort || "id",
-      sortOrder: searchParams?.order || "asc",
-    };
     const fetchBooksResult = (await fetchBooks(
       {
         search: searchQuery,
@@ -72,7 +72,7 @@ const Books = async ({
       {errorMessage ? (
         <p>{errorMessage}</p>
       ) : books.length > 0 ? (
-        <BooksTable books={books} userId={userId} />
+        <BooksTable books={books} userId={userId} sortOptions={sortOptions} />
       ) : (
         <p>No books found.</p>
       )}

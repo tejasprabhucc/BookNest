@@ -2,9 +2,9 @@
 import React, { useActionState, useEffect } from "react";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
-import { IBook } from "../lib/definitions";
-import { editBook } from "../lib/actions";
-import { Button } from "./ui/button";
+import { IBook } from "@/src/lib/definitions";
+import { editBook } from "@/src/lib/actions";
+import { Button } from "@/src/components/ui/button";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 

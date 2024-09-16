@@ -1,6 +1,6 @@
 import React from "react";
 import { signIn } from "@/src/auth";
-import { Button } from "./ui/button";
+import { Button } from "@/src/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
 
 const GoogleAuthButton = () => {

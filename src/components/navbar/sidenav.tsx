@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { MountainIcon, HomeIcon, BookmarkIcon, HeartIcon } from "lucide-react";
-import HamburgerMenu from "@/src/components/dashboard/hamburger";
+import HamburgerMenu from "@/src/components/navbar/hamburger";
 import DropDownOptions from "./dropDownMenu";
 import {
   DropdownMenu,
@@ -10,7 +10,7 @@ import {
 import { Button } from "../ui/button";
 import { IMember, INavOption } from "@/src/lib/definitions";
 import { User } from "next-auth";
-import SignOutButton from "@/src/components/ui/signOutButton";
+import SignOutButton from "@/src/components/navbar/signOutButton";
 import Image from "next/image";
 
 const Sidenav = ({
