@@ -12,7 +12,6 @@ import { ITransactionDetails } from "@/src/repositories/transaction.repository";
 import TransactionsTable from "@/src/components/dashboard/transactions-table";
 
 interface RequestPageProps {
-  memberId: bigint;
   searchParams?: {
     query?: string;
     page?: string;

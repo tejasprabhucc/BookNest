@@ -14,7 +14,6 @@ import TransactionsTable from "@/src/components/dashboard/transactions-table";
 const MyRequests = async ({
   searchParams,
 }: {
-  memberId: bigint;
   searchParams?: {
     query?: string;
     page?: string;

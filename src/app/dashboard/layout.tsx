@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Sidenav from "@/src/components/navbar/sidenav";
-import { INavOption } from "@/src/lib/definitions";
+import { IMember, INavOption } from "@/src/lib/definitions";
 import { ArrowLeftRight, Book, BookCheck, BookPlus } from "lucide-react";
 import { getUserSession } from "@/src/lib/actions";
 import { Toaster } from "@/src/components/ui/toaster";
 import { redirect } from "next/navigation";
+import { User } from "next-auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +25,7 @@ export default async function RootLayout({
     { label: "My Books", url: "/dashboard/myBooks", icon: BookCheck },
     { label: "My Requests", url: "/dashboard/myRequests", icon: BookPlus },
   ];
-  const user = await getUserSession();
+  const user = (await getUserSession()) as IMember & User;
   if (!user) {
     redirect("/login");
   }

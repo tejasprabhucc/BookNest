@@ -34,7 +34,7 @@ export default async function Profile() {
     redirect("/login");
   }
   const name = session.name;
-  const image = session.user?.image;
+  const image = session.image;
 
   const user = (await getUserById(session.id)) as IMember;
   const userData = (await getUserById(session.id)) as IMember;

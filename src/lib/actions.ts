@@ -13,7 +13,7 @@ import {
   SortOptions,
 } from "@/src/lib/definitions";
 import { auth, signIn } from "@/src/auth";
-import { AuthError } from "next-auth";
+import { AuthError, User } from "next-auth";
 import { redirect } from "next/navigation";
 import { BookRepository } from "@/src/repositories/book.repository";
 import { MemberRepository } from "@/src/repositories/member.repository";
@@ -44,7 +44,7 @@ export async function getUserSession() {
     if (!userDetails) {
       throw new Error("User details not be found");
     }
-    return { ...user, ...userDetails };
+    return { ...user, ...userDetails } as IMember & User;
   } catch (error) {
     console.error("Error finding details of user", error);
   }

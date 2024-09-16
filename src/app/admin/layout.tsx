@@ -18,7 +18,7 @@ export default async function RootLayout({
 }>) {
   const navOptions: INavOption[] = [
     { label: "Books", url: "/admin/books", icon: Book },
-    { label: "Requests", url: "/admin/requests", icon: BookPlus },
+    { label: "Requests", url: "/admin/requests/", icon: BookPlus },
     { label: "Members", url: "/admin/members", icon: Users },
     { label: "Transactions", url: "/admin/transactions", icon: ArrowLeftRight },
   ];
