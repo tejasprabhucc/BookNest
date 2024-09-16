@@ -12,7 +12,7 @@ const HamburgerMenu = ({
   children,
 }: {
   navOptions: { label: string; url: string }[];
-  user: User & IMember;
+  user: User;
   children: any;
 }) => {
   const pathname = user.role === "admin" ? "/admin" : "/dashboard";

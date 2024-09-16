@@ -44,7 +44,7 @@ export async function getUserSession() {
     if (!userDetails) {
       throw new Error("User details not be found");
     }
-    return { ...user, ...userDetails } as IMember & User;
+    return user;
   } catch (error) {
     console.error("Error finding details of user", error);
   }

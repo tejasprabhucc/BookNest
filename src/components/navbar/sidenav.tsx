@@ -18,7 +18,7 @@ const Sidenav = ({
   user,
 }: {
   navOptions: INavOption[];
-  user: User & IMember;
+  user: User;
 }) => {
   const simplifiedNavOptions = navOptions.map(({ label, url }) => ({
     label,
@@ -82,7 +82,7 @@ const Sidenav = ({
                     style={{ aspectRatio: "36/36", objectFit: "cover" }}
                   />
                 ) : (
-                  <span>{user.name.charAt(0)}</span>
+                  <span>{user.name?.charAt(0)}</span>
                 )}
               </Button>
               <p className="text-center">{user.name}</p>

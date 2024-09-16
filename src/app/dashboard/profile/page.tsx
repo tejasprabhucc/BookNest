@@ -33,12 +33,12 @@ export default async function Profile() {
   if (!session) {
     redirect("/login");
   }
-  const name = session.name;
+  const userId = Number(session.id);
   const image = session.image;
 
-  const user = (await getUserById(session.id)) as IMember;
-  const userData = (await getUserById(session.id)) as IMember;
-  const userTransactionSummary = await getUserTransactionSummary(session.id);
+  const user = (await getUserById(userId)) as IMember;
+  const userData = (await getUserById(userId)) as IMember;
+  const userTransactionSummary = await getUserTransactionSummary(userId);
 
   return (
     <Card className="w-max mt-10 mx-auto">
@@ -63,7 +63,7 @@ export default async function Profile() {
                 style={{ aspectRatio: "36/36", objectFit: "cover" }}
               />
             )}
-            <AvatarFallback>{name.charAt(0)}</AvatarFallback>
+            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-2">
             <h2 className="text-2xl font-bold text-gray-800">

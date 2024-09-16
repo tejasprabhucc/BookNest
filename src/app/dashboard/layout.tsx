@@ -25,7 +25,7 @@ export default async function RootLayout({
     { label: "My Books", url: "/dashboard/myBooks", icon: BookCheck },
     { label: "My Requests", url: "/dashboard/myRequests", icon: BookPlus },
   ];
-  const user = (await getUserSession()) as IMember & User;
+  const user = await getUserSession();
   if (!user) {
     redirect("/login");
   }
