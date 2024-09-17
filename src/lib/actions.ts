@@ -38,7 +38,6 @@ export async function getUserSession() {
   const user = session?.user;
   const email = user?.email;
 
-  console.log("session", session?.user);
   try {
     const userDetails = await memberRepo.getByEmail(email as string);
     if (!userDetails) {
@@ -52,7 +51,15 @@ export async function getUserSession() {
 
 export async function createUser(data: IMemberBase) {
   try {
-    return await memberRepo.create(data);
+    const existingUser = await memberRepo.getByEmail(data.email);
+    if (existingUser) {
+      return { message: "This email is already registered." };
+    }
+    const result = await memberRepo.create(data);
+    if (result) {
+      return { message: "Registered successfully!" };
+    }
+    return { message: "Registeration failed!" };
   } catch (err) {
     if (err instanceof z.ZodError) {
       return { message: err.errors[0].message || "Invalid input" };
