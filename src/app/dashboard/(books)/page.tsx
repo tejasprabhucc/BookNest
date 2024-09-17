@@ -1,8 +1,9 @@
 import React from "react";
-import { fetchBooks, getUserSession } from "@/src/lib/actions";
+import { fetchBooks, getUserByEmail, getUserSession } from "@/src/lib/actions";
 import {
   IBook,
   IBookBase,
+  IMember,
   IPagedResponse,
   IPaginationOptions,
   SortOptions,
@@ -12,6 +13,7 @@ import PaginationControl from "@/src/components/controls/pagination";
 import Search from "@/src/components/navbar/search";
 import SortControl from "@/src/components/controls/sortControl";
 import { User } from "lucide-react";
+import { redirect } from "next/navigation";
 
 const Books = async ({
   searchParams,
@@ -61,7 +63,13 @@ const Books = async ({
   }
 
   const session = await getUserSession();
-  const userId = Number(session?.id);
+  if (!session) {
+    redirect("/login");
+  }
+  const userEmail = session.email;
+  const image = session.image;
+
+  const userData = (await getUserByEmail(userEmail)) as IMember;
 
   return (
     <main className=" flex flex-1 flex-col gap-2 overflow-y-auto p-4 px-8 ">
@@ -71,7 +79,7 @@ const Books = async ({
         <SortControl sortOptions={sortOptions} />
       </div>
       {books.length > 0 ? (
-        <BooksGrid books={books} userId={userId} action={true} />
+        <BooksGrid books={books} userId={userData.id} action={true} />
       ) : (
         <p>No books found.</p>
       )}

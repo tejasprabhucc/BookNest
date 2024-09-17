@@ -8,6 +8,7 @@ import { Button } from "@/src/components/ui/button";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { CreateButton, EditButton } from "@/src/components/ui/customButtons";
 import {
+  getUserByEmail,
   getUserById,
   getUserSession,
   getUserTransactionSummary,
@@ -33,12 +34,11 @@ export default async function Profile() {
   if (!session) {
     redirect("/login");
   }
-  const userId = Number(session.id);
+  const userEmail = session.email;
   const image = session.image;
 
-  const user = (await getUserById(userId)) as IMember;
-  const userData = (await getUserById(userId)) as IMember;
-  const userTransactionSummary = await getUserTransactionSummary(userId);
+  const userData = (await getUserByEmail(userEmail)) as IMember;
+  const userTransactionSummary = await getUserTransactionSummary(userData.id);
 
   return (
     <Card className="w-max mt-10 mx-auto">
@@ -46,7 +46,7 @@ export default async function Profile() {
         <div className="flex justify-between items-start mb-6">
           <h1 className="text-2xl font-semibold text-gray-700">PROFILE</h1>
           <EditButton
-            url={`/admin/profile/${user.id}/edit`}
+            url={`/admin/profile/${userData.id}/edit`}
             label="Edit Profile"
           />
         </div>
@@ -63,7 +63,7 @@ export default async function Profile() {
                 style={{ aspectRatio: "36/36", objectFit: "cover" }}
               />
             )}
-            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+            <AvatarFallback>{userData.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-2">
             <h2 className="text-2xl font-bold text-gray-800">
