@@ -38,7 +38,7 @@ export async function getUserSession() {
   const user = session?.user;
   const email = user?.email;
 
-  console.log(session?.user.image);
+  console.log("session", session?.user);
   try {
     const userDetails = await memberRepo.getByEmail(email as string);
     if (!userDetails) {
@@ -70,32 +70,38 @@ export async function getUserByEmail(email: string) {
 }
 
 export async function getUserTransactionSummary(id: number) {
-  const allTransactions = await transactionRepo.listTransactionDetails(
-    {
-      offset: 0,
-      limit: 10,
-    },
-    BigInt(id),
-    { sortBy: "id", sortOrder: "desc" }
-  );
-  if (!allTransactions) {
+  console.log("ID: ", id);
+  try {
+    const allTransactions = await transactionRepo.listTransactionDetails(
+      {
+        offset: 0,
+        limit: 10,
+      },
+      BigInt(id),
+      { sortBy: "id", sortOrder: "desc" }
+    );
+    if (!allTransactions) {
+      return null;
+    }
+    const summary = allTransactions.items.reduce(
+      (acc, transaction) => {
+        if (transaction.bookStatus === "issued") {
+          acc.borrowedBooks++;
+          acc.booksDue++;
+        } else if (transaction.bookStatus === "pending") {
+          acc.pendingRequest++;
+        } else if (transaction.bookStatus === "returned") {
+          acc.returnedBooks++;
+        }
+        return acc;
+      },
+      { borrowedBooks: 0, pendingRequest: 0, booksDue: 0, returnedBooks: 0 }
+    );
+    return summary;
+  } catch (err) {
+    console.log((err as Error).message);
     return null;
   }
-  const summary = allTransactions.items.reduce(
-    (acc, transaction) => {
-      if (transaction.bookStatus === "issued") {
-        acc.borrowedBooks++;
-        acc.booksDue++;
-      } else if (transaction.bookStatus === "pending") {
-        acc.pendingRequest++;
-      } else if (transaction.bookStatus === "returned") {
-        acc.returnedBooks++;
-      }
-      return acc;
-    },
-    { borrowedBooks: 0, pendingRequest: 0, booksDue: 0, returnedBooks: 0 }
-  );
-  return summary;
 }
 
 export async function getUserById(id: number) {
