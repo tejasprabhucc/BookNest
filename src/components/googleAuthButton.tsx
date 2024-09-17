@@ -8,7 +8,7 @@ const GoogleAuthButton = () => {
     <form
       action={async () => {
         "use server";
-        const result = await signIn("google");
+        const result = await signIn("google", { redirectTo: "/bashboard" });
         console.log(result);
       }}
     >
