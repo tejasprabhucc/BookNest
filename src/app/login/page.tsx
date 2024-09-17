@@ -12,8 +12,8 @@ import GoogleAuthButton from "@/src/components/googleAuthButton";
 
 const Login = () => {
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
+    <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-12 shadow-md sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">Login</CardTitle>
           <CardDescription>
@@ -22,6 +22,7 @@ const Login = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <LoginForm />
+          <p className="text-center">Or</p>
           <GoogleAuthButton />
           <div>
             <p>

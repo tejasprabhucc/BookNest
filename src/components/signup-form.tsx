@@ -9,22 +9,33 @@ import { Input } from "@/src/components/ui/input";
 
 const SignupForm = () => {
   const router = useRouter();
+  const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setPending(true);
     const formData = new FormData(e.target as HTMLFormElement);
     const name = formData.get("name")?.toString();
     const age = Number(formData.get("age"));
     const email = formData.get("email")?.toString();
-    const password = formData.get("password")?.toString();
     const phone = formData.get("phone")?.toString() || null;
     const address = formData.get("address")?.toString() || null;
+    const password = formData.get("password")?.toString();
+    const confirmPassword = formData.get("confirmPassword")?.toString();
 
     if (!name || !email || !password || !age) {
       setError("Please fill in all the fields.");
+      setPending(false);
       return;
     }
+
+    if (password !== confirmPassword) {
+      setError("Passwords doesn't match.");
+      setPending(false);
+      return;
+    }
+
     const newUser: IMemberBase = {
       name,
       age,
@@ -38,21 +49,33 @@ const SignupForm = () => {
 
     try {
       const createdUser = await createUser(newUser);
-      if (createdUser) {
+      if (createdUser.message === "Registered successfully!") {
+        setPending(false);
         router.push("/login");
       } else {
-        setError("Failed to create account. Please try again.");
+        setError(createdUser.message);
+        setPending(false);
       }
     } catch (error) {
-      alert("An error occurred while creating the account. Please try again.");
+      setError(
+        "An error occurred while creating the account. Please try again."
+      );
+      setPending(false);
     }
   };
+
   return (
     <>
       <form onSubmit={handleSignup}>
         <div className="mt-2">
           <Label htmlFor="name">Name</Label>
-          <Input id="name" type="text" name="name" required />
+          <Input
+            id="name"
+            type="text"
+            name="name"
+            className="border-2"
+            required
+          />
         </div>
         <div className="mt-2">
           <Label htmlFor="age">Age</Label>
@@ -67,18 +90,20 @@ const SignupForm = () => {
           <Input id="phone" type="number" name="phone" required />
         </div>
         <div className="mt-2">
-          <Label htmlFor="address">Address</Label>
-          <Input id="address" type="text" name="address" />
-        </div>
-        <div className="mt-2">
           <Label htmlFor="password">Password</Label>
           <Input id="password" type="password" name="password" required />
         </div>
-        <Button type="submit" className="w-full mt-3">
-          Sign up
-        </Button>
+        <div className="mt-2">
+          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <Input
+            id="password"
+            type="password"
+            name="confirmPassword"
+            required
+          />
+        </div>
         <div
-          className="flex items-end space-x-1 mt-3"
+          className="flex items-end space-x-1 my-3"
           aria-live="polite"
           aria-atomic="true"
         >
@@ -88,6 +113,10 @@ const SignupForm = () => {
             </>
           )}
         </div>
+
+        <Button type="submit" className="w-full mt-3" disabled={pending}>
+          {pending ? "Signing up..." : "Sign up"}
+        </Button>
       </form>
     </>
   );

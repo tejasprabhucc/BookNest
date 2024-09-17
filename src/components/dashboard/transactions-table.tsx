@@ -57,6 +57,7 @@ const TransactionsTable = ({
             {actions && <TableHead>Member</TableHead>}
             <TableHead>Book</TableHead>
             <TableHead>Date of Issue</TableHead>
+            <TableHead>Due Date</TableHead>
             <TableHead>Status</TableHead>
             <TableHead></TableHead>
             {actions && <TableHead>Delete</TableHead>}
@@ -68,6 +69,7 @@ const TransactionsTable = ({
               {actions && <TableCell>{transaction.member?.name}</TableCell>}
               <TableCell>{transaction.book.title}</TableCell>
               <TableCell>{transaction.dateOfIssue || "-"}</TableCell>
+              <TableCell>{transaction.dueDate || "-"}</TableCell>
               <TableCell>
                 <div className="w-full flex items-center gap-2">
                   <Badge

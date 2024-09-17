@@ -19,6 +19,8 @@ const MembersTable = ({ members }: { members: IMember[] }) => {
           <TableHead className="hidden sm:table-cell">Name</TableHead>
           <TableHead className="hidden sm:table-cell">Age</TableHead>
           <TableHead className="hidden sm:table-cell">Email</TableHead>
+          <TableHead className="hidden sm:table-cell">Phone</TableHead>
+          <TableHead className="hidden sm:table-cell">Address</TableHead>
           <TableHead className="hidden sm:table-cell">Role</TableHead>
           <TableHead>Delete</TableHead>
         </TableRow>
@@ -31,6 +33,8 @@ const MembersTable = ({ members }: { members: IMember[] }) => {
             </TableCell>
             <TableCell className="sm:table-cell">{member.age}</TableCell>
             <TableCell className="sm:table-cell">{member.email}</TableCell>
+            <TableCell className="sm:table-cell">{member.phone}</TableCell>
+            <TableCell className="sm:table-cell">{member.address}</TableCell>
             <TableCell className="sm:table-cell">{member.role}</TableCell>
 
             <TableCell>

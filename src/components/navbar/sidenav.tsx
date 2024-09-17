@@ -12,6 +12,7 @@ import { IMember, INavOption } from "@/src/lib/definitions";
 import { User } from "next-auth";
 import SignOutButton from "@/src/components/navbar/signOutButton";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 const Sidenav = ({
   navOptions,
@@ -26,6 +27,7 @@ const Sidenav = ({
   }));
 
   const image = user.image;
+
   return (
     <>
       <div className=" z-10 lg:hidden">
@@ -43,7 +45,7 @@ const Sidenav = ({
           </HamburgerMenu>
         </div>
       </div>
-      <aside className="w-60 max-h-screen sticky top-0 inset-y-0 left-0 flex-col border-r bg-background hidden  lg:flex">
+      <aside className="w-60 max-h-screen sticky top-0 py-3 inset-y-0 left-0 flex-col border-2 bg-background hidden shadow-lg rounded-lg m-3 lg:flex">
         <div className="flex h-16 items-center justify-between border-b px-4">
           <Link href="#" className="flex items-center gap-2 " prefetch={false}>
             <MountainIcon className="h-6 w-6" />
@@ -57,7 +59,7 @@ const Sidenav = ({
               <Link
                 key={option.url}
                 href={option.url}
-                className="flex items-center gap-2 rounded-md px-3 py-3 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground"
+                className="flex items-center gap-2 rounded-md px-3 py-3 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground "
               >
                 <IconComponent /> {option.label}
               </Link>
