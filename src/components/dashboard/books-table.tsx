@@ -76,6 +76,11 @@ const BooksTable = ({
             label="Pages"
           />
           <SortableHeader
+            column="price"
+            handleSortChange={handleSortChange}
+            label="Price (₹)"
+          />
+          <SortableHeader
             column="totalNumOfCopies"
             handleSortChange={handleSortChange}
             label="Copies"
@@ -101,6 +106,7 @@ const BooksTable = ({
             <TableCell className="sm:table-cell">{book.genre}</TableCell>
             <TableCell className="sm:table-cell">{book.isbnNo}</TableCell>
             <TableCell className="sm:table-cell">{book.numOfPages}</TableCell>
+            <TableCell className="sm:table-cell">{book.price}</TableCell>
             <TableCell className="sm:table-cell">
               {book.totalNumOfCopies}
             </TableCell>

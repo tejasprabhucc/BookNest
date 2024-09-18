@@ -31,7 +31,7 @@ const Sidenav = ({
   return (
     <>
       <div className=" z-10 lg:hidden">
-        <div className="flex h-16 items-center justify-between border-b px-4">
+        <div className="w-full flex h-16 items-center justify-between border-b px-4">
           <Link
             href="#"
             className="flex items-center gap-2 font-bold"

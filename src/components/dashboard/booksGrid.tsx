@@ -23,7 +23,7 @@ const BooksGrid = ({
       {books ? (
         books.map((book, index) => (
           <Card
-            key={index}
+            key={book.id}
             className="flex bg-background shadow-lg rounded-lg overflow-hidden px-3 cursor-pointer transition-shadow hover:shadow-xl"
             onClick={() => setSelectedBook(book)}
           >
