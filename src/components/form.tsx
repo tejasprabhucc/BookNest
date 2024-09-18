@@ -55,7 +55,7 @@ const Form = ({
     toast({
       title: state.message,
     });
-    // redirect(redirectUrl);
+    redirect(redirectUrl);
   }
 
   return (
