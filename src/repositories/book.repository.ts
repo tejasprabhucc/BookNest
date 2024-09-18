@@ -9,23 +9,29 @@ import { BookSchemaBase } from "@/src/models/book.schema";
 import { IPagedResponse, IPageRequest } from "@/src/lib/definitions";
 import { MySql2Database } from "drizzle-orm/mysql2";
 import { count, eq, desc, asc, sql } from "drizzle-orm";
-import { books } from "@/src/orm/schema";
+import { books } from "@/src/drizzle/schema";
+import { VercelPgDatabase } from "drizzle-orm/vercel-postgres";
+import { z } from "zod";
 
 export class BookRepository implements IRepository<IBookBase, IBook> {
-  constructor(private readonly db: MySql2Database<Record<string, never>>) {}
+  constructor(private readonly db: VercelPgDatabase<Record<string, unknown>>) {}
 
   async create(data: IBookBase): Promise<IBook> {
     const validatedData = BookSchemaBase.parse(data);
 
     const newBook = {
       ...validatedData,
+      coverimage: validatedData.coverImage || null,
       availableNumOfCopies: validatedData.totalNumOfCopies,
     };
 
     try {
-      const [result] = await this.db.insert(books).values(newBook);
+      const [result] = await this.db
+        .insert(books)
+        .values(newBook)
+        .returning({ id: books.id });
 
-      return await this.getById(result.insertId);
+      return await this.getById(result.id);
     } catch (error) {
       throw new Error(`Error creating book: ${(error as Error).message}`);
     }
@@ -57,13 +63,13 @@ export class BookRepository implements IRepository<IBookBase, IBook> {
 
       console.log("Updating book:", updatedBook);
 
-      const [result] = await this.db
+      const result = await this.db
         .update(books)
         .set(updatedBook)
         .where(eq(books.id, id))
         .execute();
 
-      if (result.affectedRows > 0) {
+      if (result.rowCount) {
         console.log(`Book successfully updated.`);
         return await this.getById(id);
       } else {
@@ -71,6 +77,10 @@ export class BookRepository implements IRepository<IBookBase, IBook> {
       }
     } catch (error) {
       console.error(`Error updating book:`, (error as Error).message);
+      if (error instanceof z.ZodError) {
+        console.log(error.flatten());
+        throw new Error(error.errors[0].message || "Invalid input");
+      }
       throw new Error(`Error updating book: ${(error as Error).message}`);
     }
   }
@@ -79,11 +89,11 @@ export class BookRepository implements IRepository<IBookBase, IBook> {
     try {
       const bookToDelete = await this.getById(id);
 
-      const [result] = await this.db
+      const result = await this.db
         .delete(books)
         .where(eq(books.id, id))
         .execute();
-      if (result.affectedRows > 0) {
+      if (result.rowCount) {
         return bookToDelete;
       } else {
         throw new Error(`Book deletion failed`);
@@ -123,7 +133,7 @@ export class BookRepository implements IRepository<IBookBase, IBook> {
 
     if (params.search) {
       const search = `%${params.search.toLowerCase()}%`;
-      searchWhereClause = sql`${books.title} LIKE ${search} OR ${books.isbnNo} LIKE ${search}`;
+      searchWhereClause = sql`${books.title} ILIKE ${search} OR ${books.isbnNo} ILIKE ${search}`;
     }
 
     if (sortOptions) {

@@ -1,5 +1,5 @@
 "use server";
-import { db } from "@/src/orm/index";
+import { db } from "@/src/drizzle/index";
 import {
   FilterOptions,
   IBook,
@@ -23,10 +23,9 @@ import {
   TransactionRepository,
 } from "@/src/repositories/transaction.repository";
 
-// const db = initializeDatabase();
-const bookRepo = new BookRepository(db!);
-const memberRepo = new MemberRepository(db!);
-const transactionRepo = new TransactionRepository(db!);
+const bookRepo = new BookRepository(db);
+const memberRepo = new MemberRepository(db);
+const transactionRepo = new TransactionRepository(db);
 
 export type State = {
   message?: string | null;
@@ -129,7 +128,7 @@ export async function fetchMembers(params: IPageRequest) {
 
 export async function createMember(prevState: any, formData: FormData) {
   try {
-    const data: IMember = {
+    const data: Omit<IMember, "id"> = {
       name: formData.get("name") as string,
       age: Number(formData.get("age")),
       email: formData.get("email") as string,
@@ -138,7 +137,6 @@ export async function createMember(prevState: any, formData: FormData) {
       phone: formData.get("phone") as string,
       address: formData.get("address") as string,
       image: formData.get("image") as string,
-      id: 0,
     };
 
     const createdMember = await memberRepo.create(data);
@@ -265,7 +263,7 @@ export async function editBook(prevState: any, formData: FormData) {
       author: formData.get("author") as string,
       publisher: formData.get("publisher") as string,
       genre: formData.get("genre") as string,
-      isbnNo: formData.get("isbn") as string,
+      isbnNo: formData.get("isbnNo") as string,
       numOfPages: Number(formData.get("numOfPages")),
       totalNumOfCopies: Number(formData.get("totalNumOfCopies")),
       coverImage: formData.get("coverImage") as string,
@@ -283,7 +281,7 @@ export async function editBook(prevState: any, formData: FormData) {
     return { message: "Book updated successfully!" };
   } catch (err) {
     if (err instanceof z.ZodError) {
-      console.log(err.flatten());
+      console.log(err);
       return { message: err.errors[0].message || "Invalid input" };
     }
     return { message: (err as Error).message };

@@ -6,16 +6,17 @@ import {
   MemberSchema,
 } from "../models/member.schema";
 import { MySql2Database } from "drizzle-orm/mysql2";
-import { members, memberTokens } from "../orm/schema";
+import { members } from "../drizzle/schema";
 import { count, eq, like, or, sql } from "drizzle-orm";
 import { IPagedResponse, IPageRequest } from "@/src/lib/definitions";
 import bcrypt from "bcryptjs";
+import { VercelPgDatabase } from "drizzle-orm/vercel-postgres";
 
 export class MemberRepository implements IRepository<IMemberBase, IMember> {
-  constructor(private readonly db: MySql2Database<Record<string, never>>) {}
+  constructor(private readonly db: VercelPgDatabase<Record<string, unknown>>) {}
 
   async create(data: IMemberBase): Promise<IMember> {
-    const validatedData = { ...MemberBaseSchema.parse(data), id: 0 };
+    const validatedData = { ...MemberBaseSchema.parse(data) };
 
     const hashedPassword = await bcrypt.hash(validatedData.password, 10);
 
@@ -25,9 +26,12 @@ export class MemberRepository implements IRepository<IMemberBase, IMember> {
       role: validatedData.role ?? "user",
     };
     try {
-      const [insertId] = await this.db.insert(members).values(newUser);
+      const [result] = await this.db
+        .insert(members)
+        .values(newUser)
+        .returning({ id: members.id });
 
-      return await this.getById(insertId.insertId);
+      return await this.getById(result.id);
     } catch (error) {
       throw new Error(`Error creating member: ${(error as Error).message}`);
     }
@@ -46,12 +50,12 @@ export class MemberRepository implements IRepository<IMemberBase, IMember> {
     };
 
     try {
-      const [result] = await this.db
+      const result = await this.db
         .update(members)
         .set(updatedMember)
         .where(eq(members.id, id))
         .execute();
-      if (result.affectedRows > 0) {
+      if (result.rowCount) {
         return await this.getById(id);
       } else {
         throw new Error("Could not update member");
@@ -68,11 +72,11 @@ export class MemberRepository implements IRepository<IMemberBase, IMember> {
     }
 
     try {
-      const [result] = await this.db
+      const result = await this.db
         .delete(members)
         .where(eq(members.id, id))
         .execute();
-      if (result.affectedRows > 0) {
+      if (result.rowCount) {
         return memberToDelete;
       } else {
         throw new Error(`Member deletion failed`);
@@ -152,32 +156,6 @@ export class MemberRepository implements IRepository<IMemberBase, IMember> {
       return selectedMember as IMember;
     } catch (error) {
       throw error;
-    }
-  }
-
-  async addTokenEntry(memberId: number, refreshToken: string) {
-    try {
-      const tokenData = { memberId: BigInt(memberId), refreshToken, id: 0 };
-
-      const [result] = await this.db.insert(memberTokens).values(tokenData);
-      if (result.affectedRows > 0) {
-        return;
-      } else throw new Error("There was a problem while updating the member");
-    } catch (err) {
-      if (err instanceof Error) throw new Error(err.message);
-    }
-  }
-
-  async getMemberToken(memberId: number) {
-    try {
-      const [selectedTokens] = await this.db
-        .select()
-        .from(memberTokens)
-        .where(eq(members.id, memberId));
-      if (!selectedTokens) throw new Error("Token not found");
-      return selectedTokens;
-    } catch (err) {
-      if (err instanceof Error) throw new Error(err.message);
     }
   }
 }

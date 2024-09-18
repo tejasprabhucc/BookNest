@@ -19,25 +19,25 @@ const Create = () => {
     },
     {
       label: "Author",
-      type: "number",
+      type: "text",
       name: "author",
       placeholder: "Enter author name",
     },
     {
       label: "Publisher",
-      type: "password",
+      type: "text",
       name: "publisher",
       placeholder: "Enter publisher name",
     },
     {
       label: "ISBN",
-      type: "email",
+      type: "text",
       name: "isbnNo",
       placeholder: "Enter ISBN number",
     },
     {
       label: "Pages",
-      type: "text",
+      type: "number",
       name: "numOfPages",
       placeholder: "Enter number of copies",
     },
@@ -49,9 +49,15 @@ const Create = () => {
     },
     {
       label: "Total Copies",
-      type: "text",
+      type: "number",
       name: "totalNumOfCopies",
       placeholder: "Enter total number of copies",
+    },
+    {
+      label: "Price",
+      type: "number",
+      name: "price",
+      placeholder: "Enter book cost",
     },
   ];
 

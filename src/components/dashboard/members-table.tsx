@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/src/components/ui/table";
-import { books } from "@/src/orm/schema";
+import { books } from "@/src/drizzle/schema";
 import { EditButton, DeleteButton } from "@/src/components/ui/customButtons";
 
 const MembersTable = ({ members }: { members: IMember[] }) => {
