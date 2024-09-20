@@ -59,6 +59,11 @@ const Create = () => {
       name: "price",
       placeholder: "Enter book cost",
     },
+    {
+      label: "Image",
+      type: "uploadThing",
+      name: "coverImage",
+    },
   ];
 
   return (

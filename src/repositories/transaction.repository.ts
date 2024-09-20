@@ -14,7 +14,7 @@ import { BookRepository } from "@/src/repositories/book.repository";
 import { MemberRepository } from "@/src/repositories/member.repository";
 import { MySql2Database } from "drizzle-orm/mysql2";
 import { books, members, transactions } from "@/src/drizzle/schema";
-import { asc, count, desc, eq, sql } from "drizzle-orm";
+import { asc, count, desc, eq, ilike, sql } from "drizzle-orm";
 import { IPagedResponse, IPageRequest } from "@/src/lib/definitions";
 import { VercelPgDatabase } from "drizzle-orm/vercel-postgres";
 
@@ -200,8 +200,8 @@ export class TransactionRepository
       const search = `%${params.search.toLowerCase()}%`;
 
       searchWhereClause = sql`
-      (${transactions.bookId} LIKE ${search}
-       OR ${transactions.memberId} LIKE ${search})
+      (${transactions.bookId} ILIKE ${search}
+       OR ${transactions.memberId} ILIKE ${search})
     `;
     }
 
@@ -228,7 +228,7 @@ export class TransactionRepository
     let sortOrder = sql``;
     if (sortOptions) {
       const sortBy = transactions[sortOptions.sortBy] || transactions.id;
-      sortOrder = sortOptions.sortOrder === "asc" ? asc(sortBy) : desc(sortBy); // Assign directly
+      sortOrder = sortOptions.sortOrder === "asc" ? asc(sortBy) : desc(sortBy);
     }
 
     try {

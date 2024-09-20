@@ -37,10 +37,6 @@ export const authConfig = {
         nextUrl.pathname
       );
 
-      if (isOnPublicPage) {
-        return true;
-      }
-
       if (isLoggedIn) {
         if (isAdmin) {
           if (isOnAdminRoute) return true;
@@ -50,9 +46,12 @@ export const authConfig = {
           return Response.redirect(new URL("/dashboard", nextUrl));
         }
       } else {
+        if (isOnPublicPage) {
+          return true;
+        }
         return false;
       }
-      return true;
+      // return true;
     },
   },
   providers: [],

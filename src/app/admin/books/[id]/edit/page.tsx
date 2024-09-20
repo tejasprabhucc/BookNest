@@ -63,6 +63,11 @@ const EditBook = async ({ params }: { params: { id: string } }) => {
       placeholder: "Enter available number of copies",
     },
     {
+      label: "Image",
+      type: "uploadThing",
+      name: "coverImage",
+    },
+    {
       label: "Price",
       type: "number",
       name: "price",

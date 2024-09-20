@@ -110,7 +110,7 @@ export class MemberRepository implements IRepository<IMemberBase, IMember> {
 
     if (params.search) {
       const search = `%${params.search.toLowerCase()}%`;
-      searchWhereClause = sql`${members.name} LIKE ${search} OR ${members.email} LIKE ${search}`;
+      searchWhereClause = sql`${members.name} ILIKE ${search} OR ${members.email} ILIKE ${search}`;
     }
 
     try {

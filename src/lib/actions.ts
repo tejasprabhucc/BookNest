@@ -397,14 +397,17 @@ export async function authenticate(
   formData: FormData
 ) {
   try {
-    const session = await auth();
-    const userRole = session?.user.role;
+    const email = formData.get("email");
+    const password = formData.get("password");
     const result = await signIn("credentials", {
       redirect: false,
-      email: formData.get("email"),
-      password: formData.get("password"),
+      email: email,
+      password: password,
     });
-    if (userRole === "admin") {
+
+    const user = (await getUserByEmail(email as string)) as IMember;
+    console.log(user);
+    if (user.role === "admin") {
       redirect("/admin/books");
     }
     redirect("/dashboard");

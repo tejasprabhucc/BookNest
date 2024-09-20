@@ -31,7 +31,7 @@ export default async function RootLayout({
   return (
     <div className="flex flex-1 flex-col h-screen lg:flex-row">
       <Sidenav user={user} navOptions={navOptions} />
-      <div className="flex flex-col flex-1 ">
+      <div className="flex flex-col flex-1 overflow-y-auto">
         {children}
         <Toaster />
       </div>
