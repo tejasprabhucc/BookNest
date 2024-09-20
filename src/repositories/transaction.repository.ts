@@ -13,9 +13,10 @@ import {
 import { BookRepository } from "@/src/repositories/book.repository";
 import { MemberRepository } from "@/src/repositories/member.repository";
 import { MySql2Database } from "drizzle-orm/mysql2";
-import { books, members, transactions } from "@/src/orm/schema";
-import { and, asc, count, desc, eq, or, param, sql } from "drizzle-orm";
+import { books, members, transactions } from "@/src/drizzle/schema";
+import { asc, count, desc, eq, ilike, sql } from "drizzle-orm";
 import { IPagedResponse, IPageRequest } from "@/src/lib/definitions";
+import { VercelPgDatabase } from "drizzle-orm/vercel-postgres";
 
 export interface ITransactionDetails {
   id: number;
@@ -33,7 +34,7 @@ export class TransactionRepository
   private bookRepo: BookRepository;
   private memberRepo: MemberRepository;
 
-  constructor(private readonly db: MySql2Database<Record<string, never>>) {
+  constructor(private readonly db: VercelPgDatabase<Record<string, unknown>>) {
     this.bookRepo = new BookRepository(this.db);
     this.memberRepo = new MemberRepository(this.db);
   }
@@ -47,19 +48,17 @@ export class TransactionRepository
   async create(data: ITransactionBase): Promise<ITransaction> {
     const validatedData = TransactionBaseSchema.parse(data);
     try {
-      const newTransaction: ITransaction = {
-        ...validatedData,
-        bookStatus: "pending",
-        dateOfIssue: null,
-        dueDate: null,
-        id: 0,
-      };
-
-      const [insertId] = await this.db
+      const [result] = await this.db
         .insert(transactions)
-        .values(newTransaction);
+        .values({
+          ...validatedData,
+          bookStatus: "pending",
+          dateOfIssue: null,
+          dueDate: null,
+        })
+        .returning({ id: books.id });
 
-      return await this.getById(insertId.insertId);
+      return await this.getById(result.id);
     } catch (error) {
       throw new Error(
         `Error creating transaction: ${(error as Error).message}`
@@ -104,7 +103,7 @@ export class TransactionRepository
           .where(eq(transactions.id, id))
           .execute();
 
-        const [bookUpdated] = await tx
+        const bookUpdated = await tx
           .update(books)
           .set({
             ...book,
@@ -113,7 +112,7 @@ export class TransactionRepository
           .where(eq(books.id, book.id))
           .execute();
 
-        if (bookUpdated.affectedRows === 0) {
+        if (bookUpdated.rowCount === 0) {
           throw new Error(`Couldn't update book ${book.id} ${book.title}`);
         }
 
@@ -157,12 +156,11 @@ export class TransactionRepository
           .where(eq(transactions.id, id))
           .execute();
 
-        const [result] = await tx
+        const result = await tx
           .update(books)
           .set({ availableNumOfCopies: book.availableNumOfCopies + 1 })
           .where(eq(books.id, book.id))
           .execute();
-        console.log("Returning book 2");
 
         return updatedTransaction;
       });
@@ -202,8 +200,8 @@ export class TransactionRepository
       const search = `%${params.search.toLowerCase()}%`;
 
       searchWhereClause = sql`
-      (${transactions.bookId} LIKE ${search}
-       OR ${transactions.memberId} LIKE ${search})
+      (${transactions.bookId} ILIKE ${search}
+       OR ${transactions.memberId} ILIKE ${search})
     `;
     }
 
@@ -230,7 +228,7 @@ export class TransactionRepository
     let sortOrder = sql``;
     if (sortOptions) {
       const sortBy = transactions[sortOptions.sortBy] || transactions.id;
-      sortOrder = sortOptions.sortOrder === "asc" ? asc(sortBy) : desc(sortBy); // Assign directly
+      sortOrder = sortOptions.sortOrder === "asc" ? asc(sortBy) : desc(sortBy);
     }
 
     try {
@@ -259,6 +257,7 @@ export class TransactionRepository
         return {
           items: matchedTransactions.map((transaction) => ({
             ...transaction.transactions,
+            bookStatus: transaction.transactions.bookStatus as BookStatus,
             book: transaction.books as IBook,
             member: transaction.members as IMember,
           })),
@@ -280,13 +279,13 @@ export class TransactionRepository
     try {
       const validatedData = TransactionSchema.parse(data);
 
-      const [result] = await this.db
+      const result = await this.db
         .update(transactions)
         .set(validatedData)
         .where(eq(transactions.id, id))
         .execute();
 
-      if (result.affectedRows > 0) {
+      if (result.rowCount) {
         return await this.getById(id);
       } else {
         throw new Error("Could not update transaction");
@@ -304,11 +303,11 @@ export class TransactionRepository
         throw new Error("Transaction not found");
       }
 
-      const [result] = await this.db
+      const result = await this.db
         .delete(transactions)
         .where(eq(transactions.id, id))
         .execute();
-      if (result.affectedRows > 0) {
+      if (result.rowCount) {
         return transactionToDelete;
       } else {
         throw new Error(`Book deletion failed`);

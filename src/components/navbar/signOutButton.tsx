@@ -1,23 +1,23 @@
 import { signOut } from "@/src/auth";
-import { LogOutIcon } from "lucide-react";
+import { LogOut, LogOutIcon } from "lucide-react";
 import React from "react";
 import { Button } from "@/src/components/ui/button";
 
 const SignOutButton = () => {
   return (
     <form
+      className="m-0 p-0"
       action={async () => {
         "use server";
         await signOut({ redirectTo: "/login" });
       }}
     >
       <Button
-        variant={"destructive"}
+        variant="ghost"
         type="submit"
-        className="flex gap-2 px-2 text-sm"
+        className="p-2 text-sm text-red-500 text-left hover:text-black"
       >
-        <LogOutIcon className="mr-2 h-4 w-4" />
-        Sign Out
+        <LogOut className="mr-2 h-4 w-4" /> Logout
       </Button>
     </form>
   );

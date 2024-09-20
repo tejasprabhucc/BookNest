@@ -15,13 +15,12 @@ const DropDownOptions = ({ user }: { user: User }) => {
     <>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <Link href={`${pathname}/profile`}> Profile</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem>Language</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuSeparator className="mx-1 " />
+        <Link href={`${pathname}/profile`} className="mb-2">
+          <DropdownMenuItem>Profile</DropdownMenuItem>
+        </Link>
+        <DropdownMenuSeparator className="mx-1 opacity-25" />
+        <DropdownMenuItem className="m-0 p-0">
           <SignOutButton />
         </DropdownMenuItem>
       </DropdownMenuContent>

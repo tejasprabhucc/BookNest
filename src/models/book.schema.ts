@@ -18,7 +18,7 @@ export const BookSchemaBase = z.object({
     .min(3, { message: "Publisher name must be minimum 3 characters long." }),
   genre: z.string({ message: "Genre must be a string." }),
   isbnNo: z
-    .string()
+    .string({ message: "Invalid ISBN" })
     .min(13, { message: "ISBN number must be 13 characters long." })
     .max(13, { message: "ISBN number must be 13 characters long." }),
   numOfPages: z
@@ -29,7 +29,7 @@ export const BookSchemaBase = z.object({
     .number({ message: "Number of copies must be a number." })
     .int({ message: "Number of copies cannot be a decimal number." })
     .positive("Total number of copies must be a positive integer"),
-  coverImage: z.string(),
+  coverImage: z.string({ message: "Invalid url" }).optional().nullable(),
   price: z.number({ message: "Price should be a valid number." }),
 });
 
