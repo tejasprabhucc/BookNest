@@ -63,11 +63,6 @@ const EditBook = async ({ params }: { params: { id: string } }) => {
       placeholder: "Enter available number of copies",
     },
     {
-      label: "Image",
-      type: "uploadThing",
-      name: "coverImage",
-    },
-    {
       label: "Price",
       type: "number",
       name: "price",
@@ -77,7 +72,7 @@ const EditBook = async ({ params }: { params: { id: string } }) => {
 
   return (
     <>
-      <Card className="w-5/6 max-w-4xl mx-auto border-none shadow-none">
+      <Card className="w-5/6 max-w-2xl mx-auto border-none shadow-none">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">
             Update Book Details

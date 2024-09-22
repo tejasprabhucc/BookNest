@@ -9,7 +9,7 @@ const SignOutButton = () => {
       className="m-0 p-0"
       action={async () => {
         "use server";
-        await signOut({ redirectTo: "/login" });
+        await signOut({ redirectTo: "/" });
       }}
     >
       <Button

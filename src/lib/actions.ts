@@ -178,9 +178,27 @@ export async function editMember(prevState: any, formData: FormData) {
       address: formData.get("address") as string,
       password: oldData.password,
       role: oldData.role,
-      image: oldData.image,
+      image: (formData.get("image") as string) || oldData.image,
     };
     const response = await memberRepo.update(id, data);
+    if (!response) {
+      return { message: "Failed to update the profile." };
+    }
+    return { message: "Profile updated successfully!" };
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      console.log(err.flatten());
+      return { message: err.errors[0].message || "Invalid input" };
+    }
+    return { message: (err as Error).message };
+  }
+}
+
+export async function editProfilePicture(email: string, imageURL: string) {
+  try {
+    const userData = (await getUserByEmail(email)) as IMember;
+    const newData: IMember = { ...userData, image: imageURL };
+    const response = await memberRepo.update(userData.id, newData);
     if (!response) {
       return { message: "Failed to update the profile." };
     }
@@ -204,7 +222,7 @@ export async function createBook(prevState: any, formData: FormData) {
       isbnNo: formData.get("isbnNo") as string,
       numOfPages: Number(formData.get("numOfPages")),
       totalNumOfCopies: Number(formData.get("totalNumOfCopies")),
-      coverImage: formData.get("coverImage") as string,
+      coverImage: formData.get("image") as string,
       price: Number(formData.get("price")),
     };
 
@@ -266,7 +284,7 @@ export async function editBook(prevState: any, formData: FormData) {
       isbnNo: formData.get("isbnNo") as string,
       numOfPages: Number(formData.get("numOfPages")),
       totalNumOfCopies: Number(formData.get("totalNumOfCopies")),
-      coverImage: formData.get("coverImage") as string,
+      coverImage: formData.get("image") as string,
       price: Number(formData.get("price")),
     };
 

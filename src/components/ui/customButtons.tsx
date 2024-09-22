@@ -261,36 +261,6 @@ export const DeleteButton = ({ data }: { data: ItemType }) => {
 
   return (
     <>
-      {/* <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-          <Button variant="destructive" size="icon" color="red">
-            <TrashIcon className="h-4 w-4" />
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              Deleting {isBook(data) ? "book" : "member"}
-            </DialogTitle>
-            <DialogDescription className="flex flex-col gap-2">
-              <span className="text-md">
-                Are you sure you want to delete <b>&quot;{itemTitle}&quot;</b>?
-              </span>
-              <span className="flex items-center gap-1">
-                <TriangleAlert className="h-4 w-4" /> This action cannot be
-                undone.
-              </span>
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleDelete}>Delete</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog> */}
-
       <Button variant="destructive" size="icon" onClick={() => setIsOpen(true)}>
         <TrashIcon className="h-4 w-4" />
       </Button>

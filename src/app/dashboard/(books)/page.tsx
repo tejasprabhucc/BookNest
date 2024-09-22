@@ -74,7 +74,7 @@ const Books = async ({
   return (
     <main className=" flex flex-1 flex-col gap-2 overflow-y-auto p-4 px-8 ">
       <h1 className="text-3xl mb-3 font-serif lg:text-5xl">Books</h1>
-      <div className=" flex items-center justify-between">
+      <div className=" flex items-center justify-between flex-col md:flex-row">
         <Search placeholder="Enter a keyword..." />
         <SortControl sortOptions={sortOptions} />
       </div>
