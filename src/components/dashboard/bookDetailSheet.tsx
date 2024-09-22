@@ -50,7 +50,7 @@ const SideSheet = ({
       <div className="flex flex-col gap-6">
         <div className="relative w-full h-[250px]  rounded-lg overflow-hidden">
           <Image
-            src={bookCover}
+            src={book.coverImage || bookCover}
             layout="fill"
             objectFit="contain"
             alt={`Cover of ${book.title}`}

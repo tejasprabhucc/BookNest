@@ -14,7 +14,10 @@ import {
   DialogHeader,
   DialogFooter,
 } from "../ui/dialog";
-import { UploadButton } from "@/src/utils/uploadthing";
+import { UploadButton, UploadDropzone } from "@/src/utils/uploadthing";
+import { redirect } from "next/navigation";
+import { editMember, editProfilePicture } from "@/src/lib/actions";
+import Router from "next/router";
 
 const ProfileCard = ({ userData }: { userData: IMember }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,9 +35,10 @@ const ProfileCard = ({ userData }: { userData: IMember }) => {
     // You might want to show an error message to the user here
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
+    const result = await editProfilePicture(userData.email, imageUrl);
+    setImageUrl("");
     setIsOpen(false);
-    console.log("Confirming new profile image:", imageUrl);
   };
 
   return (
@@ -82,33 +86,27 @@ const ProfileCard = ({ userData }: { userData: IMember }) => {
                   />
                 ) : (
                   <>
-                    <UploadButton
+                    <UploadDropzone
                       endpoint="imageUploader"
                       onClientUploadComplete={handleUploadComplete}
                       onUploadError={handleUploadError}
-                      className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+                      appearance={{
+                        container:
+                          "flex flex-col items-center justify-center space-y-2 h-full",
+                        button: "bg-primary px-4 py-2 rounded-md",
+                      }}
+                      content={{
+                        uploadIcon: <FileImage color="gray" />,
+                        label: "Drag and drop an image here",
+                      }}
                     />
-                    <div className="flex flex-col items-center justify-center space-y-1 h-full">
-                      <FileImage color="gray" />
-                      <p className="text-gray-500">
-                        Drag and drop an image here
-                      </p>
-                      <p className="text-sm text-gray-400">or</p>
-                      <Button
-                        variant="outline"
-                        type="button"
-                        className="px-4 py-2 rounded-md"
-                      >
-                        Choose File
-                      </Button>
-                    </div>
                   </>
                 )}
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit" onClick={handleConfirm} disabled={!imageUrl}>
+            <Button onClick={handleConfirm} disabled={!imageUrl}>
               Confirm
             </Button>
           </DialogFooter>

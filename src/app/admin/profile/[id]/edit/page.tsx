@@ -44,11 +44,6 @@ const EditProfile = async ({ params }: { params: { id: string } }) => {
       name: "address",
       placeholder: "Enter your address",
     },
-    {
-      label: "Image",
-      type: "uploadThing",
-      name: "coverImage",
-    },
   ];
   return (
     <>

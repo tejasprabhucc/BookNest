@@ -1,9 +1,3 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/src/components/ui/avatar";
-import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
 import {
   Card,
@@ -11,33 +5,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/components/ui/card";
-import { CreateButton, EditButton } from "@/src/components/ui/customButtons";
 import {
   getUserByEmail,
-  getUserById,
   getUserSession,
   getUserTransactionSummary,
 } from "@/src/lib/actions";
 import { IMember } from "@/src/lib/definitions";
-import {
-  ArrowUpRight,
-  ArrowDownRight,
-  BookOpen,
-  Clock,
-  CalendarClock,
-  AlertCircle,
-  Mail,
-  MapPin,
-  Phone,
-  Calendar,
-  Camera,
-  Edit,
-  LogOut,
-} from "lucide-react";
-import Image from "next/image";
+import { Edit } from "lucide-react";
 import { redirect } from "next/navigation";
-import { UploadButton } from "@/src/utils/uploadthing";
-import ImageUploadButton from "@/src/components/form/ImageUploadButton";
 import LibraryStats from "@/src/components/profile/library-stats";
 import {
   Tabs,
@@ -57,18 +32,9 @@ export default async function Profile() {
     redirect("/login");
   }
   const userEmail = session.email;
-  const image = session.image;
 
   const userData = (await getUserByEmail(userEmail)) as IMember;
   const userTransactionSummary = await getUserTransactionSummary(userData.id);
-
-  function handleEditProfile(): void {
-    throw new Error("Function not implemented.");
-  }
-
-  function handleLogout(): void {
-    throw new Error("Function not implemented.");
-  }
 
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">

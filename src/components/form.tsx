@@ -5,11 +5,12 @@ import clsx from "clsx";
 import { Input } from "@/src/components/ui/input";
 import { Button } from "@/src/components/ui/button";
 import Link from "next/link";
-import { toast } from "./hooks/use-toast";
-import { redirect } from "next/navigation";
+import { toast, useToast } from "./hooks/use-toast";
+import { redirect, useRouter } from "next/navigation";
 import { UploadButton, UploadDropzone } from "@/src/utils/uploadthing";
-import { FileImage } from "lucide-react";
+import { FileImage, Loader2 } from "lucide-react";
 import Image from "next/image";
+import { CardContent, CardFooter } from "./ui/card";
 
 type FormFieldNames = keyof IBook | keyof IMember;
 
@@ -44,10 +45,9 @@ const Form = ({
 }: FormProps) => {
   const initialState = { message: "" };
   const [state, formAction] = useActionState(action, initialState);
-  const [imageURL, setImageURL] =
-    useState();
-    // "https://utfs.io/f/MOsMgVcTj5RzWaFm0yVUBhIkNwtGCrJAvqc3fWm1VSME0z2O"
-
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   let typedData: IBook | IMember | null = null;
 
   if (data && dataType === "book") {
@@ -56,68 +56,72 @@ const Form = ({
     typedData = data as IMember;
   }
 
-  if (state.message.toLocaleLowerCase().includes("success")) {
+  const [imageURL, setImageURL] = useState<string>();
+
+  const handleUploadComplete = (res: any) => {
+    console.log("Uploaded image:", res);
+    if (res && res[0] && res[0].url) {
+      setImageURL(res[0].url);
+    }
+  };
+
+  const handleUploadError = (error: Error) => {
     toast({
-      title: state.message,
+      title: "Error",
+      description: "Failed to upload image. Please try again.",
+      variant: "destructive",
     });
-    redirect(redirectUrl);
-  }
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    const formData = new FormData(event.currentTarget);
+    formData.append("image", imageURL || "");
+
+    try {
+      const result = await action({}, formData);
+      if (result.message.toLowerCase().includes("success")) {
+        toast({
+          title: "Success",
+          description: result.message,
+        });
+        router.push(redirectUrl);
+      } else {
+        toast({
+          title: "Error",
+          description: result.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <form
-      action={formAction}
-      className={clsx(
-        fields.length > 5 ? "md:grid-cols-2" : "w-2/3",
-        "grid grid-cols-1 gap-4 p-6 bg-white rounded-lg shadow-lg"
-      )}
-    >
-      {type === "edit" && typedData && (
-        <input type="hidden" name="id" value={typedData.id} />
-      )}
+    <form onSubmit={handleSubmit}>
+      <CardContent className="space-y-4">
+        {type === "edit" && typedData && (
+          <input type="hidden" name="id" value={typedData.id} />
+        )}
 
-      {fields.map((field) => (
-        <div key={field.name as string} className="grid gap-1">
-          <label htmlFor={field.name as string} className="text-sm font-medium">
-            {field.label}
-          </label>
-          {field.type === "uploadThing" ? (
-            <div className="relative w-full h-40 border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
-              {imageURL ? (
-                <Image
-                  src={imageURL}
-                  width={150}
-                  height={200}
-                  alt="Book Cover Preview"
-                  className=" w-full h-full object-contain"
-                />
-              ) : (
-                <>
-                  <UploadDropzone
-                    endpoint="imageUploader"
-                    onClientUploadComplete={(res) => {
-                      console.log("Uploaded image:", res);
-                    }}
-                    onUploadError={(error) => {
-                      console.error("Error uploading image:", error);
-                    }}
-                    className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                  <div className="flex flex-col items-center justify-center space-y-1 h-full">
-                    <FileImage color="gray" />
-                    <p className="text-gray-500">Drag and drop an image here</p>
-                    <p className="text-sm text-gray-400">or</p>
-                    <Button
-                      variant={"outline"}
-                      type="button"
-                      className="px-4 py-2 rounded-md"
-                    >
-                      Choose File
-                    </Button>
-                  </div>
-                </>
-              )}
-            </div>
-          ) : (
+        {fields.map((field) => (
+          <div key={field.name as string} className="space-y-2">
+            {field.type !== "hidden" && (
+              <label
+                htmlFor={field.name as string}
+                className="text-sm font-medium"
+              >
+                {field.label}
+              </label>
+            )}
             <Input
               id={field.name as string}
               name={field.name as string}
@@ -128,41 +132,238 @@ const Form = ({
                   : ""
               }
               placeholder={field.placeholder}
-              className="border-gray-300 rounded-md"
+              className="w-full"
               required
             />
-          )}
+          </div>
+        ))}
+
+        <Input type="hidden" name="image" value={imageURL} />
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Image</label>
+          <div className="flex flex-col items-center space-y-4">
+            <UploadButton
+              endpoint="imageUploader"
+              onClientUploadComplete={handleUploadComplete}
+              onUploadError={handleUploadError}
+              appearance={{
+                button:
+                  "bg-primary text-primary-foreground hover:bg-primary/90",
+              }}
+            />
+            {imageURL && (
+              <div className="relative w-full h-64">
+                <Image
+                  src={imageURL}
+                  alt="Preview"
+                  fill
+                  className="object-contain rounded-md"
+                />
+              </div>
+            )}
+          </div>
         </div>
-      ))}
-      <Input type="hidden" name="image" value={imageURL} />
-
-      <div id="error" aria-live="polite" aria-atomic="true">
-        {state?.message && !state.message.toLowerCase().includes("success") && (
-          <p className="mt-2 text-sm text-red-500 min-h-4 block">
-            {state.message}
-          </p>
-        )}
-      </div>
-
-      <div className="flex gap-4 justify-start">
-        <button
-          type="submit"
-          className="bg-primary text-white py-2 px-4 rounded-md shadow-sm border hover:bg-secondary hover:border-primary hover:text-primary transition duration-150"
-        >
-          {type === "create" ? `Create ${dataType}` : `Update ${dataType}`}
-        </button>
-
+      </CardContent>
+      <CardFooter className="flex justify-between">
         <Link href={redirectUrl}>
-          <Button
-            variant="outline"
-            className=" py-2 px-4 rounded-md shadow-sm border hover:bg-secondary hover:border-primary hover:text-primary transition duration-150"
-          >
-            {"Cancel"}
-          </Button>
+          <Button variant="outline">Cancel</Button>
         </Link>
-      </div>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {type === "create" ? `Create ${dataType}` : `Update ${dataType}`}
+        </Button>
+      </CardFooter>
     </form>
   );
 };
 
 export default Form;
+
+// "use client";
+
+// import React, { useActionState, useState } from "react";
+// import { useRouter } from "next/navigation";
+// import Image from "next/image";
+// import Link from "next/link";
+// import { IBook, IMember } from "@/src/lib/definitions";
+// import { Input } from "@/src/components/ui/input";
+// import { Button } from "@/src/components/ui/button";
+// import {
+//   Card,
+//   CardContent,
+//   CardFooter,
+//   CardHeader,
+//   CardTitle,
+// } from "@/src/components/ui/card";
+// import { UploadButton } from "@/src/utils/uploadthing";
+// import { FileImage, Loader2 } from "lucide-react";
+// import { useToast } from "./hooks/use-toast";
+
+// type FormFieldNames = keyof IBook | keyof IMember;
+
+// export interface FormField {
+//   label: string;
+//   type: string;
+//   name: FormFieldNames;
+//   placeholder?: string;
+// }
+
+// interface FormProps {
+//   type: "create" | "edit";
+//   fields: FormField[];
+//   action: (prevState: any, formData: FormData) => Promise<{ message: string }>;
+//   data?: IBook | IMember;
+//   dataType: "book" | "member";
+//   redirectUrl: string;
+// }
+
+// const EnhancedForm = ({
+//   type,
+//   fields,
+//   action,
+//   data,
+//   dataType,
+//   redirectUrl,
+// }: FormProps) => {
+//   const router = useRouter();
+//   const { toast } = useToast();
+//   const [imageURL, setImageURL] = useState<string>();
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+
+//   const initialState = { message: "" };
+//   const [state, formAction] = useActionState(action, initialState);
+
+//   let typedData: IBook | IMember | null = null;
+
+//   if (data && dataType === "book") {
+//     typedData = data as IBook;
+//   } else if (data && dataType === "member") {
+//     typedData = data as IMember;
+//   }
+
+//   const handleUploadComplete = (res: any) => {
+//     console.log("Uploaded image:", res);
+//     if (res && res[0] && res[0].url) {
+//       setImageURL(res[0].url);
+//     }
+//   };
+
+//   const handleUploadError = (error: Error) => {
+//     console.error("Error uploading image:", error);
+//     toast({
+//       title: "Error",
+//       description: "Failed to upload image. Please try again.",
+//       variant: "destructive",
+//     });
+//   };
+
+//   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+//     event.preventDefault();
+//     setIsSubmitting(true);
+//     const formData = new FormData(event.currentTarget);
+//     formData.append("image", imageURL || "");
+
+//     try {
+//       const result = await action({}, formData);
+//       if (result.message.toLowerCase().includes("success")) {
+//         toast({
+//           title: "Success",
+//           description: result.message,
+//         });
+//         router.push(redirectUrl);
+//       } else {
+//         toast({
+//           title: "Error",
+//           description: result.message,
+//           variant: "destructive",
+//         });
+//       }
+//     } catch (error) {
+//       toast({
+//         title: "Error",
+//         description: "An unexpected error occurred",
+//         variant: "destructive",
+//       });
+//     } finally {
+//       setIsSubmitting(false);
+//     }
+//   };
+
+//   return (
+//     <Card className="w-full max-w-2xl mx-auto">
+//       <CardHeader>
+//         <CardTitle>
+//           {type === "create" ? `Create ${dataType}` : `Edit ${dataType}`}
+//         </CardTitle>
+//       </CardHeader>
+//       <form onSubmit={handleSubmit}>
+//         <CardContent className="space-y-4">
+//           {type === "edit" && typedData && (
+//             <input type="hidden" name="id" value={typedData.id} />
+//           )}
+
+//           {fields.map((field) => (
+//             <div key={field.name as string} className="space-y-2">
+//               <label
+//                 htmlFor={field.name as string}
+//                 className="text-sm font-medium"
+//               >
+//                 {field.label}
+//               </label>
+//               <Input
+//                 id={field.name as string}
+//                 name={field.name as string}
+//                 type={field.type}
+//                 defaultValue={
+//                   type === "edit" && typedData
+//                     ? typedData[field.name as keyof typeof typedData]
+//                     : ""
+//                 }
+//                 placeholder={field.placeholder}
+//                 className="w-full"
+//                 required
+//               />
+//             </div>
+//           ))}
+
+//           <div className="space-y-2">
+//             <label className="text-sm font-medium">Image</label>
+//             <div className="flex flex-col items-center space-y-4">
+//               <UploadButton
+//                 endpoint="imageUploader"
+//                 onClientUploadComplete={handleUploadComplete}
+//                 onUploadError={handleUploadError}
+//                 appearance={{
+//                   button:
+//                     "bg-primary text-primary-foreground hover:bg-primary/90",
+//                 }}
+//               />
+//               {imageURL && (
+//                 <div className="relative w-full h-64">
+//                   <Image
+//                     src={imageURL}
+//                     alt="Preview"
+//                     fill
+//                     className="object-contain rounded-md"
+//                   />
+//                 </div>
+//               )}
+//             </div>
+//           </div>
+//         </CardContent>
+//         <CardFooter className="flex justify-between">
+//           <Link href={redirectUrl}>
+//             <Button variant="outline">Cancel</Button>
+//           </Link>
+//           <Button type="submit" disabled={isSubmitting}>
+//             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+//             {type === "create" ? `Create ${dataType}` : `Update ${dataType}`}
+//           </Button>
+//         </CardFooter>
+//       </form>
+//     </Card>
+//   );
+// };
+
+// export default EnhancedForm;
