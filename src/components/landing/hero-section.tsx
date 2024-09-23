@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 const HeroSection = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -11,6 +12,8 @@ const HeroSection = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+  const t = useTranslations("LandingPage");
+
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
       <div className="container mx-auto px-4 z-10">
@@ -20,16 +23,13 @@ const HeroSection = () => {
           transition={{ duration: 0.8 }}
           className="text-center"
         >
-          <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            Welcome to BookNest
-          </h1>
+          <h1 className="text-5xl md:text-7xl font-bold mb-6">{t("title")}</h1>
           <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">
-            Discover a world of knowledge at your fingertips. Borrow, read, and
-            explore with our extensive digital library.
+            {t("description")}
           </p>
-          <Button size="lg" asChild>
+          <Button className="rounded-lg" size="lg" asChild>
             <Link href="/login">
-              <span>{"Get Started"}</span>
+              <span>{t("button")}</span>
             </Link>
           </Button>
         </motion.div>
