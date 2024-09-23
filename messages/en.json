@@ -49,6 +49,7 @@
     "button": "Login",
     "buttonLoading": "Logging in...",
     "googleButton": "Continue with Google",
+    "or": "Or",
     "help": "Don't have an account?",
     "link": "Signup"
   },
@@ -63,6 +64,7 @@
     "confirmPassword": "Confirm Password",
     "button": "Sign up",
     "buttonLoading": "Signing up...",
+    "or": "Or",
     "googleButton": "Continue with Google",
     "help": "Already have an account?",
     "link": "Login"
