@@ -104,6 +104,9 @@ importers:
       react:
         specifier: 19.0.0-rc-1eaccd82-20240816
         version: 19.0.0-rc-1eaccd82-20240816
+      react-calendly:
+        specifier: ^4.3.1
+        version: 4.3.1(react-dom@19.0.0-rc-1eaccd82-20240816(react@19.0.0-rc-1eaccd82-20240816))(react@19.0.0-rc-1eaccd82-20240816)
       react-dom:
         specifier: 19.0.0-rc-1eaccd82-20240816
         version: 19.0.0-rc-1eaccd82-20240816(react@19.0.0-rc-1eaccd82-20240816)
@@ -3504,6 +3507,13 @@ packages:
   raw-body@2.4.1:
     resolution: {integrity: sha512-9WmIKF6mkvA0SLmA2Knm9+qj89e+j1zqgyn8aXGd7+nAduPoqgI9lO57SAZNn/Byzo5P7JhXTyg9PzaJbH73bA==}
     engines: {node: '>= 0.8'}
+
+  react-calendly@4.3.1:
+    resolution: {integrity: sha512-poyUH3NOUOlsotr8ho5WzbsbPuRAppaY+Jvu+C/PkwTP6WT807pNFI8+HrbbuRknXZbd75zpzysOJQvcu3P8Pg==}
+    engines: {node: '>=8', npm: '>=5'}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
 
   react-dom@19.0.0-rc-1eaccd82-20240816:
     resolution: {integrity: sha512-8HXIHjY9tQUU4Hf5e/QNwVbNLXO+QJkjyCentxKNNc2vn/UjWc5lL782ZTkqII7xBzA/DhC6UdJi83Vr24cDIQ==}
@@ -7580,6 +7590,11 @@ snapshots:
       http-errors: 1.7.3
       iconv-lite: 0.4.24
       unpipe: 1.0.0
+
+  react-calendly@4.3.1(react-dom@19.0.0-rc-1eaccd82-20240816(react@19.0.0-rc-1eaccd82-20240816))(react@19.0.0-rc-1eaccd82-20240816):
+    dependencies:
+      react: 19.0.0-rc-1eaccd82-20240816
+      react-dom: 19.0.0-rc-1eaccd82-20240816(react@19.0.0-rc-1eaccd82-20240816)
 
   react-dom@19.0.0-rc-1eaccd82-20240816(react@19.0.0-rc-1eaccd82-20240816):
     dependencies:

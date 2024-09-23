@@ -1,4 +1,9 @@
 {
+  "LocaleSwitcher": {
+    "en": "English",
+    "kn": "ಕನ್ನಡ",
+    "label": "Language"
+  },
   "LandingPage": {
     "title": "Welcome to BookNest",
     "description": "Discover a world of knowledge at your fingertips. Borrow, read, and explore with our extensive digital library.",
@@ -49,6 +54,7 @@
     "button": "Login",
     "buttonLoading": "Logging in...",
     "googleButton": "Continue with Google",
+    "or": "Or",
     "help": "Don't have an account?",
     "link": "Signup"
   },
@@ -63,8 +69,23 @@
     "confirmPassword": "Confirm Password",
     "button": "Sign up",
     "buttonLoading": "Signing up...",
+    "or": "Or",
     "googleButton": "Continue with Google",
     "help": "Already have an account?",
     "link": "Login"
+  },
+  "Books": {
+    "title": "Books",
+    "sortOptions": {
+      "author": "Author",
+      "title": "title",
+      "publisher": "Publisher"
+    }
+  },
+  "MyBooks": {
+    "title": "My Books"
+  },
+  "MyRequests": {
+    "title": "My Requests"
   }
 }

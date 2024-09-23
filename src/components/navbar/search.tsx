@@ -20,10 +20,10 @@ export default function Search({ placeholder }: { placeholder: string }) {
   }, 300);
 
   return (
-    <div className="relative w-full my-3 flex flex-1 flex-shrink-0 md:max-w-md">
+    <div className="relative w-full my-3 flex flex-1 bg-background flex-shrink-0 md:max-w-md">
       <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
       <input
-        className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+        className="bg-background peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
         placeholder={placeholder}
         onChange={(e) => {
           handleSearch(e.target.value);

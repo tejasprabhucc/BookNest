@@ -71,3 +71,33 @@ export const transactions = pgTable("transactions", {
   dateOfIssue: varchar("dateOfIssue", { length: 25 }),
   dueDate: varchar("dueDate", { length: 25 }),
 });
+
+export const professors = pgTable(
+  "professors",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name", { length: 35 }).notNull(),
+    email: varchar("email", { length: 255 }).notNull(),
+    department: varchar("department", { length: 255 }).notNull(),
+    shortBio: varchar("shortBio", { length: 255 }),
+    calendlyLink: varchar("calendlyLink", { length: 255 }).notNull(),
+  },
+  (professors) => {
+    return {
+      uniqueEmailIdx: uniqueIndex("unique_prof_email_idx").on(professors.email),
+    };
+  }
+);
+
+// Appointments Table
+export const appointments = pgTable("appointments", {
+  id: serial("id").primaryKey(),
+  memberId: bigint("memberId", { mode: "bigint" })
+    .references(() => members.id, { onDelete: "cascade" })
+    .notNull(),
+  professorId: bigint("professorId", { mode: "bigint" })
+    .references(() => professors.id, { onDelete: "cascade" })
+    .notNull(),
+  googleMeetLink: varchar("googleMeetLink", { length: 255 }).notNull(),
+  appointmentDate: varchar("appointmentDate", { length: 15 }).notNull(),
+});

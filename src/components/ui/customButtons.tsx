@@ -14,6 +14,7 @@ import {
   acceptBookRequest,
   deleteBook,
   deleteMember,
+  deleteProfessor,
   deleteTransaction,
   rejectBookRequest,
   requestBook,
@@ -33,6 +34,7 @@ import { toast } from "../hooks/use-toast";
 import {
   IBook,
   IMember,
+  IProfessor,
   ITransaction,
   ITransactionBase,
 } from "@/src/lib/definitions";
@@ -40,7 +42,7 @@ import { revalidatePath } from "next/cache";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import ConfirmDialog from "./ConfimDialog";
 
-type ItemType = IBook | IMember | ITransaction;
+type ItemType = IBook | IMember | ITransaction | IProfessor;
 
 export const CreateButton = ({
   url,
@@ -233,9 +235,15 @@ export const DeleteButton = ({ data }: { data: ItemType }) => {
     return (data as IMember).name !== undefined;
   }
 
+  function isProfessor(data: ItemType): data is IProfessor {
+    return (data as IProfessor).calendlyLink !== undefined;
+  }
+
   const itemTitle = isBook(data)
     ? data.title
     : isMember(data)
+    ? data.name
+    : isProfessor(data)
     ? data.name
     : `Transaction ${data.id}`;
 
@@ -244,7 +252,7 @@ export const DeleteButton = ({ data }: { data: ItemType }) => {
       const result = isBook(data)
         ? await deleteBook(data.id)
         : isMember(data)
-        ? await deleteMember(data.id)
+        ? await deleteMember(data.id) : isProfessor(data) ? await deleteProfessor(data.id) 
         : await deleteTransaction(data.id);
       toast({
         title: result.message,
