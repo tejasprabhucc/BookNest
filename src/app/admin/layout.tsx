@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Sidenav from "@/src/components/navbar/sidenav";
 import { Toaster } from "@/src/components/ui/toaster";
 import { INavOption } from "@/src/lib/definitions";
-import { Book, BookPlus, ArrowLeftRight, Users } from "lucide-react";
+import { Book, BookPlus, ArrowLeftRight, Users, Clock } from "lucide-react";
 import { getUserSession } from "@/src/lib/actions";
 import { redirect } from "next/navigation";
 
@@ -21,6 +21,7 @@ export default async function RootLayout({
     { label: "Requests", url: "/admin/requests/", icon: BookPlus },
     { label: "Members", url: "/admin/members", icon: Users },
     { label: "Transactions", url: "/admin/transactions", icon: ArrowLeftRight },
+    { label: "Books Due", url: "/admin/booksDue", icon: Clock },
   ];
 
   const user = await getUserSession();

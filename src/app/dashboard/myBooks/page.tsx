@@ -86,7 +86,7 @@ const MyBooks = async ({
       ) : (
         <p>No books found.</p>
       )}
-      <div className="flex justify-center align-middle m-auto my-1">
+      {/* <div className="flex justify-center align-middle m-auto my-1">
         {books.length > 0 ? (
           <PaginationControl
             currentPage={currentPage}
@@ -95,7 +95,7 @@ const MyBooks = async ({
         ) : (
           ""
         )}
-      </div>
+      </div> */}
     </main>
   );
 };

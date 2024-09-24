@@ -79,9 +79,9 @@ export interface IPageRequest {
   limit: number;
 }
 
-export type FilterOptions<Model> = {
+export type FilterOptions<Model> = Partial<{
   [Property in keyof Model]: Partial<Model[Property]>;
-};
+}>;
 
 export type SortOptions<Model> = {
   sortBy: keyof Model;

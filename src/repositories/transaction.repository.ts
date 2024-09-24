@@ -90,10 +90,10 @@ export class TransactionRepository
           memberId: BigInt(transaction.memberId),
           bookId: BigInt(transaction.bookId),
           bookStatus: "issued",
-          dateOfIssue: new Date().toDateString(),
-          dueDate: new Date(
-            new Date().setDate(new Date().getDate() + 7)
-          ).toDateString(),
+          dateOfIssue: new Date().toDateString().split("T")[0],
+          dueDate: new Date(new Date().setDate(new Date().getDate() + 7))
+            .toISOString()
+            .split("T")[0],
           id: transaction.id,
         };
 
@@ -193,7 +193,7 @@ export class TransactionRepository
       sortBy: keyof ITransaction;
       sortOrder: "asc" | "desc";
     },
-    filterOptions?: FilterOptions<ITransactionDetails>
+    filterOptions?: FilterOptions<ITransaction>
   ): Promise<IPagedResponse<ITransactionDetails> | undefined> {
     let searchWhereClause = sql`1 = 1`;
     if (params.search) {
@@ -222,7 +222,7 @@ export class TransactionRepository
     // }
 
     if (memberId) {
-      searchWhereClause = sql`${searchWhereClause} AND ${transactions.memberId} = ${memberId}`;
+      searchWhereClause = sql`${searchWhereClause} AND ${transactions.memberId} = ${memberId} AND ${transactions.bookStatus} = 'issued'`;
     }
 
     let sortOrder = sql``;
@@ -269,6 +269,60 @@ export class TransactionRepository
         };
       } else {
         throw new Error("No transactions found matching the criteria");
+      }
+    } catch (e) {
+      throw new Error((e as Error).message);
+    }
+  }
+
+  async getDueBooks(params: IPageRequest, memberId?: bigint) {
+    // Initialize the searchWhereClause to filter only "issued" books
+    let searchWhereClause = sql`${transactions.bookStatus} = 'issued'`;
+
+    // Filter by memberId if provided
+    if (memberId) {
+      searchWhereClause = sql`${searchWhereClause} AND ${transactions.memberId} = ${memberId}`;
+    }
+    // let sortOrder = sql`ORDER BY ${transactions.dueDate} DESC`;
+
+    try {
+      const matchedTransactions = await this.db
+        .select()
+        .from(transactions)
+        .leftJoin(books, eq(transactions.bookId, books.id))
+        .leftJoin(members, eq(transactions.memberId, members.id))
+        .where(searchWhereClause)
+        .offset(params.offset)
+        .limit(params.limit)
+        // .orderBy(sortOrder)
+        .execute();
+
+      if (matchedTransactions.length > 0) {
+        const [totalMatchedTransactions] = await this.db
+          .select({
+            count: count(),
+          })
+          .from(transactions)
+          .leftJoin(books, eq(transactions.bookId, books.id))
+          .leftJoin(members, eq(transactions.memberId, members.id))
+          .where(searchWhereClause)
+          .execute();
+
+        return {
+          items: matchedTransactions.map((transaction) => ({
+            ...transaction.transactions,
+            bookStatus: transaction.transactions.bookStatus as BookStatus,
+            book: transaction.books as IBook,
+            member: transaction.members as IMember,
+          })),
+          pagination: {
+            offset: params.offset,
+            limit: params.limit,
+            total: totalMatchedTransactions.count,
+          },
+        };
+      } else {
+        throw new Error("/No transactions found matching the criteria.");
       }
     } catch (e) {
       throw new Error((e as Error).message);
