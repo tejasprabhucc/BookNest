@@ -308,14 +308,31 @@ export async function editBook(prevState: any, formData: FormData) {
 
 export async function fetchTransactions(
   params: IPageRequest,
-  sortOptions: SortOptions<ITransaction>
+  sortOptions: SortOptions<ITransaction>,
+  filterOptions?: FilterOptions<ITransaction>
 ) {
   try {
     return await transactionRepo.listTransactionDetails(
       params,
       undefined,
-      sortOptions
+      sortOptions,
+      filterOptions
     );
+  } catch (err) {
+    return { message: (err as Error).message };
+  }
+}
+
+export async function fetchDueTransactions(
+  params: IPageRequest,
+  memberId?: number
+) {
+  try {
+    if (memberId) {
+      return await transactionRepo.getDueBooks(params, BigInt(memberId));
+    } else {
+      return await transactionRepo.getDueBooks(params);
+    }
   } catch (err) {
     return { message: (err as Error).message };
   }

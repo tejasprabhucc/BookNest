@@ -1,0 +1,77 @@
+{
+  "LocaleSwitcher": {
+    "en": "English",
+    "kn": "ಕನ್ನಡ",
+    "label": "Language"
+  },
+  "LandingPage": {
+    "title": "Welcome to BookNest",
+    "description": "Discover a world of knowledge at your fingertips. Borrow, read, and explore with our extensive digital library.",
+    "button": "GetStarted",
+    "logIn": "Log In",
+    "signUp": "Sign Up",
+    "language": "Language",
+    "features": {
+      "title": "How It Works",
+      "card1": {
+        "title": "Request a Book",
+        "description": "Browse our vast collection and request the book you want to read."
+      },
+      "card2": {
+        "title": "Enjoy for 7 Days",
+        "description": "Once issued, you have a full week to immerse yourself in your chosen book."
+      },
+      "card3": {
+        "title": "Return and Repeat",
+        "description": "Return the book and start the journey again with a new title."
+      }
+    },
+    "cta": {
+      "title": "Ready to Start Reading?",
+      "description": "Join BookNest today and unlock a world of literary adventures.",
+      "button": "View All Books"
+    },
+    "footer": {
+      "quickLiks": {
+        "title": "Quick Links",
+        "links": ["About Us", "FAQ", "Terms of Service", "Privacy Policy"]
+      },
+      "contact": {
+        "title": "Contact",
+        "links": [
+          "Email: info@booknest.com",
+          "Phone: (123) 456-7890",
+          "Address: 123 Library St, Booktown,BT 12345"
+        ]
+      }
+    }
+  },
+  "Login": {
+    "title": "Login",
+    "description": "Enter your email and password to access your account.",
+    "email": "Email",
+    "password": "Password",
+    "button": "Login",
+    "buttonLoading": "Logging in...",
+    "googleButton": "Continue with Google",
+    "or": "Or",
+    "help": "Don't have an account?",
+    "link": "Signup"
+  },
+  "Signup": {
+    "title": "Create an account",
+    "description": "Enter your details to register.",
+    "name": "Name",
+    "age": "Age",
+    "phoneNumber": "Phone",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "button": "Sign up",
+    "buttonLoading": "Signing up...",
+    "or": "Or",
+    "googleButton": "Continue with Google",
+    "help": "Already have an account?",
+    "link": "Login"
+  }
+}

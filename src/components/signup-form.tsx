@@ -6,6 +6,7 @@ import { createUser } from "@/src/lib/actions";
 import { IMemberBase } from "@/src/lib/definitions";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
+import { useTranslations } from "next-intl";
 
 const SignupForm = () => {
   const router = useRouter();
@@ -64,11 +65,13 @@ const SignupForm = () => {
     }
   };
 
+  const t = useTranslations("Signup");
+
   return (
     <>
       <form onSubmit={handleSignup}>
         <div className="mt-2">
-          <Label htmlFor="name">Name</Label>
+          <Label htmlFor="name"> {t("name")}</Label>
           <Input
             id="name"
             type="text"
@@ -78,23 +81,23 @@ const SignupForm = () => {
           />
         </div>
         <div className="mt-2">
-          <Label htmlFor="age">Age</Label>
+          <Label htmlFor="age"> {t("age")}</Label>
           <Input id="age" type="number" name="age" required />
         </div>
         <div className="mt-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email"> {t("email")}</Label>
           <Input id="email" type="email" name="email" required />
         </div>
         <div className="mt-2">
-          <Label htmlFor="phone">Phone Number</Label>
+          <Label htmlFor="phone"> {t("phoneNumber")}</Label>
           <Input id="phone" type="number" name="phone" required />
         </div>
         <div className="mt-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password"> {t("password")}</Label>
           <Input id="password" type="password" name="password" required />
         </div>
         <div className="mt-2">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <Label htmlFor="confirmPassword"> {t("confirmPassword")}</Label>
           <Input
             id="password"
             type="password"
@@ -115,7 +118,7 @@ const SignupForm = () => {
         </div>
 
         <Button type="submit" className="w-full mt-3" disabled={pending}>
-          {pending ? "Signing up..." : "Sign up"}
+          {pending ? t("buttonLoading") : t("button")}
         </Button>
       </form>
     </>

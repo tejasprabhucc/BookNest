@@ -17,10 +17,14 @@ import {
   Globe,
   Mountain,
 } from "lucide-react";
-import HeroSection from "../components/landing/hero-section";
-import BooksMarque from "../components/landing/books-marquee";
-import { fetchBooks } from "../lib/actions";
-import { IBook, IPagedResponse } from "../lib/definitions";
+import HeroSection from "@/src/components/landing/hero-section";
+import BooksMarque from "@/src/components/landing/books-marquee";
+import { fetchBooks } from "@/src/lib/actions";
+import { IBook, IPagedResponse } from "@/src/lib/definitions";
+import Features from "@/src/components/landing/features-section";
+import { getTranslations } from "next-intl/server";
+import LocaleSwitcher from "../components/localeSwitcher";
+import LocaleSwitcherSelect from "../components/localeSwitcherSelect";
 
 const LandingPage = async () => {
   // const { theme, setTheme } = useTheme();
@@ -35,7 +39,8 @@ const LandingPage = async () => {
       sortOrder: "asc",
     }
   )) as IPagedResponse<IBook>;
-  console.log("Books: ", books);
+
+  const t = await getTranslations("LandingPage");
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
@@ -48,11 +53,11 @@ const LandingPage = async () => {
               <span className="font-bold text-2xl">BookNest</span>
             </Link>
             <div className="flex items-center space-x-4">
-              <DropdownMenu>
+              {/* <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon">
                     <Globe className="h-5 w-5" />
-                    <span className="sr-only">Select language</span>
+                    <span className="sr-only">{t("language")}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -60,7 +65,8 @@ const LandingPage = async () => {
                   <DropdownMenuItem>Español</DropdownMenuItem>
                   <DropdownMenuItem>Français</DropdownMenuItem>
                 </DropdownMenuContent>
-              </DropdownMenu>
+              </DropdownMenu> */}
+              <LocaleSwitcher />
               <Button
                 variant="ghost"
                 size="icon"
@@ -71,10 +77,10 @@ const LandingPage = async () => {
                 <span className="sr-only">Toggle theme</span>
               </Button>
               <Button variant="outline" asChild>
-                <Link href="/login">Log In</Link>
+                <Link href="/login">{t("logIn")}</Link>
               </Button>
               <Button asChild>
-                <Link href="/signup">Sign Up</Link>
+                <Link href="/signup">{t("signUp")}</Link>
               </Button>
             </div>
           </div>
@@ -88,38 +94,15 @@ const LandingPage = async () => {
       <BooksMarque books={books.items} />
 
       {/* Features Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12">How It Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <FeatureCard
-              icon={<BookOpen className="h-12 w-12 text-primary" />}
-              title="Request a Book"
-              description="Browse our vast collection and request the book you want to read."
-            />
-            <FeatureCard
-              icon={<Clock className="h-12 w-12 text-primary" />}
-              title="Enjoy for 7 Days"
-              description="Once issued, you have a full week to immerse yourself in your chosen book."
-            />
-            <FeatureCard
-              icon={<RefreshCw className="h-12 w-12 text-primary" />}
-              title="Return and Repeat"
-              description="Return the book and start the journey again with a new title."
-            />
-          </div>
-        </div>
-      </section>
+      <Features />
 
       {/* CTA Section */}
       <section className="py-20 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6">Ready to Start Reading?</h2>
-          <p className="text-xl mb-8">
-            Join BookNest today and unlock a world of literary adventures.
-          </p>
+          <h2 className="text-4xl font-bold mb-6">{t("cta.title")}</h2>
+          <p className="text-xl mb-8">{t("cta.description")}</p>
           <Button size="lg" variant="secondary" asChild>
-            <Link href="/login">View All Books</Link>
+            <Link href="/login">{t("cta.button")}</Link>
           </Button>
         </div>
       </section>
@@ -207,25 +190,5 @@ const LandingPage = async () => {
     </div>
   );
 };
-
-function FeatureCard({
-  icon,
-  title,
-  description,
-}: {
-  icon: any;
-  title: any;
-  description: any;
-}) {
-  return (
-    <Card>
-      <CardContent className="flex flex-col items-center text-center p-6">
-        {icon}
-        <h3 className="text-xl font-semibold mt-4 mb-2">{title}</h3>
-        <p>{description}</p>
-      </CardContent>
-    </Card>
-  );
-}
 
 export default LandingPage;
