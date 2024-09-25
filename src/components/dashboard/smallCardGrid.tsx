@@ -29,7 +29,7 @@ const BooksGrid = ({
             className="flex flex-col justify-between bg-background shadow-lg rounded-lg overflow-hidden p-0 cursor-pointer transition-shadow hover:shadow-xl"
             onClick={() => setSelectedBook(book)}
           >
-            <div className="relative h-80">
+            <div className="relative h-36">
               <Image
                 src={book.coverImage || bookCover}
                 height={400}

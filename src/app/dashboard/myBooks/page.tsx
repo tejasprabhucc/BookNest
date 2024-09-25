@@ -17,6 +17,8 @@ import PaginationControl from "@/src/components/controls/pagination";
 import Search from "@/src/components/navbar/search";
 import SortControl from "@/src/components/controls/sortControl";
 import { ITransactionDetails } from "@/src/repositories/transaction.repository";
+import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
 const MyBooks = async ({
   searchParams,
@@ -72,17 +74,23 @@ const MyBooks = async ({
   } catch (error) {
     // console.error("Failed to fetch books:", error);
     // throw new Error("Something went wrong while fetching books.");
-    errorMessage = "No requests found.";
+    errorMessage = "No Books found.";
   }
+  const t = await getTranslations("MyBooks");
 
   return (
     <main className=" flex flex-1 flex-col gap-2 overflow-y-auto p-4 px-8 ">
-      <h1 className="text-3xl mb-3 font-serif lg:text-5xl">Books</h1>
+      <h1 className="text-3xl mb-3 font-serif lg:text-5xl">{t("title")}</h1>
       <div className=" flex items-center justify-between">
         <Search placeholder="Enter a keyword..." />
       </div>
       {books.length > 0 ? (
-        <BooksGrid books={books} userId={Number(user?.id)} action={false} />
+        <BooksGrid
+          books={books}
+          userId={Number(user?.id)}
+          action={false}
+          viewOnly={true}
+        />
       ) : (
         <p>No books found.</p>
       )}

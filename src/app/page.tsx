@@ -28,17 +28,18 @@ import LocaleSwitcherSelect from "../components/localeSwitcherSelect";
 
 const LandingPage = async () => {
   // const { theme, setTheme } = useTheme();
-  const books = (await fetchBooks(
-    {
-      offset: 0,
-      limit: 10,
-    },
-    undefined,
-    {
-      sortBy: "id",
-      sortOrder: "asc",
-    }
-  )) as IPagedResponse<IBook>;
+  // const books = (await fetchBooks(
+  //   {
+  //     offset: 0,
+  //     limit: 10,
+  //   },
+  //   undefined,
+  //   {
+  //     sortBy: "id",
+  //     sortOrder: "asc",
+  //   }
+  // )) as IPagedResponse<IBook>;
+
 
   const t = await getTranslations("LandingPage");
 
@@ -91,7 +92,7 @@ const LandingPage = async () => {
       <HeroSection />
 
       {/* Book Marquee */}
-      <BooksMarque books={books.items} />
+      {/* <BooksMarque books={books.items} /> */}
 
       {/* Features Section */}
       <Features />

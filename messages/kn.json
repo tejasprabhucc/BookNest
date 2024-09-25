@@ -78,5 +78,13 @@
     "googleButton": "Google ಮೂಲಕ ಮುಂದುವರಿಸಿ",
     "help": "ಈಗಾಗಲೇ ಖಾತೆಯನ್ನು ಹೊಂದಿದ್ದೀರಾ?",
     "link": "ಲಾಗಿನ್"
+  },
+  "Books": {
+    "title": "ಪುಸ್ತಕಗಳು",
+    "sortOptions": {
+      "author": "ಲೇಖಕ",
+      "title": "ಶೀರ್ಷಿಕೆ",
+      "publisher": "ಪ್ರಕಾಶಕ"
+    }
   }
 }

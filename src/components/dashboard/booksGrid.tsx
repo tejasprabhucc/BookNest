@@ -12,10 +12,12 @@ const BooksGrid = ({
   books,
   userId,
   action,
+  viewOnly,
 }: {
   books: IBook[];
   userId: number;
   action: boolean;
+  viewOnly: boolean;
 }) => {
   const [selectedBook, setSelectedBook] = useState<IBook | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -46,9 +48,11 @@ const BooksGrid = ({
                   {"₹ "}
                   {book.price}
                 </p>
-                <BorrowButton
-                  data={{ bookId: BigInt(book.id), memberId: BigInt(userId) }}
-                />
+                {!viewOnly && (
+                  <BorrowButton
+                    data={{ bookId: BigInt(book.id), memberId: BigInt(userId) }}
+                  />
+                )}
               </div>
             </div>
           </motion.div>

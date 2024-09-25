@@ -7,6 +7,7 @@ import {
   IMember,
   IMemberBase,
   IPageRequest,
+  IProfessor,
   ITransaction,
   ITransactionBase,
   Role,
@@ -22,10 +23,13 @@ import {
   ITransactionDetails,
   TransactionRepository,
 } from "@/src/repositories/transaction.repository";
+import { ProfessorRepository } from "../repositories/professor.repository";
+import { AppEnvs } from "./read-env";
 
 const bookRepo = new BookRepository(db);
 const memberRepo = new MemberRepository(db);
 const transactionRepo = new TransactionRepository(db);
+const professorRepo = new ProfessorRepository(db);
 
 export type State = {
   message?: string | null;
@@ -427,6 +431,59 @@ export async function fetchRequestsByMember(
   }
 }
 
+export async function createProfessor(prevState: any, formData: FormData) {
+  try {
+    const data: Omit<IProfessor, "id"> = {
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
+      department: formData.get("department") as string,
+      shortBio: formData.get("shortBio") as string,
+      calendlyLink: formData.get("calendlyLink") as string,
+    };
+
+    const createdMember = await professorRepo.create(data);
+    if (!createdMember) {
+      return { message: "Failed to create professor." };
+    }
+
+    return { message: "Professor created successfully!" };
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      console.log(err.flatten());
+      return { message: err.errors[0].message || "Invalid input" };
+    }
+    return { message: (err as Error).message };
+  }
+}
+
+export async function fetchProfessors(params: IPageRequest) {
+  try {
+    return await professorRepo.list(params);
+  } catch (err) {
+    return { message: (err as Error).message };
+  }
+}
+
+export async function fetchProfessorById(id: number) {
+  try {
+    return await professorRepo.getById(id);
+  } catch (err) {
+    return { message: (err as Error).message };
+  }
+}
+
+export async function deleteProfessor(id: number) {
+  try {
+    const deleted = await professorRepo.delete(id);
+    if (!deleted) {
+      return { message: "Failed to delete the professor." };
+    }
+    return { message: "Professor deleted successfully!" };
+  } catch (err) {
+    return { message: (err as Error).message };
+  }
+}
+
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData
@@ -458,3 +515,127 @@ export async function authenticate(
     throw error;
   }
 }
+
+export async function getOrganizationUri() {
+  try {
+    const response = await fetch("https://api.calendly.com/users/me", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${AppEnvs.NEXT_PUBLIC_CALENDLY_ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error fetching user info: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.resource.current_organization;
+  } catch (error) {
+    console.error("Error fetching organization URI", error);
+    throw error;
+  }
+}
+
+export async function getScheduledEvents() {
+  try {
+    const orgUri = await getOrganizationUri();
+    const url = `https://api.calendly.com/scheduled_events?organization=${orgUri}`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${AppEnvs.NEXT_PUBLIC_CALENDLY_ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error fetching user info: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.collection;
+  } catch (error) {
+    console.error("Error fetching user URI", error);
+    throw error;
+  }
+}
+
+export async function getUsersAppointments(email: string) {
+  try {
+    const orgUri = await getOrganizationUri();
+    const url = `https://api.calendly.com/scheduled_events?organization=${orgUri}&invitee_email=${email}`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${AppEnvs.NEXT_PUBLIC_CALENDLY_ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error fetching user info: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.collection;
+    // const events = data.collection;
+
+    // const eventsDetails = await Promise.all(
+    //   events.map(async (event: any) => {
+    //     const meetLink = event.location?.join_url || "No Meet link";
+    //     // Extract event UUID from the event URI
+    //     const eventUUID = event.uri.split("/").pop();
+    //     // Fetch invitee details for each event
+    //     const invitees = await getInviteeDetails(eventUUID);
+    //     // Fetch organizer details from event memberships
+    //     const organizers = event.event_memberships.map((membership: any) => ({
+    //       name: membership.user_name,
+    //       email: membership.user_email,
+    //     }));
+    //     return {
+    //       event: event.name,
+    //       start_time: event.start_time,
+    //       end_time: event.end_time,
+    //       meetLink: meetLink,
+    //       organizers, // Organizers info
+    //       invitees: invitees.map((invitee: any) => ({
+    //         name: invitee.name,
+    //         email: invitee.email,
+    //       })),
+    //     };
+    //   })
+    // );
+  } catch (error) {
+    console.error("Error fetching user URI", (error as Error).message);
+    throw error;
+  }
+}
+
+// export async function getInviteeDetails(event_uuid: string) {
+//   try {
+//     const response = await fetch(
+//       `https://api.calendly.com/scheduled_events/${event_uuid}/invitees`,
+//       {
+//         method: "GET",
+//         headers: {
+//           Authorization: `Bearer ${AppEnvs.NEXT_PUBLIC_CALENDLY_ACCESS_TOKEN}`,
+//           "Content-Type": "application/json",
+//         },
+//       }
+//     );
+
+//     if (!response.ok) {
+//       const errorText = await response.text();
+//       console.log("Error fetching invitees:", errorText);
+//       throw new Error(`Error fetching invitees: ${response.statusText}`);
+//     }
+
+//     const data = await response.json();
+//     return data.collection; // List of invitees
+//   } catch (error) {
+//     console.error("Error fetching invitee details", error);
+//     throw error;
+//   }
+// }

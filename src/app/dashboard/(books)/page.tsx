@@ -14,6 +14,8 @@ import Search from "@/src/components/navbar/search";
 import SortControl from "@/src/components/controls/sortControl";
 import { User } from "lucide-react";
 import { redirect } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
 const Books = async ({
   searchParams,
@@ -70,16 +72,22 @@ const Books = async ({
   const image = session.image;
 
   const userData = (await getUserByEmail(userEmail)) as IMember;
+  const t = await getTranslations("Books");
 
   return (
     <main className=" flex flex-1 flex-col gap-2 overflow-y-auto p-4 px-8 ">
-      <h1 className="text-3xl mb-3 font-serif lg:text-5xl">Books</h1>
+      <h1 className="text-3xl mb-3 font-serif lg:text-5xl">{t("title")}</h1>
       <div className=" flex items-center justify-between flex-col md:flex-row">
         <Search placeholder="Enter a keyword..." />
         <SortControl sortOptions={sortOptions} />
       </div>
       {books.length > 0 ? (
-        <BooksGrid books={books} userId={userData.id} action={true} />
+        <BooksGrid
+          books={books}
+          userId={userData.id}
+          action={true}
+          viewOnly={false}
+        />
       ) : (
         <p>No books found.</p>
       )}

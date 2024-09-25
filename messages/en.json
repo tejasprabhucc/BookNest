@@ -73,5 +73,19 @@
     "googleButton": "Continue with Google",
     "help": "Already have an account?",
     "link": "Login"
+  },
+  "Books": {
+    "title": "Books",
+    "sortOptions": {
+      "author": "Author",
+      "title": "title",
+      "publisher": "Publisher"
+    }
+  },
+  "MyBooks": {
+    "title": "My Books"
+  },
+  "MyRequests": {
+    "title": "My Requests"
   }
 }

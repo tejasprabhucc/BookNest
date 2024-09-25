@@ -54,6 +54,25 @@ export interface ITransaction extends ITransactionBase {
   dueDate: string | null;
 }
 
+export interface IProfessorBase {
+  name: string;
+  email: string;
+  department: string;
+  shortBio?: string;
+  calendlyLink: string;
+}
+export interface IProfessor extends IProfessorBase {
+  id: number;
+}
+
+export interface IAppointment {
+  id?: number;
+  memberId: bigint;
+  professorId: bigint;
+  googleMeetLink: string;
+  appointmentDate: string;
+}
+
 export type Models = IBook | IMember | ITransaction;
 export type BaseModels = IBookBase | IMemberBase | ITransactionBase;
 

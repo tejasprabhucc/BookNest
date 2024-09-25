@@ -20,6 +20,8 @@ import {
   SelectGroup,
 } from "@/src/components/ui/select";
 import { ITransactionDetails } from "@/src/repositories/transaction.repository";
+import { getUserLocale } from "@/src/services/locale";
+import { useTranslations } from "next-intl";
 
 interface SortOptionProps {
   sortOptions:
@@ -48,6 +50,7 @@ const SortControl = ({ sortOptions }: SortOptionProps) => {
     replace(`${pathname}?${newSearchParams.toString()}`);
   };
 
+  const t = useTranslations("Books");
   return (
     <div className="flex items-center gap-2">
       <Select value={sortOptions.sortBy} onValueChange={handleSortChange}>
@@ -56,10 +59,13 @@ const SortControl = ({ sortOptions }: SortOptionProps) => {
         </SelectTrigger>
         <SelectContent>
           <SelectItem defaultChecked={true} value="title">
-            Title
+            {t("sortOptions.title")}
           </SelectItem>
-          <SelectItem value="author">Author</SelectItem>
-          <SelectItem value="publisher">Publisher</SelectItem>
+          <SelectItem value="author"> {t("sortOptions.author")}</SelectItem>
+          <SelectItem value="publisher">
+            {" "}
+            {t("sortOptions.publisher")}
+          </SelectItem>
         </SelectContent>
       </Select>
       <Button variant="outline" size="icon" onClick={toggleSortOrder}>
