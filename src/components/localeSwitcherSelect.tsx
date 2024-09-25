@@ -1,25 +1,10 @@
 "use client";
 
-import { CheckIcon, LanguageIcon } from "@heroicons/react/24/solid";
-import clsx from "clsx";
 import { useTransition } from "react";
 import { Locale } from "@/src/i18n/config";
 import { setUserLocale } from "@/src/services/locale";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
 import { Globe } from "lucide-react";
-import { Button } from "./ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
 
 type Props = {
   defaultValue: string;
@@ -52,7 +37,6 @@ export default function LocaleSwitcherSelect({
         >
           <div className="flex items-center">
             <Globe className="mr-2 h-6 w-6 text-slate-600 transition-colors group-hover:text-slate-900" />
-            <SelectValue placeholder="Select language" />
           </div>
         </SelectTrigger>
         <SelectContent align="end" className="min-w-[8rem]">

@@ -326,6 +326,21 @@ export async function fetchTransactions(
     return { message: (err as Error).message };
   }
 }
+export async function fetchUserTransactions(
+  params: IPageRequest,
+  sortOptions: SortOptions<ITransaction>,
+  memberId: number
+) {
+  try {
+    return await transactionRepo.listTransactionDetails(
+      params,
+      BigInt(memberId),
+      sortOptions
+    );
+  } catch (err) {
+    return { message: (err as Error).message };
+  }
+}
 
 export async function fetchDueTransactions(
   params: IPageRequest,

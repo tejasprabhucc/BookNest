@@ -277,11 +277,11 @@ export class TransactionRepository
 
   async getDueBooks(params: IPageRequest, memberId?: bigint) {
     // Initialize the searchWhereClause to filter only "issued" books
-    let searchWhereClause = sql`${transactions.bookStatus} = 'issued'`;
+    let searchWhereClause = sql``;
 
     // Filter by memberId if provided
     if (memberId) {
-      searchWhereClause = sql`${searchWhereClause} AND ${transactions.memberId} = ${memberId}`;
+      searchWhereClause = sql`${transactions.memberId} = ${memberId}`;
     }
     // let sortOrder = sql`ORDER BY ${transactions.dueDate} DESC`;
 

@@ -28,17 +28,17 @@ import LocaleSwitcherSelect from "../components/localeSwitcherSelect";
 
 const LandingPage = async () => {
   // const { theme, setTheme } = useTheme();
-  // const books = (await fetchBooks(
-  //   {
-  //     offset: 0,
-  //     limit: 10,
-  //   },
-  //   undefined,
-  //   {
-  //     sortBy: "id",
-  //     sortOrder: "asc",
-  //   }
-  // )) as IPagedResponse<IBook>;
+  const books = (await fetchBooks(
+    {
+      offset: 0,
+      limit: 10,
+    },
+    undefined,
+    {
+      sortBy: "id",
+      sortOrder: "asc",
+    }
+  )) as IPagedResponse<IBook>;
 
   const t = await getTranslations("LandingPage");
 
@@ -53,19 +53,6 @@ const LandingPage = async () => {
               <span className="font-bold text-2xl">BookNest</span>
             </Link>
             <div className="flex items-center space-x-4">
-              {/* <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Globe className="h-5 w-5" />
-                    <span className="sr-only">{t("language")}</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>English</DropdownMenuItem>
-                  <DropdownMenuItem>Español</DropdownMenuItem>
-                  <DropdownMenuItem>Français</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu> */}
               <LocaleSwitcher />
               <Button
                 variant="ghost"
@@ -91,7 +78,7 @@ const LandingPage = async () => {
       <HeroSection />
 
       {/* Book Marquee */}
-      {/* <BooksMarque books={books.items} /> */}
+      <BooksMarque books={books.items} />
 
       {/* Features Section */}
       <Features />
