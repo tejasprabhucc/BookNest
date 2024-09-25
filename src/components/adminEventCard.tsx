@@ -30,6 +30,7 @@ import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
 import { Label } from "./ui/label";
 
+
 const AdminEventCard = ({ event }: { event: any }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
