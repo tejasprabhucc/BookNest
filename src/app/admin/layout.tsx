@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Sidenav from "@/src/components/navbar/sidenav";
 import { Toaster } from "@/src/components/ui/toaster";
 import { INavOption } from "@/src/lib/definitions";
+
 import {
   Book,
   BookPlus,
@@ -32,6 +33,7 @@ export default async function RootLayout({
     { label: "Books Due", url: "/admin/booksDue", icon: Clock },
     { label: "Professors", url: "/admin/professors", icon: PersonStanding },
     { label: "Events", url: "/admin/events", icon: Calendar },
+
   ];
 
   const user = await getUserSession();
