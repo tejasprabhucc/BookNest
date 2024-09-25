@@ -31,7 +31,7 @@ const MyAppointments = async () => {
       <h1 className="text-3xl font-bold mb-8">Appointments</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {events && events.length > 0 ? (
-          events.map((event, index) => (
+          events.map((event: any, index: number) => (
             <AdminEventCard key={index} event={event} />
           ))
         ) : (

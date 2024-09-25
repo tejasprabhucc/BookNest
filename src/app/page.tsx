@@ -40,7 +40,6 @@ const LandingPage = async () => {
   //   }
   // )) as IPagedResponse<IBook>;
 
-
   const t = await getTranslations("LandingPage");
 
   return (

@@ -30,7 +30,7 @@ const MyAppointments = async () => {
       <h1 className="text-3xl font-bold mb-8">My Appointments</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {appointments && appointments.length > 0 ? (
-          appointments.map((appointment, index) => (
+          appointments.map((appointment: any, index: number) => (
             <Card key={index} className="flex flex-col">
               <CardHeader>
                 <div className="flex justify-between items-start">
