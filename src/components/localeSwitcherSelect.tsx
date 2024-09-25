@@ -3,8 +3,14 @@
 import { useTransition } from "react";
 import { Locale } from "@/src/i18n/config";
 import { setUserLocale } from "@/src/services/locale";
-import { Globe } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
+import { Globe, Languages } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/src/components/ui/dropdown-menu";
+import { Button } from "./ui/button";
 
 type Props = {
   defaultValue: string;
@@ -27,30 +33,29 @@ export default function LocaleSwitcherSelect({
   }
 
   return (
-    <div className="relative">
-      <Select defaultValue={defaultValue} onValueChange={onChange}>
-        <SelectTrigger
-          className={`w-[180px] rounded-sm p-2 transition-colors hover:bg-slate-200 ${
-            isPending ? "pointer-events-none opacity-60" : ""
-          }`}
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          size="icon"
+          className={`${isPending ? "pointer-events-none opacity-60" : ""}`}
           aria-label={label}
         >
-          <div className="flex items-center">
-            <Globe className="mr-2 h-6 w-6 text-slate-600 transition-colors group-hover:text-slate-900" />
-          </div>
-        </SelectTrigger>
-        <SelectContent align="end" className="min-w-[8rem]">
-          {items.map((item) => (
-            <SelectItem
-              key={item.value}
-              value={item.value}
-              className="flex items-center px-3 py-2 text-base"
-            >
-              <p className="text-slate-900">{item.label}</p>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+          <Languages className="h-[1.2rem] w-[1.2rem] transition-colors" />
+          <span className="sr-only">{label}</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-[8rem]">
+        {items.map((item) => (
+          <DropdownMenuItem
+            key={item.value}
+            onClick={() => onChange(item.value)}
+            className="flex gap-1 items-center py-2 text-base"
+          >
+            <p className="">{item.label}</p>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

@@ -1,19 +1,10 @@
 import type { Metadata } from "next";
-import Sidenav from "@/src/components/navbar/sidenav";
 import { Toaster } from "@/src/components/ui/toaster";
 import { INavOption } from "@/src/lib/definitions";
-
-import {
-  Book,
-  BookPlus,
-  ArrowLeftRight,
-  Users,
-  Clock,
-  PersonStanding,
-  Calendar,
-} from "lucide-react";
 import { getUserSession } from "@/src/lib/actions";
 import { redirect } from "next/navigation";
+import Sidenav from "@/src/components/navbar/sidenav";
+import { getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "BookNest - Admin",
@@ -25,14 +16,27 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const t = await getTranslations("Sidenav");
   const navOptions: INavOption[] = [
-    { label: "Books", url: "/admin/books", icon: Book },
-    { label: "Requests", url: "/admin/requests/", icon: BookPlus },
-    { label: "Members", url: "/admin/members", icon: Users },
-    { label: "Transactions", url: "/admin/transactions", icon: ArrowLeftRight },
-    { label: "Books Due", url: "/admin/booksDue", icon: Clock },
-    { label: "Professors", url: "/admin/professors", icon: PersonStanding },
-    { label: "Events", url: "/admin/events", icon: Calendar },
+    { label: `${t("books")}`, url: "/admin/books", iconName: "Book" },
+    {
+      label: `${t("requests")}`,
+      url: "/admin/requests/",
+      iconName: "BookPlus",
+    },
+    { label: `${t("members")}`, url: "/admin/members", iconName: "Users" },
+    {
+      label: `${t("transactions")}`,
+      url: "/admin/transactions",
+      iconName: "ArrowLeftRight",
+    },
+    { label: `${t("booksDue")}`, url: "/admin/booksDue", iconName: "Clock" },
+    {
+      label: `${t("professors")}`,
+      url: "/admin/professors",
+      iconName: "PersonStanding",
+    },
+    { label: `${t("events")}`, url: "/admin/events", iconName: "Calendar" },
   ];
 
   const user = await getUserSession();

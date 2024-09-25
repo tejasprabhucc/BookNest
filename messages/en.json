@@ -32,17 +32,32 @@
       "button": "View All Books"
     },
     "footer": {
-      "quickLiks": {
+      "quicklinks": {
         "title": "Quick Links",
-        "links": ["About Us", "FAQ", "Terms of Service", "Privacy Policy"]
+        "getStarted": "Get Started",
+        "about": "About Us",
+        "terms": "Terms of Service",
+        "privacyPolicy": "Privacy Policy"
       },
       "contact": {
         "title": "Contact",
-        "links": [
-          "Email: info@booknest.com",
-          "Phone: (123) 456-7890",
-          "Address: 123 Library St, Booktown,BT 12345"
-        ]
+        "email": "Email: info@booknest.com",
+        "phone": "Phone: +91 8277770747",
+        "address": "Address: 123 Library St, Booktown,BT 12345"
+      },
+      "socials": {
+        "title": "Follow Us",
+        "facebook": "Facebook",
+        "instagram": "Instagram",
+        "linkedin": "LinkedIn",
+        "twitter": "Twitter"
+      },
+      "connect": {
+        "title": "Any Queries?",
+        "description": "Drop your queries here",
+        "enterEmail": "Enter your email here",
+        "query": "Enter your queries here",
+        "button": "Submit"
       }
     }
   },
@@ -87,5 +102,20 @@
   },
   "MyRequests": {
     "title": "My Requests"
+  },
+  "Sidenav": {
+    "title": "BookNest",
+    "books": "Books",
+    "myBooks": "My Books",
+    "booksDue": "Books Due",
+    "requests": "Requests",
+    "myRequests": "My Requests",
+    "professors": "Professors",
+    "myAppointments": "My Appointments",
+    "members": "Members",
+    "transactions": "Transactions",
+    "events": "Events",
+    "profile": "Profile",
+    "logout": "logout"
   }
 }
