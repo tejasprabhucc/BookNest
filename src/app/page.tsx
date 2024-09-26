@@ -23,9 +23,9 @@ import { fetchBooks } from "@/src/lib/actions";
 import { IBook, IPagedResponse } from "@/src/lib/definitions";
 import Features from "@/src/components/landing/features-section";
 import { getTranslations } from "next-intl/server";
-import LocaleSwitcher from "../components/localeSwitcher";
+import LocaleSwitcher from "@/src/components/localeSwitcher";
 import LocaleSwitcherSelect from "../components/localeSwitcherSelect";
-import { ModeToggle } from "../components/ui/theme-change";
+import { ModeToggle } from "@/src/components/ui/theme-change";
 
 const LandingPage = async () => {
   // const { theme, setTheme } = useTheme();

@@ -17,6 +17,22 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import DropDownOptions from "./dropDownMenu";
 import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { Label } from "../ui/label";
+import SettingsDialog from "./settingsDialog";
 
 const SidenavLinks = ({
   navOptions,
@@ -28,6 +44,7 @@ const SidenavLinks = ({
   children: React.JSX.Element;
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const pathname = usePathname();
 
   const renderIcon = (iconName: keyof typeof Icons) => {
@@ -39,7 +56,6 @@ const SidenavLinks = ({
     ) : null;
   };
 
-  const image = user.image;
   const t = useTranslations("Sidenav");
 
   return (
@@ -81,6 +97,23 @@ const SidenavLinks = ({
           ))}
         </ul>
       </nav>
+
+      <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+        <DialogTrigger asChild>
+          <Button
+            variant="ghost"
+            className={cn(
+              "justify-start hover:bg-slate-700 mb-2 mx-2",
+              isCollapsed ? "px-2" : "px-4"
+            )}
+          >
+            <Icons.Settings className="h-6 w-6 mr-2" />
+            {!isCollapsed && <span>{t("settings")}</span>}
+          </Button>
+        </DialogTrigger>
+        <SettingsDialog />
+      </Dialog>
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div

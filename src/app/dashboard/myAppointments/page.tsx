@@ -42,7 +42,7 @@ const MyAppointments = async () => {
 
   return (
     <div className="container mx-auto py-12 px-4">
-      <h1 className="text-3xl font-bold mb-8">My Appointments</h1>
+      <h1 className="text-3xl font-bold my-6 lg:text-5xl">My Appointments</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {appointments && appointments.length > 0 ? (
           appointments.map((appointment, index) => (
@@ -63,7 +63,7 @@ const MyAppointments = async () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
-                      className="flex flex-col items-start justify-start"
+                      className="grid items-start justify-start"
                       align="end"
                     >
                       <DropdownMenuItem asChild>
@@ -71,22 +71,19 @@ const MyAppointments = async () => {
                           url={appointment.rescheduleLink}
                           user={user}
                           triggerButton={
-                            <Button variant="ghost" className="w-full">
+                            <Button variant="ghost" className="justify-start">
                               <RefreshCcw className="mr-2 h-4 w-4" />
                               Reschedule
                             </Button>
                           }
                         />
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild className="text-red-600">
+                      <DropdownMenuItem className="text-red-600" asChild>
                         <EditSchedule
                           url={appointment.cancelLink}
                           user={user}
                           triggerButton={
-                            <Button
-                              variant="ghost"
-                              className="text-left w-full"
-                            >
+                            <Button variant="ghost" className="justify-start">
                               <X className="mr-2 h-4 w-4" />
                               Cancel
                             </Button>
