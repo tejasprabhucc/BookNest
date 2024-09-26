@@ -126,4 +126,27 @@ export interface INavOption {
   label: string;
   url: string;
   iconName: string;
+
+}
+
+export interface IOrganizer {
+  name: string;
+  email: string;
+}
+
+export interface IInvitee {
+  name: string;
+  email: string;
+}
+
+export interface ICalendlyEvent {
+  event: string;
+  status: string;
+  start_time: string;
+  end_time: string;
+  meetLink: string;
+  cancelLink: string;
+  rescheduleLink: string;
+  organizers: IOrganizer[];
+  invitees: IInvitee[];
 }

@@ -1,4 +1,4 @@
-import CalendlyScheduleCard from "@/src/components/dashboard/calendlyScheduleCard";
+import CalendlyScheduleCard from "@/src/components/appointment/calendlyScheduleCard";
 import {
   Card,
   CardHeader,
