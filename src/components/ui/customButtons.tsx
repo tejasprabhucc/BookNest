@@ -54,7 +54,7 @@ export const CreateButton = ({
   return (
     <Link
       href={url}
-      className="flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-white transition-colors border hover:border-black hover:bg-white hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      className="flex h-10 items-center rounded-lg bg-foreground px-4 text-sm font-medium text-primary transition-colors border hover:border-black hover:bg-white hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
     >
       <span className="hidden md:block">{label}</span>
       <PlusIcon className="h-5 md:ml-4" />
@@ -252,7 +252,9 @@ export const DeleteButton = ({ data }: { data: ItemType }) => {
       const result = isBook(data)
         ? await deleteBook(data.id)
         : isMember(data)
-        ? await deleteMember(data.id) : isProfessor(data) ? await deleteProfessor(data.id) 
+        ? await deleteMember(data.id)
+        : isProfessor(data)
+        ? await deleteProfessor(data.id)
         : await deleteTransaction(data.id);
       toast({
         title: result.message,
