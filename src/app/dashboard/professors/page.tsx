@@ -28,7 +28,7 @@ const ProfessorsPage = async () => {
 
   return (
     <div className="container mx-auto py-12 px-4">
-      <h1 className="text-3xl font-bold mb-8">Our Esteemed Faculty</h1>
+      <h1 className="text-3xl font-bold my-6 lg:text-5xl">Professors</h1>
 
       {professors && professors.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

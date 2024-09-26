@@ -96,5 +96,34 @@
       "title": "ಶೀರ್ಷಿಕೆ",
       "publisher": "ಪ್ರಕಾಶಕ"
     }
+  },
+  "MyBooks": {
+    "title": "ನನ್ನ ಪುಸ್ತಕಗಳು"
+  },
+  "MyRequests": {
+    "title": "ನನ್ನ ವಿನಂತಿಗಳು"
+  },
+  "Sidenav": {
+    "title": "BookNest",
+    "books": "ಪುಸ್ತಕಗಳು",
+    "myBooks": "ನನ್ನ ಪುಸ್ತಕಗಳು",
+    "booksDue": "ಬಾಕಿ ಪುಸ್ತಕಗಳು",
+    "requests": "ವಿನಂತಿಗಳು",
+    "myRequests": "ನನ್ನ ವಿನಂತಿಗಳು",
+    "professors": "ಪ್ರಾಧ್ಯಾಪಕರು",
+    "myAppointments": "ನನ್ನ ನೇಮಕಾತಿಗಳು",
+    "members": "ಸದಸ್ಯರು",
+    "transactions": "ವಹಿವಾಟುಗಳು",
+    "events": "ಕಾರ್ಯಕ್ರಮಗಳು",
+    "profile": "ಪ್ರೊಫೈಲ್",
+    "logout": "ಲಾಗ್ ಔಟ್",
+    "settings": "ಸಂಯೋಜನೆಗಳು",
+    "theme": "ಥೀಮ್",
+    "selectTheme": "ಥೀಮ್ ಆಯ್ಕೆಮಾಡಿ",
+    "light": "ಲೈಟ್",
+    "dark": "ಡಾರ್ಕ್",
+    "system": "ಸಿಸ್ಟಮ್",
+    "language": "ಭಾಷೆ",
+    "selectLanguage": "ಭಾಷೆ ಆಯ್ಕೆಮಾಡಿ"
   }
 }

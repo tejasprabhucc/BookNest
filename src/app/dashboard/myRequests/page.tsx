@@ -100,7 +100,7 @@ const BooksDue = async ({
 
   return (
     <main className="flex flex-1 flex-col gap-2 overflow-y-auto p-4 px-8">
-      <h1 className="text-3xl mb-3 font-serif lg:text-5xl">Books Due</h1>
+      <h1 className="text-3xl font-bold my-6 lg:text-5xl">Books Due</h1>
       <div className="flex items-center justify-between">
         <Search placeholder="Enter a keyword..." />
         <DueFilterControl />

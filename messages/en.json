@@ -116,6 +116,14 @@
     "transactions": "Transactions",
     "events": "Events",
     "profile": "Profile",
-    "logout": "logout"
+    "logout": "logout",
+    "settings": "Settings",
+    "theme": "Theme",
+    "selectTheme": "Select Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "language": "Language",
+    "selectLanguage": "Select Language"
   }
 }
