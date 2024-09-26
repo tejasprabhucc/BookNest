@@ -52,12 +52,11 @@ export const CreateButton = ({
   label: string;
 }) => {
   return (
-    <Link
-      href={url}
-      className="flex h-10 items-center rounded-lg bg-foreground px-4 text-sm font-medium text-primary transition-colors border hover:border-black hover:bg-white hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-    >
-      <span className="hidden md:block">{label}</span>
-      <PlusIcon className="h-5 md:ml-4" />
+    <Link href={url}>
+      <Button variant="default">
+        <span className="hidden md:block">{label}</span>
+        <PlusIcon className="h-5 md:ml-4" />
+      </Button>
     </Link>
   );
 };

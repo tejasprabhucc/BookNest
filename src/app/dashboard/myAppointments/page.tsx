@@ -8,12 +8,28 @@ import {
   CardFooter,
 } from "@/src/components/ui/card";
 import {
-  getScheduledEvents,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/src/components/ui/tooltip";
+import {
+  getUserByEmail,
   getUsersAppointments,
   getUserSession,
 } from "@/src/lib/actions";
-import { Calendar, Clock, Link, MapPin, User } from "lucide-react";
+import { ICalendlyEvent, IMember } from "@/src/lib/definitions";
+import { Calendar, Clock, Link, User, RefreshCcw, X } from "lucide-react";
 import { redirect } from "next/navigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/src/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
+import EditSchedule from "@/src/components/appointment/editSchedule";
+import { SiGooglemeet } from "react-icons/si";
 
 const MyAppointments = async () => {
   const session = await getUserSession();
@@ -21,29 +37,64 @@ const MyAppointments = async () => {
     redirect("/login");
   }
   const email = session.email;
-  // const appointments = await getScheduledEvents();
-  const appointments = await getUsersAppointments(email);
-  console.log(appointments);
+  const user = (await getUserByEmail(email)) as IMember;
+  const appointments: ICalendlyEvent[] = await getUsersAppointments(email);
 
   return (
     <div className="container mx-auto py-12 px-4">
       <h1 className="text-3xl font-bold mb-8">My Appointments</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {appointments && appointments.length > 0 ? (
-          appointments.map((appointment: any, index: number) => (
+          appointments.map((appointment, index) => (
             <Card key={index} className="flex flex-col">
               <CardHeader>
                 <div className="flex justify-between items-start">
-                  <CardTitle className="text-2xl font-semibold">
-                    {appointment.name}
+                  <CardTitle className="text-xl font-semibold flex items-center space-x-2">
+                    {appointment.event}
+                    <Badge className="ml-3" variant="outline">
+                      {appointment.status}
+                    </Badge>
                   </CardTitle>
-                  <Badge
-                    variant={
-                      appointment.status === "active" ? "default" : "secondary"
-                    }
-                  >
-                    {appointment.status === "active" ? "Active" : "Inactive"}
-                  </Badge>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <MoreHorizontal className="h-4 w-4" />
+                        <span className="sr-only">Open menu</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      className="flex flex-col items-start justify-start"
+                      align="end"
+                    >
+                      <DropdownMenuItem asChild>
+                        <EditSchedule
+                          url={appointment.rescheduleLink}
+                          user={user}
+                          triggerButton={
+                            <Button variant="ghost" className="w-full">
+                              <RefreshCcw className="mr-2 h-4 w-4" />
+                              Reschedule
+                            </Button>
+                          }
+                        />
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="text-red-600">
+                        <EditSchedule
+                          url={appointment.cancelLink}
+                          user={user}
+                          triggerButton={
+                            <Button
+                              variant="ghost"
+                              className="text-left w-full"
+                            >
+                              <X className="mr-2 h-4 w-4" />
+                              Cancel
+                            </Button>
+                          }
+                        />
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </CardHeader>
               <CardContent className="flex-grow space-y-4">
@@ -56,37 +107,41 @@ const MyAppointments = async () => {
                 <div className="flex items-center space-x-2">
                   <Clock className="h-5 w-5 text-muted-foreground" />
                   <p className="text-sm">
-                    {new Date(appointment.start_time).toLocaleTimeString()}{" "}
-                    {" - "}
+                    {new Date(appointment.start_time).toLocaleTimeString()} -
                     {new Date(appointment.end_time).toLocaleTimeString()}
                   </p>
                 </div>
-                {appointment.location.type && (
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="h-5 w-5 text-muted-foreground" />
-                    <p className="text-sm">{appointment.location.type}</p>
+                <div className="flex items-center space-x-2">
+                  <User className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex flex-wrap gap-2">
+                    {appointment.organizers.map((organizer, idx) => (
+                      <TooltipProvider key={idx}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <p>{organizer.name}</p>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs text-muted-foreground">
+                              {organizer.email}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ))}
                   </div>
-                )}
-                {appointment.invitees && appointment.invitees.length > 0 && (
-                  <div className="flex items-center space-x-2">
-                    <User className="h-5 w-5 text-muted-foreground" />
-                    <p className="text-sm">{appointment.invitees[0].name}</p>
-                  </div>
-                )}
+                </div>
               </CardContent>
-              <CardFooter>
-                {appointment.location.join_url && (
-                  <Button variant="outline" className="w-full" asChild>
-                    <a
-                      href={appointment.location.join_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Link className="mr-2 h-4 w-4" />
-                      Join Meeting
-                    </a>
-                  </Button>
-                )}
+              <CardFooter className="flex flex-col space-y-2">
+                <Button variant="default" className="w-full" asChild>
+                  <a
+                    href={appointment.meetLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <SiGooglemeet className="mr-2 h-4 w-4" />
+                    Join Meeting
+                  </a>
+                </Button>
               </CardFooter>
             </Card>
           ))

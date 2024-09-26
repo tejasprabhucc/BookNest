@@ -594,63 +594,66 @@ export async function getUsersAppointments(email: string) {
     }
 
     const data = await response.json();
-    return data.collection;
-    // const events = data.collection;
+    const events = data.collection;
 
-    // const eventsDetails = await Promise.all(
-    //   events.map(async (event: any) => {
-    //     const meetLink = event.location?.join_url || "No Meet link";
-    //     // Extract event UUID from the event URI
-    //     const eventUUID = event.uri.split("/").pop();
-    //     // Fetch invitee details for each event
-    //     const invitees = await getInviteeDetails(eventUUID);
-    //     // Fetch organizer details from event memberships
-    //     const organizers = event.event_memberships.map((membership: any) => ({
-    //       name: membership.user_name,
-    //       email: membership.user_email,
-    //     }));
-    //     return {
-    //       event: event.name,
-    //       start_time: event.start_time,
-    //       end_time: event.end_time,
-    //       meetLink: meetLink,
-    //       organizers, // Organizers info
-    //       invitees: invitees.map((invitee: any) => ({
-    //         name: invitee.name,
-    //         email: invitee.email,
-    //       })),
-    //     };
-    //   })
-    // );
+    const eventsDetails = await Promise.all(
+      events.map(async (event: any) => {
+        const meetLink = event.location?.join_url || "No Meet link";
+        const eventUUID = event.uri.split("/").pop();
+        const invitees = await getInviteeDetails(eventUUID);
+        const organizers = event.event_memberships.map((membership: any) => ({
+          name: membership.user_name,
+          email: membership.user_email,
+        }));
+        const currentInvitee = invitees.filter(
+          (invitee: any) => invitee.email === email
+        );
+        return {
+          event: event.name,
+          status: event.status,
+          start_time: event.start_time,
+          end_time: event.end_time,
+          meetLink: meetLink,
+          cancelLink: currentInvitee[0].cancel_url,
+          rescheduleLink: currentInvitee[0].reschedule_url,
+          organizers,
+          invitees: invitees.map((invitee: any) => ({
+            name: invitee.name,
+            email: invitee.email,
+          })),
+        };
+      })
+    );
+    return eventsDetails;
   } catch (error) {
     console.error("Error fetching user URI", (error as Error).message);
     throw error;
   }
 }
 
-// export async function getInviteeDetails(event_uuid: string) {
-//   try {
-//     const response = await fetch(
-//       `https://api.calendly.com/scheduled_events/${event_uuid}/invitees`,
-//       {
-//         method: "GET",
-//         headers: {
-//           Authorization: `Bearer ${AppEnvs.NEXT_PUBLIC_CALENDLY_ACCESS_TOKEN}`,
-//           "Content-Type": "application/json",
-//         },
-//       }
-//     );
+export async function getInviteeDetails(event_uuid: string) {
+  try {
+    const response = await fetch(
+      `https://api.calendly.com/scheduled_events/${event_uuid}/invitees`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${AppEnvs.NEXT_PUBLIC_CALENDLY_ACCESS_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-//     if (!response.ok) {
-//       const errorText = await response.text();
-//       console.log("Error fetching invitees:", errorText);
-//       throw new Error(`Error fetching invitees: ${response.statusText}`);
-//     }
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log("Error fetching invitees:", errorText);
+      throw new Error(`Error fetching invitees: ${response.statusText}`);
+    }
 
-//     const data = await response.json();
-//     return data.collection; // List of invitees
-//   } catch (error) {
-//     console.error("Error fetching invitee details", error);
-//     throw error;
-//   }
-// }
+    const data = await response.json();
+    return data.collection; // List of invitees
+  } catch (error) {
+    console.error("Error fetching invitee details", error);
+    throw error;
+  }
+}
