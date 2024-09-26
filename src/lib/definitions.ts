@@ -126,6 +126,7 @@ export interface INavOption {
   label: string;
   url: string;
   iconName: string;
+
 }
 
 export interface IOrganizer {
