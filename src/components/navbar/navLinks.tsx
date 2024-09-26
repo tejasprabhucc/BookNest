@@ -103,8 +103,8 @@ const SidenavLinks = ({
           <Button
             variant="ghost"
             className={cn(
-              "justify-start hover:bg-slate-700 mb-2 mx-2",
-              isCollapsed ? "px-2" : "px-4"
+              "justify-start hover:bg-slate-700 mb-2",
+              isCollapsed ? "px-2" : "px-4 mx-2"
             )}
           >
             <Icons.Settings className="h-6 w-6 mr-2" />
