@@ -29,9 +29,7 @@ const EditSchedule: React.FC<EditScheduleProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        {triggerButton || <Button>Edit Schedule</Button>}
-      </DialogTrigger>
+      <DialogTrigger asChild>{triggerButton}</DialogTrigger>
       <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Edit Your Schedule</DialogTitle>
