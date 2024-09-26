@@ -64,7 +64,9 @@ const MyAppointments = async () => {
                         </span>
                       </Button>
                     </DropdownMenuTrigger>
+
                     <DropdownMenuContent align="end" className="w-56">
+
                       <DropdownMenuItem asChild>
                         <EditSchedule
                           url={appointment.rescheduleLink}
