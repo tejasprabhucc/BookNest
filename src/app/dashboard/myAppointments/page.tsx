@@ -59,31 +59,38 @@ const MyAppointments = async () => {
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                         <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Open menu</span>
+                        <span className="sr-only">
+                          Open appointment options
+                        </span>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      className="grid items-start justify-start"
-                      align="end"
-                    >
+
+                    <DropdownMenuContent align="end" className="w-56">
+
                       <DropdownMenuItem asChild>
                         <EditSchedule
                           url={appointment.rescheduleLink}
                           user={user}
                           triggerButton={
-                            <Button variant="ghost" className="justify-start">
+                            <Button
+                              variant="ghost"
+                              className="w-full justify-start"
+                            >
                               <RefreshCcw className="mr-2 h-4 w-4" />
                               Reschedule
                             </Button>
                           }
                         />
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600" asChild>
+                      <DropdownMenuItem asChild>
                         <EditSchedule
                           url={appointment.cancelLink}
                           user={user}
                           triggerButton={
-                            <Button variant="ghost" className="justify-start">
+                            <Button
+                              variant="ghost"
+                              className="w-full justify-start text-red-600 hover:text-red-600 hover:bg-red-100"
+                            >
                               <X className="mr-2 h-4 w-4" />
                               Cancel
                             </Button>
