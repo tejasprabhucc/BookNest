@@ -125,5 +125,5 @@ export interface IRepository<
 export interface INavOption {
   label: string;
   url: string;
-  icon: React.ComponentType;
+  iconName: string;
 }

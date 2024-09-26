@@ -37,8 +37,8 @@ export default async function Profile() {
   const userTransactionSummary = await getUserTransactionSummary(userData.id);
 
   return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="max-w-4xl mx-auto">
+    <div className="py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="max-w-4xl mx-auto ">
         <CardHeader className="pb-0">
           <div className="flex justify-between items-center">
             <CardTitle className="text-3xl font-bold">My Profile</CardTitle>

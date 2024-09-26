@@ -31,7 +31,7 @@ const DueFilterControl = () => {
     <div className="flex items-center gap-2">
       <Select onValueChange={handleFilterChange}>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Filter due books" />
+          <SelectValue placeholder="Filter due books" defaultValue={"All"} />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All</SelectItem>

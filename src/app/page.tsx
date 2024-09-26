@@ -25,27 +25,28 @@ import Features from "@/src/components/landing/features-section";
 import { getTranslations } from "next-intl/server";
 import LocaleSwitcher from "../components/localeSwitcher";
 import LocaleSwitcherSelect from "../components/localeSwitcherSelect";
+import { ModeToggle } from "../components/ui/theme-change";
 
 const LandingPage = async () => {
   // const { theme, setTheme } = useTheme();
-  // const books = (await fetchBooks(
-  //   {
-  //     offset: 0,
-  //     limit: 10,
-  //   },
-  //   undefined,
-  //   {
-  //     sortBy: "id",
-  //     sortOrder: "asc",
-  //   }
-  // )) as IPagedResponse<IBook>;
+  const books = (await fetchBooks(
+    {
+      offset: 0,
+      limit: 8,
+    },
+    undefined,
+    {
+      sortBy: "id",
+      sortOrder: "asc",
+    }
+  )) as IPagedResponse<IBook>;
 
   const t = await getTranslations("LandingPage");
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm">
+      <nav className=" m-auto fixed top-0 left-0 right-0 z-50  backdrop-blur-sm mt-5 rounded-xl max-w-[1280px]">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center space-x-2">
@@ -53,29 +54,8 @@ const LandingPage = async () => {
               <span className="font-bold text-2xl">BookNest</span>
             </Link>
             <div className="flex items-center space-x-4">
-              {/* <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Globe className="h-5 w-5" />
-                    <span className="sr-only">{t("language")}</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>English</DropdownMenuItem>
-                  <DropdownMenuItem>Español</DropdownMenuItem>
-                  <DropdownMenuItem>Français</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu> */}
               <LocaleSwitcher />
-              <Button
-                variant="ghost"
-                size="icon"
-                // onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              >
-                <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                <span className="sr-only">Toggle theme</span>
-              </Button>
+              <ModeToggle />
               <Button variant="outline" asChild>
                 <Link href="/login">{t("logIn")}</Link>
               </Button>
@@ -91,7 +71,7 @@ const LandingPage = async () => {
       <HeroSection />
 
       {/* Book Marquee */}
-      {/* <BooksMarque books={books.items} /> */}
+      <BooksMarque books={books.items} />
 
       {/* Features Section */}
       <Features />
@@ -112,74 +92,72 @@ const LandingPage = async () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="font-bold mb-4">Quick Links</h3>
+              <h3 className="font-bold mb-4">{t("footer.quicklinks.title")}</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link href="/about" className="hover:underline">
-                    About Us
+                  <Link href="/signup" className="hover:underline">
+                    {t("footer.quicklinks.getStarted")}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/faq" className="hover:underline">
-                    FAQ
+                  <Link href="/about" className="hover:underline">
+                    {t("footer.quicklinks.about")}
                   </Link>
                 </li>
                 <li>
                   <Link href="/terms" className="hover:underline">
-                    Terms of Service
+                    {t("footer.quicklinks.terms")}
                   </Link>
                 </li>
                 <li>
                   <Link href="/privacy" className="hover:underline">
-                    Privacy Policy
+                    {t("footer.quicklinks.privacyPolicy")}
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="font-bold mb-4">Contact</h3>
+              <h3 className="font-bold mb-4">{t("footer.contact.title")}</h3>
               <ul className="space-y-2">
-                <li>Email: info@booknest.com</li>
-                <li>Phone: (123) 456-7890</li>
-                <li>Address: 123 Library St, Booktown, BT 12345</li>
+                <li>{t("footer.contact.email")}</li>
+                <li>{t("footer.contact.phone")}</li>
+                <li>{t("footer.contact.address")}</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-bold mb-4">Follow Us</h3>
+              <h3 className="font-bold mb-4">{t("footer.socials.title")}</h3>
               <ul className="space-y-2">
                 <li>
                   <a href="#" className="hover:underline">
-                    Facebook
+                    {t("footer.socials.facebook")}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:underline">
-                    Twitter
+                    {t("footer.socials.instagram")}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:underline">
-                    Instagram
+                    {t("footer.socials.linkedin")}
                   </a>
                 </li>
                 <li>
                   <a href="#" className="hover:underline">
-                    LinkedIn
+                    {t("footer.socials.twitter")}
                   </a>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="font-bold mb-4">Newsletter</h3>
-              <p className="mb-4">
-                Stay updated with our latest books and features.
-              </p>
+              <h3 className="font-bold mb-4"> {t("footer.connect.title")}</h3>
+              <p className="mb-4">{t("footer.connect.description")}</p>
               <input
                 type="email"
-                placeholder="Enter your email"
+                placeholder={t("footer.connect.enterEmail")}
                 className="w-full p-2 mb-2 border rounded"
               />
-              <Button className="w-full">Subscribe</Button>
+              <Button className="w-full">{t("footer.connect.button")}</Button>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t text-center">
