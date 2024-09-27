@@ -24,7 +24,7 @@ const ProfessorsPage = async () => {
     offset: 0,
     limit: 10,
   })) as IPagedResponse<IProfessor>;
-  const professors = result.items;
+  const professors = result.items.filter((items) => items.calendlyLink);
 
   return (
     <div className="container mx-auto py-12 px-4">
