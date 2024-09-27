@@ -8,7 +8,11 @@ import {
   CardDescription,
   CardContent,
 } from "@/src/components/ui/card";
-import { createBook, createProfessor } from "@/src/lib/actions";
+import {
+  createBook,
+  createProfessor,
+  inviteProfessor,
+} from "@/src/lib/actions";
 import React from "react";
 
 const CreateProfessor = () => {
@@ -37,12 +41,6 @@ const CreateProfessor = () => {
       name: "shortBio",
       placeholder: "Enter a short bio about professor.",
     },
-    {
-      label: "Calendly Link",
-      type: "text",
-      name: "calendlyLink",
-      placeholder: "Enter the calendly link.",
-    },
   ];
 
   return (
@@ -58,7 +56,7 @@ const CreateProfessor = () => {
           <ProfessorCreateForm
             type="create"
             fields={professorsFields}
-            action={createProfessor}
+            action={inviteProfessor}
             redirectUrl="/admin/professors"
           />
         </CardContent>

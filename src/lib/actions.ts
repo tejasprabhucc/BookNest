@@ -25,6 +25,7 @@ import {
 } from "@/src/repositories/transaction.repository";
 import { ProfessorRepository } from "../repositories/professor.repository";
 import { AppEnvs } from "./read-env";
+import { revalidatePath } from "next/cache";
 
 const bookRepo = new BookRepository(db);
 const memberRepo = new MemberRepository(db);
@@ -166,6 +167,27 @@ export async function deleteMember(id: number) {
     }
     return { message: "Member deleted successfully!" };
   } catch (err) {
+    return { message: (err as Error).message };
+  }
+}
+
+export async function updateRole(id: number, role: Role) {
+  try {
+    const oldData = await memberRepo.getById(id);
+    const data: IMemberBase = {
+      ...oldData,
+      role: role,
+    };
+    const response = await memberRepo.update(id, data);
+    if (!response) {
+      return { message: "Failed to update the role." };
+    }
+    return { message: "Member role updated successfully!" };
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      console.log(err.flatten());
+      return { message: err.errors[0].message || "Invalid input" };
+    }
     return { message: (err as Error).message };
   }
 }
@@ -570,7 +592,33 @@ export async function getScheduledEvents() {
     }
 
     const data = await response.json();
-    return data.collection;
+    const events = data.collection;
+
+    const eventsDetails = await Promise.all(
+      events.map(async (event: any) => {
+        const meetLink = event.location?.join_url || "No Meet link";
+        const eventUUID = event.uri.split("/").pop();
+        const invitees = await getInviteeDetails(eventUUID);
+        const organizers = event.event_memberships.map((membership: any) => ({
+          name: membership.user_name,
+          email: membership.user_email,
+        }));
+
+        return {
+          event: event.name,
+          status: event.status,
+          start_time: event.start_time,
+          end_time: event.end_time,
+          meetLink: meetLink,
+          organizers,
+          invitees: invitees.map((invitee: any) => ({
+            name: invitee.name,
+            email: invitee.email,
+          })),
+        };
+      })
+    );
+    return eventsDetails;
   } catch (error) {
     console.error("Error fetching user URI", error);
     throw error;
@@ -655,5 +703,122 @@ export async function getInviteeDetails(event_uuid: string) {
   } catch (error) {
     console.error("Error fetching invitee details", error);
     throw error;
+  }
+}
+
+export async function inviteProfessor(
+  prevState: string | undefined,
+  formData: FormData
+) {
+  try {
+    const email = formData.get("email") as string;
+    const data: Omit<IProfessor, "id"> = {
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
+      department: formData.get("department") as string,
+      shortBio: formData.get("shortBio") as string,
+      calendlyLink: null,
+    };
+
+    const orgUri: string = await getOrganizationUri();
+    const uuid = orgUri.split("/").pop();
+
+    const invitationResult = await fetch(`${orgUri}/invitations`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${AppEnvs.NEXT_PUBLIC_CALENDLY_ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+      }),
+    });
+
+    if (invitationResult.ok) {
+      const createdMember = await professorRepo.create(data);
+      if (!createdMember) {
+        return { message: "Failed to create professor." };
+      }
+      return { message: "Professor created successfully!" };
+    }
+
+    return { message: "Failed to create professor." };
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      console.log(err.flatten());
+      return { message: err.errors[0].message || "Invalid input" };
+    }
+    return { message: (err as Error).message };
+  }
+}
+
+export async function refreshCalendlyLink(email: string) {
+  try {
+    const orgUri: string = await getOrganizationUri();
+    const uuid = orgUri.split("/").pop();
+
+    const invitationsResponse = await fetch(
+      `https://api.calendly.com/organizations/${uuid}/invitations?email=${encodeURIComponent(
+        email
+      )}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${AppEnvs.NEXT_PUBLIC_CALENDLY_ACCESS_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!invitationsResponse.ok) {
+      throw new Error(
+        `Error fetching invitations: ${invitationsResponse.statusText}`
+      );
+    }
+
+    const invitationsData = await invitationsResponse.json();
+    const invitation = invitationsData.collection[0];
+
+    if (invitation && invitation.status === "accepted") {
+      const userResponse = await fetch(invitation.user, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${AppEnvs.NEXT_PUBLIC_CALENDLY_ACCESS_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!userResponse.ok) {
+        throw new Error(`Error fetching user: ${userResponse.statusText}`);
+      }
+
+      const userData = await userResponse.json();
+      const calendlyLink = userData.resource.scheduling_url;
+
+      const professor = await professorRepo.getByEmail(email);
+
+      if (professor) {
+        await professorRepo.update(professor.id, {
+          ...professor,
+          calendlyLink: calendlyLink,
+        });
+        return {
+          success: true,
+          message: "Calendly link updated successfully.",
+        };
+      } else {
+        throw new Error("Professor not found in the database.");
+      }
+    } else {
+      return {
+        success: false,
+        message: "Invitation not accepted or not found.",
+      };
+    }
+  } catch (error) {
+    console.error("Error in checkInvitationAndUpdateCalendlyLink:", error);
+    throw error;
+  } finally {
+    revalidatePath("/admin/professors");
   }
 }

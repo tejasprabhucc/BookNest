@@ -6,6 +6,7 @@ import {
   CheckIcon,
   FilePenIcon,
   PlusIcon,
+  RefreshCw,
   TrashIcon,
   XIcon,
 } from "lucide-react";
@@ -41,6 +42,7 @@ import {
 import { revalidatePath } from "next/cache";
 import { ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
 import ConfirmDialog from "./ConfimDialog";
+import { cn } from "@/src/lib/utils";
 
 type ItemType = IBook | IMember | ITransaction | IProfessor;
 
@@ -282,5 +284,50 @@ export const DeleteButton = ({ data }: { data: ItemType }) => {
         variant={"destructive"}
       />
     </>
+  );
+};
+
+export const RefreshLink = ({
+  email,
+  action,
+}: {
+  email: string;
+  action: (email: string) => Promise<{ success: boolean; message: string }>;
+}) => {
+  const [isLoading, setLoading] = useState(false);
+  const handleRefresh = async (email: string) => {
+    try {
+      setLoading(true);
+      const result = await action(email);
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: result.message,
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to refresh Calendly link.",
+          variant: "destructive",
+        });
+      }
+      setLoading(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An error occurred while refreshing the Calendly link.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  return (
+    <Button variant="outline" size="sm" onClick={() => handleRefresh(email)}>
+      <RefreshCw
+        className={cn("h-4 w-4 mr-2", isLoading ? "animate-spin" : "")}
+      />
+      Refresh Link
+    </Button>
   );
 };

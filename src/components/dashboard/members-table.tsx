@@ -1,6 +1,6 @@
 "use client";
-import React from "react";
-import { IMember } from "@/src/lib/definitions";
+import React, { useState } from "react";
+import { IMember, Role } from "@/src/lib/definitions";
 import {
   Table,
   TableBody,
@@ -19,11 +19,19 @@ import {
   SelectValue,
 } from "../ui/select";
 
-const MembersTable = ({ members }: { members: IMember[] }) => {
-  const handleRoleChange = (memberId: number, newRole: string) => {
-    console.log(`Changing role for member ${memberId} to ${newRole}`);
+const MembersTable = ({
+  members,
+  updateRole,
+}: {
+  members: IMember[];
+  updateRole: (id: number, role: Role)=>void}) => {
+  const handleRoleChange = async (id: number, role: string) => {
+    try {
+      const response = await updateRole(id, role as Role);
+    } catch (error) {
+      console.log((error as Error).message);
+    }
   };
-
   return (
     <Table className="w-full">
       <TableHeader>
@@ -51,8 +59,8 @@ const MembersTable = ({ members }: { members: IMember[] }) => {
             <TableCell className="sm:table-cell">{member.role}</TableCell>
             <TableCell className="sm:table-cell">
               <Select
-                onValueChange={(value) => handleRoleChange(member.id, value)}
                 defaultValue={member.role}
+                onValueChange={(value) =>handleRoleChange(member.id, value)}
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select role" />

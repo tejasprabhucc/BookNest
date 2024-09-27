@@ -79,8 +79,8 @@ export const professors = pgTable(
     name: varchar("name", { length: 35 }).notNull(),
     email: varchar("email", { length: 255 }).notNull(),
     department: varchar("department", { length: 255 }).notNull(),
-    shortBio: varchar("shortBio", { length: 255 }),
-    calendlyLink: varchar("calendlyLink", { length: 255 }).notNull(),
+    shortBio: varchar("shortBio", { length: 255 }).notNull(),
+    calendlyLink: varchar("calendlyLink", { length: 255 }),
   },
   (professors) => {
     return {
