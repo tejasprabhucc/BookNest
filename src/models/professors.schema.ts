@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const professorSchema = z.object({
+export const ProfessorSchema = z.object({
   id: z.number().optional(),
   name: z
     .string()
@@ -14,12 +14,10 @@ export const professorSchema = z.object({
     .string()
     .min(1, "Department is required")
     .max(255, "Department cannot exceed 255 characters"),
-  shortBio: z
-    .string()
-    .max(255, "Short bio cannot exceed 255 characters")
-    .optional(),
+  shortBio: z.string().max(255, "Short bio cannot exceed 255 characters"),
   calendlyLink: z
     .string()
     .url("Invalid Calendly URL")
-    .max(255, "Calendly link cannot exceed 255 characters"),
+    .max(255, "Calendly link cannot exceed 255 characters")
+    .nullable(),
 });

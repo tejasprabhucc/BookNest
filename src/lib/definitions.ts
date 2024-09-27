@@ -58,8 +58,8 @@ export interface IProfessorBase {
   name: string;
   email: string;
   department: string;
-  shortBio?: string;
-  calendlyLink: string;
+  shortBio: string;
+  calendlyLink: string | null;
 }
 export interface IProfessor extends IProfessorBase {
   id: number;
@@ -126,7 +126,6 @@ export interface INavOption {
   label: string;
   url: string;
   iconName: string;
-
 }
 
 export interface IOrganizer {

@@ -1,9 +1,10 @@
 import React from "react";
-import { fetchMembers } from "@/src/lib/actions";
+import { fetchMembers, updateRole } from "@/src/lib/actions";
 import {
   IMember,
   IPagedResponse,
   IPaginationOptions,
+  Role,
 } from "@/src/lib/definitions";
 import PaginationControl from "@/src/components/controls/pagination";
 import Search from "@/src/components/navbar/search";
@@ -57,7 +58,7 @@ const Members = async ({
       {errorMessage ? (
         <p>{errorMessage}</p>
       ) : members.length > 0 ? (
-        <MembersTable members={members} />
+        <MembersTable members={members} updateRole={updateRole} />
       ) : (
         <p>No members found.</p>
       )}

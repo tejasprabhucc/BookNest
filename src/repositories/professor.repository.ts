@@ -13,13 +13,13 @@ import {
 import { professors } from "../drizzle/schema";
 import { count, eq, sql } from "drizzle-orm";
 import bcrypt from "bcryptjs";
-import { professorSchema } from "../models/professors.schema";
+import { ProfessorSchema } from "../models/professors.schema";
 
 export class ProfessorRepository {
   constructor(private readonly db: VercelPgDatabase<Record<string, unknown>>) {}
 
   async create(data: IProfessorBase): Promise<IProfessor | undefined> {
-    const validatedData = { ...professorSchema.parse(data) };
+    const validatedData = { ...ProfessorSchema.parse(data) };
 
     const newProfessor: IProfessorBase = {
       ...validatedData,
@@ -36,8 +36,32 @@ export class ProfessorRepository {
     }
   }
 
-  update(id: number, data: IProfessor): Promise<IProfessor | undefined> {
-    throw new Error("Method not implemented.");
+  async update(id: number, data: IProfessor): Promise<IProfessor | undefined> {
+    const professorToUpdate = await this.getById(id);
+    if (!professorToUpdate) {
+      throw new Error("Professor not found");
+    }
+
+    const validatedData = ProfessorSchema.parse(data);
+    const updatedProfessor: IProfessor = {
+      ...professorToUpdate,
+      ...validatedData,
+    };
+
+    try {
+      const result = await this.db
+        .update(professors)
+        .set(updatedProfessor)
+        .where(eq(professors.id, id))
+        .execute();
+      if (result.rowCount) {
+        return await this.getById(id);
+      } else {
+        throw new Error("Could not update professor");
+      }
+    } catch (error) {
+      throw new Error("Could not update professor");
+    }
   }
 
   async delete(id: number): Promise<IProfessor | undefined> {
@@ -115,6 +139,22 @@ export class ProfessorRepository {
       }
     } catch (e) {
       throw new Error((e as Error).message);
+    }
+  }
+
+  async getByEmail(email: string): Promise<IProfessor | null> {
+    try {
+      if (!this.db) {
+        return null;
+      }
+      const [selectedProf] = await this.db
+        .select()
+        .from(professors)
+        .where(eq(professors.email, email));
+      if (!selectedProf) return null;
+      return selectedProf as IProfessor;
+    } catch (error) {
+      throw error;
     }
   }
 }

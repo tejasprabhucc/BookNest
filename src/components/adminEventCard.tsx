@@ -1,180 +1,139 @@
 "use client";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "@radix-ui/react-dialog";
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  User,
-  Copy,
-  Edit,
-  Trash2,
-  ExternalLink,
-} from "lucide-react";
-import { useState } from "react";
-import { Button } from "./ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import { DialogHeader } from "./ui/dialog";
-import { Input } from "./ui/input";
+
+import React from "react";
+import { Calendar, Clock, User, ExternalLink } from "lucide-react";
 import { Badge } from "./ui/badge";
-import { Label } from "./ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
+import { Button } from "./ui/button";
 
+interface Invitee {
+  name: string;
+  email: string;
+}
+interface Organizer {
+  name: string;
+  email: string;
+}
 
-const AdminEventCard = ({ event }: { event: any }) => {
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+interface Event {
+  event: string;
+  status: string;
+  start_time: string;
+  end_time: string;
+  meetLink: string;
+  organizers: Organizer[];
+  invitees: Invitee[];
+}
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        // You might want to show a toast notification here
-        console.log("Copied to clipboard");
-      })
-      .catch((err) => {
-        console.error("Failed to copy: ", err);
-      });
-  };
-
+const AdminEventTable = ({ events }: { events: Event[] }) => {
   return (
-    <Card className="flex flex-col">
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <CardTitle className="text-xl font-semibold">{event.name}</CardTitle>
-          <Badge variant={event.status === "active" ? "default" : "secondary"}>
-            {event.status}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="flex-grow space-y-3">
-        <div className="flex items-center space-x-2">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-          <p className="text-sm">
-            {new Date(event.start_time).toLocaleDateString()}
-          </p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Clock className="h-4 w-4 text-muted-foreground" />
-          <p className="text-sm">
-            {new Date(event.start_time).toLocaleTimeString()} -
-            {new Date(event.end_time).toLocaleTimeString()}
-          </p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <MapPin className="h-4 w-4 text-muted-foreground" />
-          <p className="text-sm">{event.location.type}</p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <User className="h-4 w-4 text-muted-foreground" />
-          <p className="text-sm">
-            Invitees: {event.invitees_counter.active}/
-            {event.invitees_counter.limit}
-          </p>
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => copyToClipboard(event.uri)}
-        >
-          <Copy className="h-4 w-4 mr-2" />
-          Event ID
-        </Button>
-      </CardContent>
-      <CardFooter className="flex justify-between">
-        {/* <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Edit className="h-4 w-4 mr-2" />
-              Edit
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Edit Appointment</DialogTitle>
-              <DialogDescription>
-                Make changes to the appointment here.
-              </DialogDescription>
-            </DialogHeader> */}
-        {/* <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleEdit({
-                  ...event,
-                  name: e.target.name.value,
-                  start_time: e.target.start_time.value,
-                  end_time: e.target.end_time.value,
-                });
-              }}
-            >
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Name
-                  </Label>
-                  <Input
-                    id="name"
-                    defaultValue={event.name}
-                    className="col-span-3"
-                  />
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Event Name</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Date & Time</TableHead>
+          <TableHead>Meet Link</TableHead>
+          <TableHead>Organizers</TableHead>
+          <TableHead>Invitees</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {events.map((event, index) => (
+          <TableRow key={index}>
+            <TableCell>{event.event}</TableCell>
+            <TableCell>
+              <Badge
+                variant={event.status === "active" ? "default" : "secondary"}
+              >
+                {event.status}
+              </Badge>
+            </TableCell>
+            <TableCell>
+              <div className="flex flex-col space-y-1">
+                <div className="flex items-center space-x-2">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm">
+                    {new Date(event.start_time).toLocaleDateString()}
+                  </span>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="start_time" className="text-right">
-                    Start Time
-                  </Label>
-                  <Input
-                    id="start_time"
-                    type="datetime-local"
-                    defaultValue={event.start_time.slice(0, 16)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="end_time" className="text-right">
-                    End Time
-                  </Label>
-                  <Input
-                    id="end_time"
-                    type="datetime-local"
-                    defaultValue={event.end_time.slice(0, 16)}
-                    className="col-span-3"
-                  />
+                <div className="flex items-center space-x-2">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm">
+                    {new Date(event.start_time).toLocaleTimeString()} -
+                    {new Date(event.end_time).toLocaleTimeString()}
+                  </span>
                 </div>
               </div>
-              <div className="flex justify-end">
-                <Button type="submit">Save changes</Button>
-              </div>
-            </form> */}
-        {/* </DialogContent>
-        </Dialog> */}
-        <Button variant="destructive" size="sm">
-          <Trash2 className="h-4 w-4 mr-2" />
-          Delete
-        </Button>
-        {event.location.join_url && (
-          <Button variant="default" size="sm" asChild>
-            <a
-              href={event.location.join_url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Join
-            </a>
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
+            </TableCell>
+            <TableCell>
+              <Button variant="link" size="sm" asChild>
+                <a
+                  href={event.meetLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Join Meeting
+                </a>
+              </Button>
+            </TableCell>
+            <TableCell>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center space-x-2">
+                      <User className="h-4 w-4 text-orange-600" />
+                      <span className="text-sm">
+                        {event.organizers[0].name}
+                      </span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <div className="flex flex-col space-y-1">
+                      <span className="text-sm">
+                        {event.organizers[0].email}
+                      </span>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </TableCell>
+            <TableCell>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center space-x-2">
+                      <User className="h-4 w-4  text-blue-500" />
+                      <span className="text-sm">{event.invitees[0].name}</span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <div className="flex flex-col space-y-1">
+                      <span className="text-sm">{event.invitees[0].email}</span>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 };
 
-export default AdminEventCard;
+export default AdminEventTable;

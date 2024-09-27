@@ -79,8 +79,9 @@ const MyAppointments: React.FC<MyAppointmentsProps> = ({
                         </span>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56 z-50">
+                    <DropdownMenuContent align="end" className=" z-50">
                       <DropdownMenuItem
+                        className="p-2"
                         onSelect={() =>
                           handleReschedule(appointment.rescheduleLink)
                         }

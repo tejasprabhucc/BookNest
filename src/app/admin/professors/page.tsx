@@ -1,15 +1,8 @@
 import React from "react";
-import { fetchMembers, fetchProfessors } from "@/src/lib/actions";
-import {
-  IMember,
-  IPagedResponse,
-  IPaginationOptions,
-  IProfessor,
-} from "@/src/lib/definitions";
-import PaginationControl from "@/src/components/controls/pagination";
+import { fetchProfessors, refreshCalendlyLink } from "@/src/lib/actions";
+import { IPagedResponse, IProfessor } from "@/src/lib/definitions";
 import Search from "@/src/components/navbar/search";
 import { CreateButton } from "@/src/components/ui/customButtons";
-import MembersTable from "@/src/components/dashboard/members-table";
 import ProfessorsTable from "@/src/components/dashboard/professors-table";
 
 const Professors = async ({
@@ -39,10 +32,13 @@ const Professors = async ({
       </div>
       {errorMessage ? (
         <p>{errorMessage}</p>
-      ) : professors.length > 0 ? (
-        <ProfessorsTable professors={professors} />
+      ) : professors ? (
+        <ProfessorsTable
+          professors={professors}
+          refreshCalendlyLink={refreshCalendlyLink}
+        />
       ) : (
-        <p>No members found.</p>
+        <p>No professors found.</p>
       )}
     </div>
   );
