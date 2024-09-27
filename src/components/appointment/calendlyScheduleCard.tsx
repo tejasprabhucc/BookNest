@@ -11,13 +11,19 @@ const CalendlyScheduleCard = ({
   user: IMember;
 }) => {
   return (
-    <InlineWidget
-      url={professor.calendlyLink}
-      styles={{
-        height: "650px",
-      }}
-      prefill={{ name: user.name, email: user.email }}
-    />
+    <>
+      {professor.calendlyLink ? (
+        <InlineWidget
+          url={professor.calendlyLink}
+          styles={{
+            height: "650px",
+          }}
+          prefill={{ name: user.name, email: user.email }}
+        />
+      ) : (
+        <p>This professor is not available.</p>
+      )}
+    </>
   );
 };
 
