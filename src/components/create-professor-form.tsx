@@ -96,11 +96,11 @@ const ProfessorCreateForm = ({
               id={field.name as string}
               name={field.name as string}
               type={field.type}
-              defaultValue={
-                type === "edit" && data
-                  ? data[field.name as keyof typeof data]
-                  : ""
-              }
+              // defaultValue={
+              //   type === "edit" && data
+              //     ? data[field.name as keyof typeof data]
+              //     : ""
+              // }
               placeholder={field.placeholder}
               className="w-full"
               required
