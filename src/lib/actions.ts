@@ -627,8 +627,10 @@ export async function getScheduledEvents() {
 
 export async function getUsersAppointments(email: string) {
   try {
+    const start_time = new Date();
+    const end_time = new Date();
     const orgUri = await getOrganizationUri();
-    const url = `https://api.calendly.com/scheduled_events?organization=${orgUri}&invitee_email=${email}`;
+    const url = `https://api.calendly.com/scheduled_events?organization=${orgUri}&invitee_email=${email}&min_start_time=${start_time}`;
     const response = await fetch(url, {
       method: "GET",
       headers: {

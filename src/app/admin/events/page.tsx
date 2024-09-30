@@ -1,20 +1,5 @@
-import AdminEventTable from "@/src/components/adminEventCard";
-import AdminEventCard from "@/src/components/adminEventCard";
-import { Badge } from "@/src/components/ui/badge";
-import { Button } from "@/src/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/src/components/ui/card";
-import {
-  getScheduledEvents,
-  getUsersAppointments,
-  getUserSession,
-} from "@/src/lib/actions";
-import { Calendar, Clock, Link, MapPin, User } from "lucide-react";
+import AdminEventTable from "@/src/components/event-table";
+import { getScheduledEvents, getUserSession } from "@/src/lib/actions";
 import { redirect } from "next/navigation";
 
 const MyAppointments = async () => {

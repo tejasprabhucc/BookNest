@@ -84,7 +84,10 @@ const ProfessorCard = ({ professor }: { professor: IProfessor }) => {
         </CardContent>
         <CardFooter className="pt-4">
           <Button className="w-full" asChild>
-            <Link href={`/dashboard/professors/${professor.id}/schedule`}>
+            {/* <Link href={`/dashboard/professors/${professor.id}/schedule`}>
+              Book Appointment
+            </Link> */}
+            <Link href={`/dashboard/professors/${professor.id}/pay`}>
               Book Appointment
             </Link>
           </Button>

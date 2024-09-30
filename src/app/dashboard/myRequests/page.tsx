@@ -1,9 +1,6 @@
 import React from "react";
 import {
   fetchDueTransactions,
-  fetchRequestsByMember,
-  fetchTransactions,
-  fetchUserTransactions,
   getUserByEmail,
   getUserSession,
 } from "@/src/lib/actions";
@@ -15,7 +12,6 @@ import {
   ITransaction,
   SortOptions,
 } from "@/src/lib/definitions";
-import PaginationControl from "@/src/components/controls/pagination";
 import Search from "@/src/components/navbar/search";
 import TransactionsTable from "@/src/components/dashboard/transactions-table"; // Ensure you have this component
 import { ITransactionDetails } from "@/src/repositories/transaction.repository";
@@ -70,6 +66,7 @@ const BooksDue = async ({
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowFormatted = tomorrow.toDateString();
+
     const filteredDueRequest = fetchTransactionsResult.items.filter((trxn) => {
       if (filterOption === "today") {
         return trxn.dueDate === today;

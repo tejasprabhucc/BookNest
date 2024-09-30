@@ -13,6 +13,7 @@ import {
 // Use drizzle to send queries to your database
 export const db = drizzle(sql);
 export const roleEnum = pgEnum("role", ["user", "admin"]);
+export const paymentStatusEnum = pgEnum("paymentStatus", ["Paid", "Scheduled"]);
 
 // Books Table
 export const books = pgTable(
@@ -90,7 +91,7 @@ export const professors = pgTable(
 );
 
 // Appointments Table
-export const appointments = pgTable("appointments", {
+export const appointments = pgTable("payments", {
   id: serial("id").primaryKey(),
   memberId: bigint("memberId", { mode: "bigint" })
     .references(() => members.id, { onDelete: "cascade" })
@@ -98,6 +99,7 @@ export const appointments = pgTable("appointments", {
   professorId: bigint("professorId", { mode: "bigint" })
     .references(() => professors.id, { onDelete: "cascade" })
     .notNull(),
-  googleMeetLink: varchar("googleMeetLink", { length: 255 }).notNull(),
-  appointmentDate: varchar("appointmentDate", { length: 15 }).notNull(),
+  transactionId: varchar("transactionId", { length: 35 }).notNull(),
+  orderId: varchar("orderId", { length: 35 }).notNull(),
+  status: paymentStatusEnum("paymentStatus").notNull().default("Paid"),
 });
