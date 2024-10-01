@@ -1,6 +1,6 @@
 "use client";
 
-import { IMember, IProfessor } from "@/src/lib/definitions";
+import { IMember, IPaymentBase, IProfessor } from "@/src/lib/definitions";
 import { ArrowLeft, CheckCircle, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
@@ -14,13 +14,6 @@ import {
 } from "../ui/card";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 
-interface TransactionDetails {
-  professorId: number;
-  userId: number;
-  paymentId: string;
-  orderId: string;
-}
-
 const PaymentSheet = ({
   user,
   professorId,
@@ -30,8 +23,7 @@ const PaymentSheet = ({
 }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [transactionDetails, setTransactionDetails] =
-    useState<TransactionDetails>();
+  const [transactionDetails, setTransactionDetails] = useState<IPaymentBase>();
 
   const handlePayNow = async () => {
     setLoading(true);
@@ -45,12 +37,13 @@ const PaymentSheet = ({
         currency: order.currency,
         order_id: order.id,
         handler: function (response: any) {
-          setTransactionDetails({
-            professorId: professorId,
-            userId: user.id,
-            paymentId: response.razorpay_payment_id,
+          const paymentDetails: IPaymentBase = {
+            memberId: user.id,
+            transactionId: response.razorpay_payment_id,
             orderId: response.razorpay_order_id,
-          });
+            amount: order.amount,
+          };
+          setTransactionDetails(paymentDetails);
         },
         prefill: {
           name: user?.name,
@@ -118,21 +111,21 @@ const PaymentSheet = ({
               </div>
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">
-                  Professor ID:{" "}
-                  <span className="font-medium">
-                    {transactionDetails.professorId}
-                  </span>
-                </p>
-                <p className="text-sm text-muted-foreground">
                   Payment ID:{" "}
                   <span className="font-medium">
-                    {transactionDetails.paymentId}
+                    {transactionDetails.transactionId}
                   </span>
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Order ID:{" "}
                   <span className="font-medium">
                     {transactionDetails.orderId}
+                  </span>
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Order ID:{" "}
+                  <span className="font-medium">
+                    {transactionDetails.amount}
                   </span>
                 </p>
               </div>

@@ -7,6 +7,7 @@ import {
   IMember,
   IMemberBase,
   IPageRequest,
+  IPaymentBase,
   IProfessor,
   ITransaction,
   ITransactionBase,
@@ -18,6 +19,7 @@ import { AuthError, User } from "next-auth";
 import { redirect } from "next/navigation";
 import { BookRepository } from "@/src/repositories/book.repository";
 import { MemberRepository } from "@/src/repositories/member.repository";
+import { PaymentRepository } from "@/src/repositories/payment.repository";
 import { z } from "zod";
 import {
   ITransactionDetails,
@@ -31,6 +33,7 @@ const bookRepo = new BookRepository(db);
 const memberRepo = new MemberRepository(db);
 const transactionRepo = new TransactionRepository(db);
 const professorRepo = new ProfessorRepository(db);
+const paymentRepo = new PaymentRepository(db);
 
 export type State = {
   message?: string | null;
@@ -509,18 +512,6 @@ export async function fetchProfessorById(id: number) {
   }
 }
 
-export async function deleteProfessor(id: number) {
-  try {
-    const deleted = await professorRepo.delete(id);
-    if (!deleted) {
-      return { message: "Failed to delete the professor." };
-    }
-    return { message: "Professor deleted successfully!" };
-  } catch (err) {
-    return { message: (err as Error).message };
-  }
-}
-
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData
@@ -822,5 +813,131 @@ export async function refreshCalendlyLink(email: string) {
     throw error;
   } finally {
     revalidatePath("/admin/professors");
+  }
+}
+
+export async function fetchMembershipUuid(email: string) {
+  try {
+    console.log("email while deleting", email);
+    const orgUri = await getOrganizationUri();
+    const response = await fetch(
+      `https://api.calendly.com/organization_memberships?organization=${encodeURIComponent(
+        orgUri
+      )}&email=${encodeURIComponent(email)}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${AppEnvs.NEXT_PUBLIC_CALENDLY_ACCESS_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Error fetching membership UUID: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const membership = data.collection[0]; // Assuming the first entry is the required one
+
+    return membership.uri.split("/").pop();
+  } catch (error) {
+    console.error("Error fetching membership UUID", error);
+    throw error;
+  }
+}
+
+export async function deleteProfessor(professorId: number) {
+  try {
+    const professor = await professorRepo.getById(professorId);
+    if (!professor) throw new Error("Professor not found");
+
+    const membershipUuid = await fetchMembershipUuid(professor.email);
+
+    const response = await fetch(
+      `https://api.calendly.com/organization_memberships/${membershipUuid}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_CALENDLY_ACCESS_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to remove professor from organization:`);
+    }
+
+    const deletedProfessor = await professorRepo.delete(professorId);
+
+    return {
+      success: true,
+      message: "Professor successfully removed from organization",
+      deletedProfessor,
+    };
+  } catch (error: any) {
+    console.error("Error removing professor:", error);
+    return {
+      success: false,
+      message: error.message || "Failed to remove professor",
+    };
+  } finally {
+    revalidatePath("/admin/professors");
+  }
+}
+
+export async function addPayment(paymentDetails: IPaymentBase) {
+  try {
+    const result = await paymentRepo.create(paymentDetails);
+    if (!result) {
+      return {
+        success: false,
+        message: "Failed to add payment to database",
+      };
+    }
+    return {
+      success: true,
+      message: "Payment added successfully.",
+    };
+  } catch (error: any) {
+    console.error("Failed to add payment to database:", error);
+    return {
+      success: false,
+      message: error.message || "Failed to add payment to database",
+    };
+  }
+}
+
+export async function addWalletBalance(amount: number, memberId: number) {
+  try {
+    const memberData = (await getUserById(memberId)) as IMember;
+    if (!memberData) {
+      return {
+        message: "Member not found to update wallet balance.",
+      };
+    }
+
+    const updatedUser: IMember = {
+      ...memberData,
+      walletBalance: memberData.walletBalance
+        ? memberData.walletBalance + amount
+        : amount,
+    };
+
+    const updateResult = await memberRepo.update(memberData.id, updatedUser);
+
+    if (!updateResult) {
+      return {
+        success: false,
+        message: "Failed to add funds to wallet",
+      };
+    }
+  } catch (error) {
+    console.error("Failed to add payment to database:", error);
+    return {
+      success: false,
+      message: "Failed to add funds to wallet",
+    };
   }
 }

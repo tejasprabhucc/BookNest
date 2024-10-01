@@ -4,23 +4,15 @@ import { ArrowUpDown } from "lucide-react";
 import React from "react";
 import { Button } from "../ui/button";
 import { IBook, IMember, SortOptions } from "@/src/lib/definitions";
-import {
-  redirect,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Select,
   SelectContent,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
-  SelectGroup,
 } from "@/src/components/ui/select";
 import { ITransactionDetails } from "@/src/repositories/transaction.repository";
-import { getUserLocale } from "@/src/services/locale";
 import { useTranslations } from "next-intl";
 
 interface SortOptionProps {
@@ -63,7 +55,6 @@ const SortControl = ({ sortOptions }: SortOptionProps) => {
           </SelectItem>
           <SelectItem value="author"> {t("sortOptions.author")}</SelectItem>
           <SelectItem value="publisher">
-            {" "}
             {t("sortOptions.publisher")}
           </SelectItem>
         </SelectContent>

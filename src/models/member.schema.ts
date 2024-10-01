@@ -16,7 +16,6 @@ export const MemberBaseSchema = z.object({
     .string({ message: "Password must be a string." })
     .min(8, { message: "Password must be at least 8 characters long." }),
   role: z.enum(["user", "admin"]),
-  refreshToken: z.string().optional(),
   phone: z
     .string()
     .min(10, { message: "Phone number should have atleast 10 digits" })
@@ -27,6 +26,11 @@ export const MemberBaseSchema = z.object({
     .optional()
     .nullable(),
   image: z.string().optional().nullable(),
+  walletBalance: z
+    .number({ message: "Wallet amount must be a number." })
+    .int()
+    .optional()
+    .nullable(),
 });
 
 export const MemberSchema = MemberBaseSchema.extend({
@@ -38,7 +42,6 @@ export type IMember = z.infer<typeof MemberSchema>;
 
 export const MemberTokensBase = z.object({
   memberId: z.number().int().min(1),
-  refreshToken: z.string(),
 });
 
 export const MemberTokens = MemberTokensBase.extend({

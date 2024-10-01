@@ -25,6 +25,7 @@ import SignOutButton from "@/src/components/navbar/signOutButton";
 import UserActivity from "@/src/components/profile/user-activity";
 import ContactInfo from "@/src/components/profile/contact-info";
 import ProfileCard from "@/src/components/profile/profile-card";
+import { WalletCard } from "@/src/components/profile/wallet";
 
 export default async function Profile() {
   const session = await getUserSession();
@@ -38,7 +39,7 @@ export default async function Profile() {
 
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8">
-      <Card className="max-w-4xl mx-auto ">
+      <Card className="max-w-4xl mx-auto">
         <CardHeader className="pb-0">
           <div className="flex justify-between items-center">
             <CardTitle className="text-3xl font-bold">My Profile</CardTitle>
@@ -56,19 +57,24 @@ export default async function Profile() {
           </div>
         </CardHeader>
         <CardContent className="pt-6">
-          <ProfileCard userData={userData} />
+          <div className="flex justify-between items-center mb-6">
+            <ProfileCard userData={userData} />
+          </div>
           <Tabs defaultValue="overview" className="mt-6">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="activity">Activity</TabsTrigger>
+              <TabsTrigger value="wallet">Wallet</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-4">
               <ContactInfo userData={userData} />
-
               <LibraryStats userTransactionSummary={userTransactionSummary} />
             </TabsContent>
             <TabsContent value="activity">
               <UserActivity />
+            </TabsContent>
+            <TabsContent value="wallet">
+              {/* <WalletTransactions transactions={} /> */}
             </TabsContent>
           </Tabs>
         </CardContent>
