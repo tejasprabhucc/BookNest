@@ -28,7 +28,7 @@ const BooksGrid = ({
           <motion.div
             key={book.isbnNo}
             whileHover={{ scale: 1.015 }}
-            className="flex flex-col justify-between bg-background shadow-lg rounded-lg overflow-hidden p-0 cursor-pointer transition-shadow hover:shadow-xl"
+            className="flex flex-col justify-between bg-background shadow-lg rounded-lg overflow-hidden p-0 cursor-pointer transition-shadow border border-slate-800 hover:shadow-xl"
             onClick={() => setSelectedBook(book)}
           >
             <div className="relative h-80">

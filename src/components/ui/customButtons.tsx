@@ -233,7 +233,7 @@ export const DeleteButton = ({ data }: { data: ItemType }) => {
   }
 
   function isMember(data: ItemType): data is IMember {
-    return (data as IMember).name !== undefined;
+    return (data as IMember).role !== undefined;
   }
 
   function isProfessor(data: ItemType): data is IProfessor {
@@ -250,6 +250,9 @@ export const DeleteButton = ({ data }: { data: ItemType }) => {
 
   const handleDelete = async () => {
     try {
+      console.log("IsBook: ", isBook(data));
+      console.log("isMember: ", isMember(data));
+      console.log("IsProf: ", isProfessor(data));
       const result = isBook(data)
         ? await deleteBook(data.id)
         : isMember(data)
@@ -257,6 +260,8 @@ export const DeleteButton = ({ data }: { data: ItemType }) => {
         : isProfessor(data)
         ? await deleteProfessor(data.id)
         : await deleteTransaction(data.id);
+
+      console.log("Result: ", result);
       toast({
         title: result.message,
       });

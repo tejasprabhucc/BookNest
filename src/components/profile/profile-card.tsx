@@ -1,5 +1,5 @@
 "use client";
-import { Camera, FileImage } from "lucide-react";
+import { Camera, FileImage, Wallet } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { IMember } from "@/src/lib/definitions";
@@ -14,10 +14,10 @@ import {
   DialogHeader,
   DialogFooter,
 } from "../ui/dialog";
-import { UploadButton, UploadDropzone } from "@/src/utils/uploadthing";
-import { redirect } from "next/navigation";
-import { editMember, editProfilePicture } from "@/src/lib/actions";
-import Router from "next/router";
+import { UploadDropzone } from "@/src/utils/uploadthing";
+import { editProfilePicture } from "@/src/lib/actions";
+import Link from "next/link";
+import { WalletCard } from "./wallet";
 
 const ProfileCard = ({ userData }: { userData: IMember }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -59,13 +59,22 @@ const ProfileCard = ({ userData }: { userData: IMember }) => {
           </Button>
         </div>
         <div className="text-center md:text-left">
-          <h2 className="text-2xl font-bold">{userData.name}</h2>
+          <p className="text-2xl font-bold">{userData.name}</p>
           <Badge variant="secondary" className="mt-2">
             {userData.role.toUpperCase()}
           </Badge>
-          {/* <p className="text-sm text-muted-foreground mt-2">
-                Member since {new Date(userData.).toLocaleDateString()}
-              </p> */}
+          <div className="flex space-x-2 items-center mt-2">
+            <WalletCard balance={200} user={userData} />
+            {/* <Wallet className="h-5 w-5 text-muted-foreground" />
+            <span className="font-medium">
+              ₹{userData.walletBalance?.toFixed(2)}
+            </span>
+            <Link href={`/dashboard/profile/${userData.id}/wallet`}>
+              <Button variant="outline" size="sm">
+                Add Funds
+              </Button>
+            </Link> */}
+          </div>
         </div>
       </div>
 

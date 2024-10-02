@@ -2,11 +2,13 @@ import React from "react";
 import {
   fetchBooks,
   fetchRequestsByMember,
+  getUserByEmail,
   getUserSession,
 } from "@/src/lib/actions";
 import {
   IBook,
   IBookBase,
+  IMember,
   IPagedResponse,
   IPaginationOptions,
   ITransaction,
@@ -19,6 +21,7 @@ import SortControl from "@/src/components/controls/sortControl";
 import { ITransactionDetails } from "@/src/repositories/transaction.repository";
 import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
 
 const MyBooks = async ({
   searchParams,
@@ -30,6 +33,11 @@ const MyBooks = async ({
     order?: "asc" | "desc";
   };
 }) => {
+  const session = await getUserSession();
+  if (!session) {
+    redirect("/login");
+  }
+
   let currentPage = Number(searchParams?.page) || 1;
   const searchQuery = searchParams?.query || undefined;
   const limit = 8;
@@ -46,7 +54,8 @@ const MyBooks = async ({
     sortOrder: searchParams?.order || "asc",
   };
   let errorMessage: string | null = null;
-  const user = await getUserSession();
+
+  const user = (await getUserByEmail(session.email)) as IMember;
   const memberId = Number(user?.id);
   try {
     const fetchRequestsResult = (await fetchRequestsByMember(
@@ -70,13 +79,15 @@ const MyBooks = async ({
         ...paginationOptions,
         total: books.length,
       };
+      console.log(books);
     }
   } catch (error) {
-    // console.error("Failed to fetch books:", error);
+    console.error("Failed to fetch books:", error);
     // throw new Error("Something went wrong while fetching books.");
     errorMessage = "No Books found.";
   }
   const t = await getTranslations("MyBooks");
+  console.log(books);
 
   return (
     <main className=" flex flex-1 flex-col gap-2 overflow-y-auto p-4 px-8 ">

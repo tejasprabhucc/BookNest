@@ -8,11 +8,13 @@ import {
   bigint,
   pgEnum,
   uniqueIndex,
+  decimal,
 } from "drizzle-orm/pg-core";
 
 // Use drizzle to send queries to your database
 export const db = drizzle(sql);
 export const roleEnum = pgEnum("role", ["user", "admin"]);
+export const paymentStatusEnum = pgEnum("paymentStatus", ["Paid", "Booked"]);
 
 // Books Table
 export const books = pgTable(
@@ -50,6 +52,7 @@ export const members = pgTable(
     password: varchar("password", { length: 255 }).unique(),
     image: varchar("image", { length: 500 }),
     role: roleEnum("role").notNull().default("user"),
+    walletBalance: integer("walletBalance").default(0),
   },
   (members) => {
     return {
@@ -81,6 +84,7 @@ export const professors = pgTable(
     department: varchar("department", { length: 255 }).notNull(),
     shortBio: varchar("shortBio", { length: 255 }).notNull(),
     calendlyLink: varchar("calendlyLink", { length: 255 }),
+    credits: integer("credits").default(0),
   },
   (professors) => {
     return {
@@ -90,14 +94,12 @@ export const professors = pgTable(
 );
 
 // Appointments Table
-export const appointments = pgTable("appointments", {
+export const payments = pgTable("payments", {
   id: serial("id").primaryKey(),
   memberId: bigint("memberId", { mode: "bigint" })
     .references(() => members.id, { onDelete: "cascade" })
     .notNull(),
-  professorId: bigint("professorId", { mode: "bigint" })
-    .references(() => professors.id, { onDelete: "cascade" })
-    .notNull(),
-  googleMeetLink: varchar("googleMeetLink", { length: 255 }).notNull(),
-  appointmentDate: varchar("appointmentDate", { length: 15 }).notNull(),
+  transactionId: varchar("transactionId", { length: 35 }).notNull(),
+  orderId: varchar("orderId", { length: 35 }).notNull(),
+  amount: integer("amount"),
 });

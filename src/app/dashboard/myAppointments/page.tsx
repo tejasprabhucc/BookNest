@@ -7,7 +7,14 @@ import { redirect } from "next/navigation";
 import MyAppointments from "@/src/components/appointment/myAppointments";
 import { IMember } from "@/src/lib/definitions";
 
-const AppointmentsPage = async () => {
+const AppointmentsPage = async ({
+  searchParams,
+}: {
+  searchParams?: {
+    startDate?: string;
+    endDate?: string;
+  };
+}) => {
   const session = await getUserSession();
   if (!session) {
     redirect("/login");

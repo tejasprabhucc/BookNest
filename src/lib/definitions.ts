@@ -26,6 +26,7 @@ export interface IMemberBase {
   password: string;
   image: string | null;
   role: Role;
+  walletBalance?: number | null;
 }
 export interface IMember extends IMemberBase {
   id: number;
@@ -65,12 +66,15 @@ export interface IProfessor extends IProfessorBase {
   id: number;
 }
 
-export interface IAppointment {
-  id?: number;
-  memberId: bigint;
-  professorId: bigint;
-  googleMeetLink: string;
-  appointmentDate: string;
+export interface IPaymentBase {
+  memberId: number;
+  transactionId: string;
+  orderId: string;
+  amount: number;
+}
+
+export interface IPayment extends IPaymentBase {
+  id: number;
 }
 
 export type Models = IBook | IMember | ITransaction;

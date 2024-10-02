@@ -200,29 +200,15 @@ export class TransactionRepository
       const search = `%${params.search.toLowerCase()}%`;
 
       searchWhereClause = sql`
-      (${transactions.bookId} ILIKE ${search}
-       OR ${transactions.memberId} ILIKE ${search})
+      (${transactions.bookId}::text ILIKE ${search}
+      OR ${transactions.memberId}::text ILIKE ${search}
+      OR ${books.title} ILIKE ${search}
+      OR ${members.name} ILIKE ${search})
     `;
     }
 
-    // if (params.search) {
-    //   const searchTerm = `%${params.search.toLowerCase()}%`;
-    //   const searchFields = [
-    //     transactions.bookId,
-    //     transactions.memberId,
-    //     members.name,
-    //     books.title,
-    //   ];
-
-    //   searchWhereClause = sql`
-    //     (${searchFields
-    //       .map((field) => `${field} LIKE ${searchTerm}`)
-    //       .join(" OR ")})
-    //   `;
-    // }
-
     if (memberId) {
-      searchWhereClause = sql`${searchWhereClause} AND ${transactions.memberId} = ${memberId} AND ${transactions.bookStatus} = 'issued'`;
+      searchWhereClause = sql`${searchWhereClause} AND ${transactions.memberId} = ${memberId}`;
     }
 
     let sortOrder = sql``;
@@ -276,14 +262,28 @@ export class TransactionRepository
   }
 
   async getDueBooks(params: IPageRequest, memberId?: bigint) {
-    // Initialize the searchWhereClause to filter only "issued" books
-    let searchWhereClause = sql``;
+    let searchWhereClause = sql`1 = 1`;
 
-    // Filter by memberId if provided
     if (memberId) {
       searchWhereClause = sql`${transactions.memberId} = ${memberId}`;
     }
-    // let sortOrder = sql`ORDER BY ${transactions.dueDate} DESC`;
+
+    // if (params.search) {
+    //   const search = `%${params.search.toLowerCase()}%`;
+
+    //   searchWhereClause = sql`
+    //   (${transactions.bookId}::text ILIKE ${search}
+    //   OR ${transactions.memberId}::text ILIKE ${search}
+    //   OR ${books.title} ILIKE ${search}
+    //   OR ${members.name} ILIKE ${search})
+    // `;
+    // }
+
+    // if (memberId) {
+    //   searchWhereClause = sql`${searchWhereClause} AND ${transactions.memberId} = ${memberId} AND ${transactions.bookStatus} = 'issued'`;
+    // }
+
+    let sortOrder = sql`ORDER BY ${transactions.dueDate} DESC`;
 
     try {
       const matchedTransactions = await this.db

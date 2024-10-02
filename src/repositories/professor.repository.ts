@@ -65,7 +65,9 @@ export class ProfessorRepository {
   }
 
   async delete(id: number): Promise<IProfessor | undefined> {
+    console.log("Prof ID: ", id);
     const professorToDelete = await this.getById(id);
+    console.log("Prof: ", professorToDelete);
     if (!professorToDelete) {
       throw new Error("Member not found");
     }
